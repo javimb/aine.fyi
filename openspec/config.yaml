@@ -2,3 +2,5 @@ schema: spec-driven
 
 context: |
   We use conventional commits
+  Every new change has to be developed in its own branch
+  Commit and push after each step
