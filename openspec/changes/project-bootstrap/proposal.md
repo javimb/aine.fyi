@@ -17,6 +17,7 @@ The project has no code yet. Before building any features, we need a solid found
 ## Capabilities
 
 ### New Capabilities
+
 - `project-setup`: Next.js App Router scaffold, TypeScript config, linting, formatting, pre-commit hooks, Vitest setup
 - `ui-framework`: Tailwind CSS + shadcn/ui integration and component library setup
 - `aine-data`: Typed AINE blacklist data model with Zod validation schema
