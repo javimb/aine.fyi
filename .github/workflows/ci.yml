@@ -42,24 +42,8 @@ jobs:
       - name: Unit tests with coverage
         run: npm run test:coverage
 
-      - name: Restore Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Smoke E2E tests
-        run: npm run test:e2e:smoke
-
-  e2e-exhaustive:
+  e2e:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -95,5 +79,5 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Exhaustive E2E tests
-        run: npm run test:e2e:exhaustive
+      - name: E2E tests (smoke then exhaustive)
+        run: npm run test:e2e:smoke && npm run test:e2e:exhaustive
