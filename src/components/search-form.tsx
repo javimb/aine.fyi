@@ -61,7 +61,11 @@ export default function SearchForm() {
         </button>
       </form>
 
-      {error && <p className="text-red-600">{error}</p>}
+      {error && (
+        <p className="text-red-600" data-testid="error-message">
+          {error}
+        </p>
+      )}
 
       {results.length > 0 && (
         <ul className="space-y-2" data-testid="search-results">
@@ -78,6 +82,7 @@ export default function SearchForm() {
                       : "text-yellow-600"
                 }`}
                 data-testid="aine-status"
+                data-aine-status={r.aineAnalysis.status}
               >
                 {r.aineAnalysis.status === "RED"
                   ? `⚠️ AINE detectado: ${r.aineAnalysis.matchedAines?.map((a) => a.name).join(", ")}`
