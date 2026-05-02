@@ -40,13 +40,13 @@ Vercel's Hobby (free) tier is sufficient. The CIMA API is hosted in Madrid (`cim
 
 **Rationale**: The CIMA API (`cima.aemps.es`) is a Spanish government API hosted in Spain. Madrid is the closest Vercel region, minimizing proxy latency.
 
-### 3. Skip ESLint and TypeScript during Vercel build
+### 3. Skip TypeScript during Vercel build
 
-**Choice**: Set `eslint.ignoreDuringBuilds: true` and `typescript.ignoreBuildErrors: true` in `next.config.ts`.
+**Choice**: Set `typescript.ignoreBuildErrors: true` in `next.config.ts`.
 
-**Rationale**: GH Actions already runs `npm run lint` and `npx tsc --noEmit` as quality gates. Running them again in Vercel is redundant and wastes build time. GitHub branch protection ensures they pass before merge.
+**Rationale**: GH Actions already runs `npx tsc --noEmit` as a quality gate. Running it again in Vercel is redundant and wastes build time. GitHub branch protection ensures it passes before merge. Note: Next.js 16 no longer runs ESLint during builds, so `eslint.ignoreDuringBuilds` is unnecessary.
 
-**Alternative considered**: Keep checks in Vercel build. Rejected because it doubles CI time for no quality benefit.
+**Alternative considered**: Keep type checks in Vercel build. Rejected because it doubles CI time for no quality benefit.
 
 ### 4. Quality enforcement via GitHub branch protection
 

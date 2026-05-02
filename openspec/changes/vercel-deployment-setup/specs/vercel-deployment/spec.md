@@ -16,17 +16,17 @@ The project SHALL include a `vercel.json` file at the repository root with regio
 
 ### Requirement: Minimal Vercel build with CI quality gates
 
-The Next.js build configuration SHALL skip ESLint and TypeScript checks during Vercel builds by setting `eslint.ignoreDuringBuilds: true` and `typescript.ignoreBuildErrors: true` in `next.config.ts`. Quality enforcement SHALL rely on the GitHub Actions CI pipeline and branch protection rules.
-
-#### Scenario: Vercel build skips ESLint
-
-- **WHEN** Vercel runs `next build`
-- **THEN** ESLint checks SHALL be skipped and the build SHALL not fail due to lint errors
+The Next.js build configuration SHALL skip TypeScript checks during Vercel builds by setting `typescript.ignoreBuildErrors: true` in `next.config.ts`. Quality enforcement SHALL rely on the GitHub Actions CI pipeline and branch protection rules. Note: Next.js 16 no longer runs ESLint during builds, so no ESLint config override is needed.
 
 #### Scenario: Vercel build skips TypeScript checks
 
 - **WHEN** Vercel runs `next build`
 - **THEN** TypeScript type checking SHALL be skipped and the build SHALL not fail due to type errors
+
+#### Scenario: ESLint is not part of the Vercel build
+
+- **WHEN** Vercel runs `next build`
+- **THEN** ESLint SHALL not be run (Next.js 16 does not run ESLint during builds by default), and the build SHALL not fail due to lint errors
 
 #### Scenario: CI pipeline remains the quality gate
 
