@@ -4,7 +4,7 @@ es-un-aine is a Next.js 16 app that proxies the Spanish CIMA medication API and 
 
 The app is simple: one API route (`/api/cima`), one page, and in-memory data. No database, no environment secrets (no API keys needed — CIMA is public).
 
-Vercel's Hobby (free) tier is sufficient. The CIMA API is hosted in Madrid (`cima.aemps.es`), making the `mad1` region optimal for latency.
+Vercel's Hobby (free) tier is sufficient. The CIMA API is hosted in Madrid (`cima.aemps.es`), making the `cdg1` (Paris) region the closest available Vercel region for low latency.
 
 ## Goals / Non-Goals
 
@@ -13,7 +13,7 @@ Vercel's Hobby (free) tier is sufficient. The CIMA API is hosted in Madrid (`cim
 - Deploy the app to Vercel with zero config on the Dashboard (beyond repo connection)
 - Ensure all build configuration is version-controlled in code
 - Minimize Vercel build time by skipping redundant checks (CI already validates)
-- Deploy serverless functions to `mad1` for proximity to the CIMA API
+- Deploy serverless functions to `cdg1` for proximity to the CIMA API
 - Enforce CI quality gates via GitHub branch protection
 
 **Non-Goals:**
@@ -34,11 +34,11 @@ Vercel's Hobby (free) tier is sufficient. The CIMA API is hosted in Madrid (`cim
 
 **Alternative considered**: GH Actions builds + `vercel deploy --prebuilt`. Rejected because it loses preview deploy URLs on PRs and adds significant workflow complexity.
 
-### 2. Region: `mad1` (Madrid)
+### 2. Region: `cdg1` (Paris)
 
-**Choice**: Deploy functions to `mad1`.
+**Choice**: Deploy functions to `cdg1`.
 
-**Rationale**: The CIMA API (`cima.aemps.es`) is a Spanish government API hosted in Spain. Madrid is the closest Vercel region, minimizing proxy latency.
+**Rationale**: The CIMA API (`cima.aemps.es`) is a Spanish government API hosted in Spain. Vercel does not have a Madrid region; `cdg1` (Paris) is the closest available Vercel region, minimizing proxy latency.
 
 ### 3. Skip TypeScript during Vercel build
 

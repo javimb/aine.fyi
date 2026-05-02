@@ -1,6 +1,6 @@
 ## 1. Configuration Files
 
-- [x] 1.1 Create `vercel.json` with `$schema`, `regions: ["mad1"]`
+- [x] 1.1 Create `vercel.json` with `$schema`, `regions: ["cdg1"]`
 - [x] 1.2 Update `next.config.ts` to add `typescript: { ignoreBuildErrors: true }` (Note: `eslint.ignoreDuringBuilds` is unnecessary in Next.js 16 — ESLint is no longer run during builds)
 - [x] 1.3 Verify `.vercel/` is already in `.gitignore`
 

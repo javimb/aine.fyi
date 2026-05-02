@@ -2,12 +2,12 @@
 
 ### Requirement: Vercel project configuration in code
 
-The project SHALL include a `vercel.json` file at the repository root with region configuration set to `mad1` (Madrid), ensuring all serverless functions execute closest to the CIMA API data source.
+The project SHALL include a `vercel.json` file at the repository root with region configuration set to `cdg1` (Paris), the closest available Vercel region to Spain, ensuring all serverless functions execute close to the CIMA API data source.
 
 #### Scenario: Deploying to the correct region
 
 - **WHEN** Vercel deploys the application
-- **THEN** all serverless functions SHALL execute in the `mad1` region
+- **THEN** all serverless functions SHALL execute in the `cdg1` region
 
 #### Scenario: Region configuration is version-controlled
 
