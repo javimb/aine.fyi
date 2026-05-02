@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const aineEntrySchema = z.object({
   name: z.string().min(1),
+  cimaNames: z.array(z.string()).min(1),
   aliases: z.array(z.string()).min(1),
   family: z.string().min(1),
 });
