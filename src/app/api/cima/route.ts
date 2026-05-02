@@ -72,6 +72,21 @@ async function handleDetail(url: string) {
   }
 }
 
+async function fetchDetail(
+  nregistro: string,
+): Promise<Record<string, unknown> | null> {
+  try {
+    const response = await fetch(
+      `${CIMA_BASE_URL}/medicamento?nregistro=${encodeURIComponent(nregistro)}`,
+      { headers: { Accept: "application/json" } },
+    );
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
 async function handleSearch(nombre: string) {
   try {
     const url = new URL(`${CIMA_BASE_URL}/medicamentos`);
@@ -94,9 +109,28 @@ async function handleSearch(nombre: string) {
     const data = await response.json();
 
     if (Array.isArray(data.resultados)) {
-      data.resultados = data.resultados.map((item: Record<string, unknown>) =>
-        enrichWithAineAnalysis(item),
-      );
+      const enriched = [];
+      const batchSize = 5;
+      for (let i = 0; i < data.resultados.length; i += batchSize) {
+        const batch = data.resultados.slice(i, i + batchSize);
+        const batchResults = await Promise.all(
+          batch.map(async (item: Record<string, unknown>) => {
+            if (item.pactivos) {
+              return enrichWithAineAnalysis(item);
+            }
+            const detail = await fetchDetail(item.nregistro as string);
+            if (detail && detail.pactivos) {
+              return enrichWithAineAnalysis({
+                ...item,
+                pactivos: detail.pactivos,
+              });
+            }
+            return enrichWithAineAnalysis(item);
+          }),
+        );
+        enriched.push(...batchResults);
+      }
+      data.resultados = enriched;
     }
 
     if (data.pactivos !== undefined) {
