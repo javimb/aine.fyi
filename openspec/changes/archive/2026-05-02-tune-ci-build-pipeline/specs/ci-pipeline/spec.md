@@ -1,8 +1,4 @@
-## Purpose
-
-TBD
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: GitHub Actions CI workflow
 
@@ -66,6 +62,13 @@ The CI workflow SHALL include an `e2e` job that runs: Next.js build, Playwright 
 - **WHEN** a pull request is opened or updated against the main branch
 - **THEN** the `e2e` job SHALL run (not restricted to main branch only)
 
+### Requirement: Exhaustive E2E job (post-merge signal)
+
+**Reason**: Exhaustive E2E is now a required merge gate in the `e2e` job, replacing the non-blocking post-merge approach.
+**Migration**: The `e2e` job now serves this purpose with proper merge gating.
+
+## ADDED Requirements
+
 ### Requirement: Smoke E2E runs before exhaustive E2E in CI
 
 In the `e2e` job, smoke E2E tests SHALL run before exhaustive E2E tests. If smoke tests fail, exhaustive E2E tests SHALL NOT run (fast-fail behavior).
@@ -79,17 +82,3 @@ In the `e2e` job, smoke E2E tests SHALL run before exhaustive E2E tests. If smok
 
 - **WHEN** any smoke E2E test fails
 - **THEN** the exhaustive E2E tests SHALL NOT run and the `e2e` job SHALL fail immediately
-
-### Requirement: CI uses Node.js 22 and caches dependencies
-
-The CI workflow SHALL use Node.js 22 (matching `.nvmrc`), install dependencies via `npm ci`, cache `node_modules`, and install Playwright browsers with `npx playwright install --with-deps` only for jobs that run E2E tests.
-
-#### Scenario: Node version in CI
-
-- **WHEN** the CI workflow runs
-- **THEN** it SHALL use Node.js version 22 as specified in `.nvmrc`
-
-#### Scenario: Dependency caching
-
-- **WHEN** the CI workflow installs dependencies
-- **THEN** it SHALL cache `node_modules` to speed up subsequent runs
