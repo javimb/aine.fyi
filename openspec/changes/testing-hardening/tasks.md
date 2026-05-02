@@ -24,4 +24,4 @@
 - [x] 4.2 Update Playwright `webServer` config to use `npm run start` when `CI` environment variable is set, falling back to `npm run dev` locally
 - [x] 4.3 Add `npm run build` step before E2E in `.github/workflows/ci.yml` check job (ensure the build artifact is reused, not rebuilt)
 - [x] 4.4 Verify `npm run test:e2e:smoke` and `npm run test:e2e:exhaustive` pass locally
-- [ ] 4.5 Verify CI workflow passes on a test PR
+- [x] 4.5 Verify CI workflow passes on a test PR
