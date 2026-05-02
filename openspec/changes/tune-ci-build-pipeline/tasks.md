@@ -8,6 +8,6 @@
 
 ## 2. Verify CI configuration
 
-- [ ] 2.1 Push the branch, open a draft PR, and confirm both `check` and `e2e` jobs run in parallel on the PR
-- [ ] 2.2 Confirm the `e2e` job runs smoke E2E first and only runs exhaustive E2E if smoke passes
-- [ ] 2.3 Confirm both `check` and `e2e` must pass before merge (update GitHub branch protection rules to require `e2e` as a required status check)
+- [x] 2.1 Push the branch, open a draft PR, and confirm both `check` and `e2e` jobs run in parallel on the PR
+- [x] 2.2 Confirm the `e2e` job runs smoke E2E first and only runs exhaustive E2E if smoke passes
+- [x] 2.3 Confirm both `check` and `e2e` must pass before merge (update GitHub branch protection rules to require `e2e` as a required status check)
