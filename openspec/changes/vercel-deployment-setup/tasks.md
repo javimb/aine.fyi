@@ -12,7 +12,7 @@
 
 ## 3. Manual Setup (One-Time Dashboard Steps)
 
-- [ ] 3.1 Connect the GitHub repository to Vercel via the Dashboard (import project)
-- [ ] 3.2 Verify Vercel auto-detects Next.js framework preset
-- [ ] 3.3 Set up GitHub branch protection on `main`: require `check` status check to pass before merging
-- [ ] 3.4 Trigger first deployment by pushing to `main` and verify it deploys successfully
+- [x] 3.1 Connect the GitHub repository to Vercel via the Dashboard (import project)
+- [x] 3.2 Verify Vercel auto-detects Next.js framework preset
+- [x] 3.3 Set up GitHub branch protection on `main`: require `check` status check to pass before merging
+- [x] 3.4 Trigger first deployment by pushing to `main` and verify it deploys successfully
