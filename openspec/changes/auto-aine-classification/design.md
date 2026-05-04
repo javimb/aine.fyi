@@ -92,7 +92,7 @@ For XML parsing: use `fast-xml-parser` (lightweight, no native deps, works in No
 
 - **[AEMPS format change]** → Script should validate expected XML structure and fail loudly if tags change. PR review catches anomalies.
 - **[~6,700-entry generated file in repo]** → It's data, not logic. Git diffs will show meaningful changes. The file is fully regenerated each time (no partial updates).
-- **[Combination drugs with M01A + non-M01A ATC codes]** → A single principio can appear in multiple medications with different ATC codes. The script must collect ALL ATC codes for each principio across all medications, then take the max level. Correctly handled.
+- **[Combination drugs with M01A + non-M01A ATC codes]** → A single principio can appear in multiple medications with different ATC codes. The script distinguishes between single-principio and combination medications: for combos, only AINE-related ATC codes (M01A*, N02BA*, B01AC06) are included if the same code also appears when that principio is a sole active ingredient. This prevents false positives (e.g., omeprazol inheriting ibuprofen's M01AE01 code from a combo drug). All ATC codes from single-principio medications are always included.
 - **[Principios with no ATC code in Prescripcion.xml]** → These get YELLOW (unknown). These are edge cases — the script should log them for manual review.
 - **[fast-xml-parser dependency]** → Lightweight, widely used, ESM-compatible. If it becomes an issue, can be replaced with native DOMParser (available in Node 22+).
 
