@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { matchAines } from "@/lib/aine-matcher";
-import aineBlacklist from "../../../../data/aines";
+import { matchAines, YELLOW_ANALYSIS } from "@/lib/aine-matcher";
+import { principioClassification } from "../../../../data/aine-classification";
 
 const CIMA_BASE_URL = "https://cima.aemps.es/cima/rest";
-const YELLOW_ANALYSIS = { status: "YELLOW" as const, matchedAines: [] };
 
 function enrichWithAineAnalysis(
   data: Record<string, unknown>,
 ): Record<string, unknown> {
   const pactivos = data.pactivos as string | undefined | null;
-  return { ...data, aineAnalysis: matchAines(pactivos, aineBlacklist) };
+  return {
+    ...data,
+    aineAnalysis: matchAines(pactivos, principioClassification),
+  };
 }
 
 export async function GET(request: NextRequest) {
@@ -136,7 +138,7 @@ async function handleSearch(nombre: string) {
     if (data.pactivos !== undefined) {
       data.aineAnalysis = matchAines(
         data.pactivos as string | undefined | null,
-        aineBlacklist,
+        principioClassification,
       );
     }
 

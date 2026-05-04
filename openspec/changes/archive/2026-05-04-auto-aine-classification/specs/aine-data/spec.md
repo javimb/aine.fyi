@@ -1,8 +1,4 @@
-## Purpose
-
-AINE classification data structure — the auto-generated principio activo classification map and its validation schema.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: AINE blacklist data structure
 
@@ -27,6 +23,20 @@ The project SHALL define a typed TypeScript data structure in `data/aine-classif
 
 - **WHEN** the Zod schema is applied to the generated data
 - **THEN** it SHALL parse successfully and return typed data
+
+## REMOVED Requirements
+
+### Requirement: Initial AINE entries
+
+**Reason**: The hardcoded list of 7 AINE entries is replaced by the auto-generated classification map containing all ~6,700 principios activos.
+**Migration**: The `generate-aine-classification` script derives the full classification from AEMPS data. The 7 original entries (Ibuprofeno, Ácido Acetilsalicílico, Naproxeno, Diclofenaco, Dexketoprofeno, Indometacina, Piroxicam) will be present in the generated map with appropriate levels (RED or AMBER).
+
+### Requirement: AINE Zod validation schema (old location)
+
+**Reason**: The Zod schema moves from `data/aines.schema.ts` to `data/aine-classification.schema.ts` with a different structure (flat `Record` instead of array of grouped entries).
+**Migration**: The new schema validates `Record<string, PrincipleInfo>` instead of `AineEntry[]`.
+
+## ADDED Requirements
 
 ### Requirement: YELLOW status for unknown principios
 

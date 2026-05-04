@@ -56,9 +56,7 @@ describe("API integration tests (/api/cima)", () => {
     const body = await response.json();
 
     expect(body.resultados[0].aineAnalysis.status).toBe("RED");
-    expect(body.resultados[0].aineAnalysis.matchedAines.length).toBeGreaterThan(
-      0,
-    );
+    expect(body.resultados[0].aineAnalysis.matchedAines[0].level).toBe("RED");
     expect(body.resultados[1].aineAnalysis.status).toBe("GREEN");
     expect(body.resultados[1].aineAnalysis.matchedAines).toEqual([]);
   });
@@ -78,9 +76,11 @@ describe("API integration tests (/api/cima)", () => {
     const body = await response.json();
 
     expect(body.aineAnalysis.status).toBe("RED");
-    expect(body.aineAnalysis.matchedAines).toEqual([
-      expect.objectContaining({ name: "Ibuprofeno" }),
-    ]);
+    expect(body.aineAnalysis.matchedAines).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "IBUPROFENO", level: "RED" }),
+      ]),
+    );
   });
 
   it("fetches detail by cn and enriches with aineAnalysis", async () => {
@@ -98,6 +98,7 @@ describe("API integration tests (/api/cima)", () => {
     const body = await response.json();
 
     expect(body.aineAnalysis.status).toBe("GREEN");
+    expect(body.aineAnalysis.matchedAines).toEqual([]);
   });
 
   it("returns 404 with YELLOW analysis when CIMA returns 404 for detail lookup", async () => {

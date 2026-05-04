@@ -1,4 +1,4 @@
-import { createServer, Server, request as httpRequest } from "http";
+import { createServer, request as httpRequest } from "http";
 import { AddressInfo } from "net";
 
 interface TestServer {
@@ -19,7 +19,7 @@ export async function createTestServer(): Promise<TestServer> {
       headers: Object.entries(req.headers).map(([k, v]) => [
         k,
         Array.isArray(v) ? v.join(", ") : String(v),
-      ]),
+      ]) as [string, string][],
       body: body || undefined,
     });
 

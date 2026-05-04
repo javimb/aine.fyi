@@ -1,8 +1,4 @@
-## Purpose
-
-AINE matching against CIMA pactivos data — detecting NSAIDs in medication active ingredients via classification map lookup with 4-level status.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: AINE matching against CIMA pactivos
 
@@ -62,6 +58,8 @@ The classification function SHALL detect all RED and AMBER entries present in a 
 
 - **WHEN** a `pactivos` string contains `"IBUPROFENO"` (RED) and `"ACETILSALICILICO ACIDO"` (AMBER)
 - **THEN** both corresponding entries SHALL be included in `matchedAines` with their respective levels, and status SHALL be `RED`
+
+## ADDED Requirements
 
 ### Requirement: Matched entry includes level
 
