@@ -27,6 +27,19 @@ describe("RootLayout", () => {
     expect(getByTestId("vercel-analytics")).toBeInTheDocument();
   });
 
+  it("renders Analytics after children inside <body>", async () => {
+    const { default: RootLayout } = await import("./layout");
+    const { baseElement } = render(
+      <RootLayout>
+        <p>Test content</p>
+      </RootLayout>,
+    );
+    const html = baseElement.innerHTML;
+    const contentPos = html.indexOf("Test content");
+    const analyticsPos = html.indexOf("vercel-analytics");
+    expect(contentPos).toBeLessThan(analyticsPos);
+  });
+
   it("renders children inside <body>", async () => {
     const { default: RootLayout } = await import("./layout");
     const { getByText } = render(
