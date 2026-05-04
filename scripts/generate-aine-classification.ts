@@ -9,9 +9,9 @@ const AEMPS_URL = "https://listadomedicamentos.aemps.gob.es/prescripcion.zip";
 
 const ATC_FAMILY_MAP: Record<string, string> = {
   M01AA: "Pirazolona",
-  M01AB: "Acetico",
+  M01AB: "Acético",
   M01AC: "Oxicam",
-  M01AE: "Propionico",
+  M01AE: "Propiónico",
   M01AG: "Fenamato",
   M01AH: "Coxib",
   M01AX: "Otros AINE",
@@ -303,7 +303,7 @@ async function main() {
     );
 
     const spotChecks: Array<[string, Level, string]> = [
-      ["IBUPROFENO", "RED", "Propionico"],
+      ["IBUPROFENO", "RED", "Propiónico"],
       ["ACETILSALICILICO ACIDO", "AMBER", "Salicilato"],
       ["PARACETAMOL", "GREEN", ""],
     ];

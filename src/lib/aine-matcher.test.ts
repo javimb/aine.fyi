@@ -3,9 +3,9 @@ import { matchAines } from "./aine-matcher";
 import type { PrincipleClassification } from "../../data/aine-classification.schema";
 
 const classification: PrincipleClassification = {
-  IBUPROFENO: { level: "RED", family: "Propionico" },
-  DICLOFENACO: { level: "RED", family: "Acetico" },
-  DICLOFENACO_SODICO: { level: "RED", family: "Acetico" },
+  IBUPROFENO: { level: "RED", family: "Propiónico" },
+  DICLOFENACO: { level: "RED", family: "Acético" },
+  DICLOFENACO_SODICO: { level: "RED", family: "Acético" },
   "ACETILSALICILICO ACIDO": { level: "AMBER", family: "Salicilato" },
   PARACETAMOL: { level: "GREEN", family: "" },
   PIROXICAM: { level: "RED", family: "Oxicam" },
@@ -16,7 +16,7 @@ describe("matchAines (4-level)", () => {
     const result = matchAines("IBUPROFENO", classification);
     expect(result.status).toBe("RED");
     expect(result.matchedAines).toEqual([
-      { name: "IBUPROFENO", family: "Propionico", level: "RED" },
+      { name: "IBUPROFENO", family: "Propiónico", level: "RED" },
     ]);
   });
 
@@ -24,7 +24,7 @@ describe("matchAines (4-level)", () => {
     const result = matchAines("DICLOFENACO", classification);
     expect(result.status).toBe("RED");
     expect(result.matchedAines).toEqual([
-      { name: "DICLOFENACO", family: "Acetico", level: "RED" },
+      { name: "DICLOFENACO", family: "Acético", level: "RED" },
     ]);
   });
 
@@ -47,7 +47,7 @@ describe("matchAines (4-level)", () => {
     );
     expect(result.status).toBe("RED");
     expect(result.matchedAines).toEqual([
-      { name: "IBUPROFENO", family: "Propionico", level: "RED" },
+      { name: "IBUPROFENO", family: "Propiónico", level: "RED" },
       {
         name: "ACETILSALICILICO ACIDO",
         family: "Salicilato",
@@ -131,7 +131,7 @@ describe("matchAines (4-level)", () => {
     const result = matchAines("IBUPROFENO, UNKNOWN_DRUG", classification);
     expect(result.status).toBe("RED");
     expect(result.matchedAines).toEqual([
-      { name: "IBUPROFENO", family: "Propionico", level: "RED" },
+      { name: "IBUPROFENO", family: "Propiónico", level: "RED" },
     ]);
   });
 });

@@ -30,9 +30,9 @@ describe("PrincipleInfoSchema", () => {
   it("parses valid PrincipleInfo data", () => {
     const result = PrincipleInfoSchema.parse({
       level: "RED",
-      family: "Propionico",
+      family: "Propiónico",
     });
-    expect(result).toEqual({ level: "RED", family: "Propionico" });
+    expect(result).toEqual({ level: "RED", family: "Propiónico" });
   });
 
   it("parses GREEN with empty family", () => {
@@ -73,7 +73,7 @@ describe("PrincipleInfoSchema", () => {
 describe("PrincipleClassificationSchema", () => {
   it("parses valid classification map", () => {
     const data = {
-      IBUPROFENO: { level: "RED", family: "Propionico" },
+      IBUPROFENO: { level: "RED", family: "Propiónico" },
       PARACETAMOL: { level: "GREEN", family: "" },
     };
     const result = PrincipleClassificationSchema.parse(data);
@@ -82,7 +82,7 @@ describe("PrincipleClassificationSchema", () => {
 
   it("rejects classification with invalid level value", () => {
     const data = {
-      IBUPROFENO: { level: "INVALID", family: "Propionico" },
+      IBUPROFENO: { level: "INVALID", family: "Propiónico" },
     };
     expect(() => PrincipleClassificationSchema.parse(data)).toThrow();
   });
