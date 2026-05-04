@@ -24,6 +24,11 @@ function normalizePactivos(pactivos: string): string[] {
     .map((token) => stripAccents(token.trim().toUpperCase()));
 }
 
+export const YELLOW_ANALYSIS: AineAnalysis = {
+  status: "YELLOW",
+  matchedAines: [],
+};
+
 export function matchAines(
   pactivos: string | undefined | null,
   classification: PrincipleClassification,

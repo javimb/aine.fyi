@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { matchAines } from "@/lib/aine-matcher";
+import { matchAines, YELLOW_ANALYSIS } from "@/lib/aine-matcher";
 import { principioClassification } from "../../../../data/aine-classification";
 
 const CIMA_BASE_URL = "https://cima.aemps.es/cima/rest";
-const YELLOW_ANALYSIS = { status: "YELLOW" as const, matchedAines: [] };
 
 function enrichWithAineAnalysis(
   data: Record<string, unknown>,
