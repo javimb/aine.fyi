@@ -309,6 +309,8 @@ async function main() {
 
     const spotChecks: Array<[string, Level]> = [
       ["IBUPROFENO", "RED"],
+      ["DICLOFENACO", "RED"],
+      ["PIROXICAM", "RED"],
       ["ACETILSALICILICO ACIDO", "AMBER"],
       ["PARACETAMOL", "GREEN"],
     ];
@@ -327,6 +329,35 @@ async function main() {
       }
       console.log(`Spot check OK: ${name} → ${info.level}/${info.family}`);
     }
+
+    if (yellowCount === 0) {
+      console.error(
+        "Spot check FAILED: expected at least one YELLOW entry (unknown principios)",
+      );
+      process.exit(1);
+    }
+    if (redCount === 0) {
+      console.error("Spot check FAILED: expected at least one RED entry");
+      process.exit(1);
+    }
+    if (amberCount === 0) {
+      console.error("Spot check FAILED: expected at least one AMBER entry");
+      process.exit(1);
+    }
+
+    for (const [name, info] of classification) {
+      if (info.level === "RED" && info.family === "") {
+        console.error(`Spot check FAILED: ${name} is RED but has empty family`);
+        process.exit(1);
+      }
+      if (info.level === "AMBER" && info.family === "") {
+        console.error(
+          `Spot check FAILED: ${name} is AMBER but has empty family`,
+        );
+        process.exit(1);
+      }
+    }
+    console.log("Spot check OK: all RED/AMBER entries have non-empty family");
 
     const tsContent = generateTsFile(classification);
     const scriptDir = path.dirname(new URL(import.meta.url).pathname);
