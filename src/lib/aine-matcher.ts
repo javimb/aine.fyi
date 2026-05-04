@@ -1,8 +1,17 @@
-import type { AineBlacklist } from "../../data/aines.schema";
+import type { PrincipleClassification } from "../../data/aine-classification.schema";
+
+export type Level = "RED" | "AMBER" | "YELLOW" | "GREEN";
 
 export type AineAnalysis = {
-  status: "RED" | "GREEN" | "YELLOW";
-  matchedAines: Array<{ name: string; family: string }>;
+  status: Level;
+  matchedAines: Array<{ name: string; family: string; level: "RED" | "AMBER" }>;
+};
+
+const LEVEL_ORDER: Record<Level, number> = {
+  RED: 3,
+  AMBER: 2,
+  YELLOW: 1,
+  GREEN: 0,
 };
 
 function stripAccents(str: string): string {
@@ -17,7 +26,7 @@ function normalizePactivos(pactivos: string): string[] {
 
 export function matchAines(
   pactivos: string | undefined | null,
-  blacklist: AineBlacklist,
+  classification: PrincipleClassification,
 ): AineAnalysis {
   if (!pactivos || pactivos.trim() === "") {
     return { status: "YELLOW", matchedAines: [] };
@@ -25,20 +34,33 @@ export function matchAines(
 
   const normalizedTokens = normalizePactivos(pactivos);
 
-  const matchedAines: Array<{ name: string; family: string }> = [];
+  const matchedAines: AineAnalysis["matchedAines"] = [];
+  let overallLevel: Level = "GREEN";
+  let hasUnknown = false;
 
-  for (const entry of blacklist) {
-    const isMatch = entry.cimaNames.some((cimaName) =>
-      normalizedTokens.includes(cimaName),
-    );
-    if (isMatch) {
-      matchedAines.push({ name: entry.name, family: entry.family });
+  for (const token of normalizedTokens) {
+    const entry = classification[token];
+    if (!entry) {
+      hasUnknown = true;
+      continue;
+    }
+
+    const { level, family } = entry;
+    if (level === "RED" || level === "AMBER") {
+      matchedAines.push({ name: token, family, level });
+    }
+
+    if (LEVEL_ORDER[level] > LEVEL_ORDER[overallLevel]) {
+      overallLevel = level;
     }
   }
 
-  if (matchedAines.length > 0) {
-    return { status: "RED", matchedAines };
+  if (hasUnknown && overallLevel === "GREEN") {
+    overallLevel = "YELLOW";
   }
 
-  return { status: "GREEN", matchedAines: [] };
+  return {
+    status: overallLevel,
+    matchedAines: matchedAines.length > 0 ? matchedAines : [],
+  };
 }

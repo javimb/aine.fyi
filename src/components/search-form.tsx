@@ -6,8 +6,12 @@ interface SearchResult {
   nombre: string;
   pactivos: string;
   aineAnalysis: {
-    status: "RED" | "GREEN" | "YELLOW";
-    matchedAines?: Array<{ name: string; family: string }>;
+    status: "RED" | "AMBER" | "GREEN" | "YELLOW";
+    matchedAines?: Array<{
+      name: string;
+      family: string;
+      level: "RED" | "AMBER";
+    }>;
   };
 }
 
@@ -77,18 +81,22 @@ export default function SearchForm() {
                 className={`mt-1 font-bold ${
                   r.aineAnalysis.status === "RED"
                     ? "text-red-600"
-                    : r.aineAnalysis.status === "GREEN"
-                      ? "text-green-600"
-                      : "text-yellow-600"
+                    : r.aineAnalysis.status === "AMBER"
+                      ? "text-amber-600"
+                      : r.aineAnalysis.status === "GREEN"
+                        ? "text-green-600"
+                        : "text-yellow-600"
                 }`}
                 data-testid="aine-status"
                 data-aine-status={r.aineAnalysis.status}
               >
                 {r.aineAnalysis.status === "RED"
                   ? `⚠️ AINE detectado: ${r.aineAnalysis.matchedAines?.map((a) => a.name).join(", ")}`
-                  : r.aineAnalysis.status === "GREEN"
-                    ? "✅ No es un AINE"
-                    : "⚠️ Estado desconocido"}
+                  : r.aineAnalysis.status === "AMBER"
+                    ? `⚠️ Salicilato: ${r.aineAnalysis.matchedAines?.map((a) => a.name).join(", ")}`
+                    : r.aineAnalysis.status === "GREEN"
+                      ? "✅ No es un AINE"
+                      : "⚠️ Estado desconocido"}
               </p>
             </li>
           ))}

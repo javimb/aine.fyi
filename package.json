@@ -13,7 +13,8 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test --project=smoke",
-    "test:e2e:exhaustive": "playwright test --project=exhaustive"
+    "test:e2e:exhaustive": "playwright test --project=exhaustive",
+    "generate-aines": "tsx scripts/generate-aine-classification.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -39,11 +40,13 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "eslint-config-prettier": "^10.1.8",
+    "fast-xml-parser": "^5.7.2",
     "husky": "^9.1.7",
     "jsdom": "^27.0.1",
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.3",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^3.2.4"
   },
