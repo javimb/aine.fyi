@@ -4,12 +4,7 @@ import path from "node:path";
 import os from "node:os";
 import { XMLParser } from "fast-xml-parser";
 import { execSync } from "node:child_process";
-import {
-  type Level,
-  ATC_FAMILY_MAP,
-  classifyPrincipio,
-  mergeAtcCodes,
-} from "./classify-utils";
+import { type Level, classifyPrincipio, mergeAtcCodes } from "./classify-utils";
 
 const AEMPS_URL = "https://listadomedicamentos.aemps.gob.es/prescripcion.zip";
 
@@ -209,14 +204,15 @@ function buildFamilyMap(
   const familyMap: Record<string, string> = {};
 
   for (const [code, description] of atcDictionary) {
-    if (code.length === 5 && code.startsWith("M01A")) {
+    if (code.length === 4 && code.startsWith("M01A")) {
       familyMap[code] = description;
     }
   }
 
-  for (const [prefix, name] of Object.entries(ATC_FAMILY_MAP)) {
-    if (!(prefix in familyMap)) {
-      familyMap[prefix] = name;
+  for (const [code, description] of atcDictionary) {
+    if (code === "N02BA") {
+      familyMap["N02BA"] = description;
+      break;
     }
   }
 
