@@ -134,4 +134,10 @@ describe("matchAines (4-level)", () => {
       { name: "IBUPROFENO", family: "Propiónico", level: "RED" },
     ]);
   });
+
+  it("UNKNOWN alongside GREEN upgrades status to YELLOW", () => {
+    const result = matchAines("UNKNOWN_DRUG, PARACETAMOL", classification);
+    expect(result.status).toBe("YELLOW");
+    expect(result.matchedAines).toEqual([]);
+  });
 });
