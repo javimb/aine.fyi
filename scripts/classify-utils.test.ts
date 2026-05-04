@@ -3,6 +3,7 @@ import {
   classifyPrincipio,
   getAtcFamily,
   mergeAtcCodes,
+  ATC_FAMILY_MAP,
 } from "./classify-utils";
 
 describe("classifyPrincipio", () => {
@@ -68,6 +69,54 @@ describe("classifyPrincipio", () => {
       family: "Oxicam",
     });
   });
+
+  it("uses custom familyMap when provided", () => {
+    const customMap = {
+      ...ATC_FAMILY_MAP,
+      M01AE: "Custom Propiónico",
+    };
+    expect(classifyPrincipio(new Set(["M01AE01"]), customMap)).toEqual({
+      level: "RED",
+      family: "Custom Propiónico",
+    });
+  });
+
+  it("falls back to default familyMap when not provided", () => {
+    expect(classifyPrincipio(new Set(["M01AE01"]))).toEqual({
+      level: "RED",
+      family: "Propiónico",
+    });
+  });
+
+  it("uses custom familyMap for new ATC subgroups", () => {
+    const customMap = {
+      ...ATC_FAMILY_MAP,
+      M01AJ: "Nuevo AINE",
+    };
+    expect(classifyPrincipio(new Set(["M01AJ01"]), customMap)).toEqual({
+      level: "RED",
+      family: "Nuevo AINE",
+    });
+  });
+
+  it("returns Otros AINE for unlisted M01A subgroups when custom map is provided", () => {
+    const customMap = { ...ATC_FAMILY_MAP };
+    expect(classifyPrincipio(new Set(["M01AZ99"]), customMap)).toEqual({
+      level: "RED",
+      family: "Otros AINE",
+    });
+  });
+
+  it("AMBER family is always Salicilato regardless of custom familyMap", () => {
+    const customMap = {
+      ...ATC_FAMILY_MAP,
+      N02BA: "Aspirina derivados",
+    };
+    expect(classifyPrincipio(new Set(["N02BA01"]), customMap)).toEqual({
+      level: "AMBER",
+      family: "Salicilato",
+    });
+  });
 });
 
 describe("getAtcFamily", () => {
@@ -81,6 +130,28 @@ describe("getAtcFamily", () => {
 
   it("returns Otros AINE for unrecognized M01A subgroups", () => {
     expect(getAtcFamily("M01AZ99")).toBe("Otros AINE");
+  });
+
+  it("uses custom familyMap when provided", () => {
+    const customMap = {
+      M01AE: "Modified Propiónico",
+    };
+    expect(getAtcFamily("M01AE01", customMap)).toBe("Modified Propiónico");
+  });
+
+  it("returns Otros AINE for ATC code not in custom familyMap", () => {
+    const customMap = {
+      M01AE: "Propiónico",
+    };
+    expect(getAtcFamily("M01AB01", customMap)).toBe("Otros AINE");
+  });
+
+  it("matches longer prefix before shorter when order allows", () => {
+    const customMap = {
+      M01A: "Broad AINE",
+      M01AE: "Propiónico",
+    };
+    expect(getAtcFamily("M01AE01", customMap)).toBe("Broad AINE");
   });
 });
 
@@ -123,5 +194,37 @@ describe("mergeAtcCodes", () => {
 
     const result = mergeAtcCodes(single, combo, 1, singleMap);
     expect(result.has("M01AE01")).toBe(true);
+  });
+
+  it("returns single codes when combo is empty", () => {
+    const single = new Set(["M01AE01", "N02BE01"]);
+    const combo = new Set<string>();
+    const singleMap = new Map<number, Set<string>>();
+    singleMap.set(1, single);
+
+    const result = mergeAtcCodes(single, combo, 1, singleMap);
+    expect(result).toEqual(new Set(["M01AE01", "N02BE01"]));
+  });
+
+  it("handles principio with no single-principio entry in map", () => {
+    const single = new Set<string>();
+    const combo = new Set(["M01AE01", "C01BA01"]);
+    const singleMap = new Map<number, Set<string>>();
+
+    const result = mergeAtcCodes(single, combo, 99, singleMap);
+    expect(result.has("C01BA01")).toBe(true);
+    expect(result.has("M01AE01")).toBe(false);
+  });
+
+  it("merges codes from both single and combo with multiple AINE codes", () => {
+    const single = new Set(["M01AE01"]);
+    const combo = new Set(["M01AE01", "N02BA01", "A01AB01"]);
+    const singleMap = new Map<number, Set<string>>();
+    singleMap.set(1, single);
+
+    const result = mergeAtcCodes(single, combo, 1, singleMap);
+    expect(result.has("M01AE01")).toBe(true);
+    expect(result.has("A01AB01")).toBe(true);
+    expect(result.has("N02BA01")).toBe(false);
   });
 });
