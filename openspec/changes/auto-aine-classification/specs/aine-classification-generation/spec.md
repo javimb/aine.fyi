@@ -64,6 +64,8 @@ The script SHALL assign a `family` string to each principio based on the ATC sub
 
 GREEN-level principios SHALL have an empty string `""` as family.
 
+> **Note**: Approximately 24% of principios in the AEMPS data have no ATC code in Prescripcion.xml and are classified as YELLOW (unknown). This is expected — these represent principios without pharmacological ATC classification in the AEMPS dataset. The YELLOW percentage should be monitored across updates; if it grows significantly, investigate whether the XML parsing or ATC mapping has regressed.
+
 #### Scenario: Principio mapped to family
 
 - **WHEN** a principio activo is classified as RED with ATC code `M01AE01` (Ibuprofeno)
