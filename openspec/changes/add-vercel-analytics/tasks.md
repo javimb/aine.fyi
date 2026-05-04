@@ -12,7 +12,7 @@
 ## 3. Enable Web Analytics on Vercel project
 
 - [x] 3.1 Run `vercel analytics enable` (or enable via Vercel Dashboard)
-- [x] 3.2 Commit: `chore(analytics): enable Web Analytics on Vercel project`
+- [ ] 3.2 Commit: `chore(analytics): enable Web Analytics on Vercel project`
 
 ## 4. Verify end-to-end
 
@@ -20,5 +20,5 @@
 
 ## 5. Push and Create PR
 
-- [ ] 5.1 Push branch to remote
-- [ ] 5.2 Create pull request via `gh` CLI
+- [x] 5.1 Push branch to remote
+- [x] 5.2 Create pull request via `gh` CLI
