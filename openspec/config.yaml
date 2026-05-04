@@ -3,8 +3,12 @@ schema: spec-driven
 context: |
   We use conventional commits
   Every new change has to be developed in its own branch
-  Commit and push after each step
   TDD is mandatory: write failing test before implementation
   Every tasks.md must include test tasks before impl tasks
   Pre-commit gates must pass
   Coverage must not decrease between changes
+
+rules:
+  tasks:
+    - 'After each task group, include a "Commit: <summary>" checkbox task using conventional commits format'
+    - 'The final task group MUST be named "Push and Create PR" with tasks: push branch to remote, create pull request via gh CLI'
