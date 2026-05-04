@@ -7,24 +7,13 @@ export const LEVEL_ORDER: Record<Level, number> = {
   GREEN: 0,
 };
 
-export const ATC_FAMILY_MAP: Record<string, string> = {
-  M01AA: "Pirazolona",
-  M01AB: "Acético",
-  M01AC: "Oxicam",
-  M01AE: "Propiónico",
-  M01AG: "Fenamato",
-  M01AH: "Coxib",
-  M01AX: "Otros AINE",
-};
-
 const SALICILATO_FAMILY = "Salicilato";
 
 export function getAtcFamily(
   atcCode: string,
-  familyMap?: Record<string, string>,
+  familyMap: Record<string, string>,
 ): string {
-  const resolvedFamilyMap = familyMap ?? ATC_FAMILY_MAP;
-  for (const [prefix, family] of Object.entries(resolvedFamilyMap)) {
+  for (const [prefix, family] of Object.entries(familyMap)) {
     if (atcCode.startsWith(prefix)) {
       return family;
     }
@@ -34,7 +23,7 @@ export function getAtcFamily(
 
 export function classifyPrincipio(
   atcCodes: Set<string> | undefined,
-  familyMap?: Record<string, string>,
+  familyMap: Record<string, string>,
 ): { level: Level; family: string } {
   if (!atcCodes || atcCodes.size === 0) {
     return { level: "YELLOW", family: "" };

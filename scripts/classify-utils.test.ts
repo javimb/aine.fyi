@@ -3,68 +3,83 @@ import {
   classifyPrincipio,
   getAtcFamily,
   mergeAtcCodes,
-  ATC_FAMILY_MAP,
 } from "./classify-utils";
+
+const ATC_FAMILY_MAP: Record<string, string> = {
+  M01AA: "Pirazolona",
+  M01AB: "Acético",
+  M01AC: "Oxicam",
+  M01AE: "Propiónico",
+  M01AG: "Fenamato",
+  M01AH: "Coxib",
+  M01AX: "Otros AINE",
+};
 
 describe("classifyPrincipio", () => {
   it("returns YELLOW for undefined ATC codes", () => {
-    expect(classifyPrincipio(undefined)).toEqual({
+    expect(classifyPrincipio(undefined, ATC_FAMILY_MAP)).toEqual({
       level: "YELLOW",
       family: "",
     });
   });
 
   it("returns YELLOW for empty ATC code set", () => {
-    expect(classifyPrincipio(new Set())).toEqual({
+    expect(classifyPrincipio(new Set(), ATC_FAMILY_MAP)).toEqual({
       level: "YELLOW",
       family: "",
     });
   });
 
   it("returns GREEN for non-AINE ATC codes", () => {
-    expect(classifyPrincipio(new Set(["N02BE01"]))).toEqual({
+    expect(classifyPrincipio(new Set(["N02BE01"]), ATC_FAMILY_MAP)).toEqual({
       level: "GREEN",
       family: "",
     });
   });
 
   it("classifies M01A ATC codes as RED", () => {
-    expect(classifyPrincipio(new Set(["M01AE01"]))).toEqual({
+    expect(classifyPrincipio(new Set(["M01AE01"]), ATC_FAMILY_MAP)).toEqual({
       level: "RED",
       family: "Propiónico",
     });
   });
 
   it("classifies B01AC06 as AMBER", () => {
-    expect(classifyPrincipio(new Set(["B01AC06"]))).toEqual({
+    expect(classifyPrincipio(new Set(["B01AC06"]), ATC_FAMILY_MAP)).toEqual({
       level: "AMBER",
       family: "Salicilato",
     });
   });
 
   it("classifies N02BA prefix as AMBER", () => {
-    expect(classifyPrincipio(new Set(["N02BA01"]))).toEqual({
+    expect(classifyPrincipio(new Set(["N02BA01"]), ATC_FAMILY_MAP)).toEqual({
       level: "AMBER",
       family: "Salicilato",
     });
   });
 
   it("RED takes precedence over AMBER", () => {
-    expect(classifyPrincipio(new Set(["M01AE01", "N02BA01"]))).toEqual({
+    expect(
+      classifyPrincipio(new Set(["M01AE01", "N02BA01"]), ATC_FAMILY_MAP),
+    ).toEqual({
       level: "RED",
       family: "Propiónico",
     });
   });
 
   it("AMBER takes precedence over GREEN", () => {
-    expect(classifyPrincipio(new Set(["N02BA01", "N02BE01"]))).toEqual({
+    expect(
+      classifyPrincipio(new Set(["N02BA01", "N02BE01"]), ATC_FAMILY_MAP),
+    ).toEqual({
       level: "AMBER",
       family: "Salicilato",
     });
   });
 
   it("uses highest-precedence family for RED when multiple RED ATC codes exist", () => {
-    expect(classifyPrincipio(new Set(["M01AC01", "M01AE01"]))).toEqual({
+    expect(
+      classifyPrincipio(new Set(["M01AC01", "M01AE01"]), ATC_FAMILY_MAP),
+    ).toEqual({
       level: "RED",
       family: "Oxicam",
     });
@@ -81,13 +96,6 @@ describe("classifyPrincipio", () => {
     });
   });
 
-  it("falls back to default familyMap when not provided", () => {
-    expect(classifyPrincipio(new Set(["M01AE01"]))).toEqual({
-      level: "RED",
-      family: "Propiónico",
-    });
-  });
-
   it("uses custom familyMap for new ATC subgroups", () => {
     const customMap = {
       ...ATC_FAMILY_MAP,
@@ -99,9 +107,8 @@ describe("classifyPrincipio", () => {
     });
   });
 
-  it("returns Otros AINE for unlisted M01A subgroups when custom map is provided", () => {
-    const customMap = { ...ATC_FAMILY_MAP };
-    expect(classifyPrincipio(new Set(["M01AZ99"]), customMap)).toEqual({
+  it("returns Otros AINE for unlisted M01A subgroups", () => {
+    expect(classifyPrincipio(new Set(["M01AZ99"]), ATC_FAMILY_MAP)).toEqual({
       level: "RED",
       family: "Otros AINE",
     });
@@ -121,15 +128,15 @@ describe("classifyPrincipio", () => {
 
 describe("getAtcFamily", () => {
   it("maps M01AE to Propiónico", () => {
-    expect(getAtcFamily("M01AE01")).toBe("Propiónico");
+    expect(getAtcFamily("M01AE01", ATC_FAMILY_MAP)).toBe("Propiónico");
   });
 
   it("maps M01AB to Acético", () => {
-    expect(getAtcFamily("M01AB01")).toBe("Acético");
+    expect(getAtcFamily("M01AB01", ATC_FAMILY_MAP)).toBe("Acético");
   });
 
   it("returns Otros AINE for unrecognized M01A subgroups", () => {
-    expect(getAtcFamily("M01AZ99")).toBe("Otros AINE");
+    expect(getAtcFamily("M01AZ99", ATC_FAMILY_MAP)).toBe("Otros AINE");
   });
 
   it("uses custom familyMap when provided", () => {
