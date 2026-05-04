@@ -17,8 +17,14 @@ export const ATC_FAMILY_MAP: Record<string, string> = {
   M01AX: "Otros AINE",
 };
 
-export function getAtcFamily(atcCode: string): string {
-  for (const [prefix, family] of Object.entries(ATC_FAMILY_MAP)) {
+const SALICILATO_FAMILY = "Salicilato";
+
+export function getAtcFamily(
+  atcCode: string,
+  familyMap?: Record<string, string>,
+): string {
+  const resolvedFamilyMap = familyMap ?? ATC_FAMILY_MAP;
+  for (const [prefix, family] of Object.entries(resolvedFamilyMap)) {
     if (atcCode.startsWith(prefix)) {
       return family;
     }
@@ -26,10 +32,10 @@ export function getAtcFamily(atcCode: string): string {
   return "Otros AINE";
 }
 
-export function classifyPrincipio(atcCodes: Set<string> | undefined): {
-  level: Level;
-  family: string;
-} {
+export function classifyPrincipio(
+  atcCodes: Set<string> | undefined,
+  familyMap?: Record<string, string>,
+): { level: Level; family: string } {
   if (!atcCodes || atcCodes.size === 0) {
     return { level: "YELLOW", family: "" };
   }
@@ -41,12 +47,12 @@ export function classifyPrincipio(atcCodes: Set<string> | undefined): {
     if (atc.startsWith("M01A")) {
       if (LEVEL_ORDER.RED > LEVEL_ORDER[maxLevel]) {
         maxLevel = "RED";
-        family = getAtcFamily(atc);
+        family = getAtcFamily(atc, familyMap);
       }
     } else if (atc === "B01AC06" || atc.startsWith("N02BA")) {
       if (LEVEL_ORDER.AMBER > LEVEL_ORDER[maxLevel]) {
         maxLevel = "AMBER";
-        family = "Salicilato";
+        family = SALICILATO_FAMILY;
       }
     }
   }

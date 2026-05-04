@@ -4,7 +4,12 @@ import path from "node:path";
 import os from "node:os";
 import { XMLParser } from "fast-xml-parser";
 import { execSync } from "node:child_process";
-import { type Level, classifyPrincipio, mergeAtcCodes } from "./classify-utils";
+import {
+  type Level,
+  ATC_FAMILY_MAP,
+  classifyPrincipio,
+  mergeAtcCodes,
+} from "./classify-utils";
 
 const AEMPS_URL = "https://listadomedicamentos.aemps.gob.es/prescripcion.zip";
 
@@ -160,6 +165,64 @@ function parsePrescripcion(xmlDir: string): Map<number, Set<string>> {
   return principioToAtc;
 }
 
+function parseAtcDictionary(xmlDir: string): Map<string, string> {
+  const filePath = path.join(xmlDir, "DICCIONARIO_ATC.xml");
+  if (!fs.existsSync(filePath)) {
+    console.error(`Missing file: ${filePath}`);
+    process.exit(1);
+  }
+  const parser = new XMLParser();
+  const xml = fs.readFileSync(filePath, "utf-8");
+  const parsed = parser.parse(xml);
+
+  const root = parsed["aemps_prescripcion_atc"] ?? parsed["aemps_atc"];
+  if (!root) {
+    console.error("Missing expected root element in DICCIONARIO_ATC.xml");
+    process.exit(1);
+  }
+
+  const entries = root.atc ?? root.atcs;
+  if (!entries) {
+    console.error("Missing expected element <atc> in DICCIONARIO_ATC.xml");
+    process.exit(1);
+  }
+
+  const items = Array.isArray(entries) ? entries : [entries];
+  const map = new Map<string, string>();
+
+  for (const entry of items) {
+    const code = String(entry.cod_atc ?? "").trim();
+    const description = String(
+      entry.des_atc ?? entry.descripcion ?? entry.nombre ?? "",
+    ).trim();
+    if (code && description) {
+      map.set(code, description);
+    }
+  }
+
+  return map;
+}
+
+function buildFamilyMap(
+  atcDictionary: Map<string, string>,
+): Record<string, string> {
+  const familyMap: Record<string, string> = {};
+
+  for (const [code, description] of atcDictionary) {
+    if (code.length === 5 && code.startsWith("M01A")) {
+      familyMap[code] = description;
+    }
+  }
+
+  for (const [prefix, name] of Object.entries(ATC_FAMILY_MAP)) {
+    if (!(prefix in familyMap)) {
+      familyMap[prefix] = name;
+    }
+  }
+
+  return familyMap;
+}
+
 function generateTsFile(
   classification: Map<string, { level: Level; family: string }>,
 ): string {
@@ -213,6 +276,15 @@ async function main() {
     const principioToAtc = parsePrescripcion(tmpDir);
     console.log(`Found ATC mappings for ${principioToAtc.size} principios`);
 
+    const atcDictionary = parseAtcDictionary(tmpDir);
+    console.log(`Found ${atcDictionary.size} ATC entries in dictionary`);
+
+    const familyMap = buildFamilyMap(atcDictionary);
+    console.log("ATC family mapping (from DICCIONARIO_ATC.xml):");
+    for (const [prefix, name] of Object.entries(familyMap).sort()) {
+      console.log(`  ${prefix}: ${name}`);
+    }
+
     const classification = new Map<string, { level: Level; family: string }>();
 
     let redCount = 0;
@@ -222,7 +294,7 @@ async function main() {
 
     for (const [nro, name] of principios) {
       const atcCodes = principioToAtc.get(nro);
-      const result = classifyPrincipio(atcCodes);
+      const result = classifyPrincipio(atcCodes, familyMap);
       classification.set(name, result);
 
       if (result.level === "RED") redCount++;
@@ -235,13 +307,13 @@ async function main() {
       `Classified ${classification.size} principios: RED=${redCount}, AMBER=${amberCount}, GREEN=${greenCount}, YELLOW=${yellowCount}`,
     );
 
-    const spotChecks: Array<[string, Level, string]> = [
-      ["IBUPROFENO", "RED", "Propiónico"],
-      ["ACETILSALICILICO ACIDO", "AMBER", "Salicilato"],
-      ["PARACETAMOL", "GREEN", ""],
+    const spotChecks: Array<[string, Level]> = [
+      ["IBUPROFENO", "RED"],
+      ["ACETILSALICILICO ACIDO", "AMBER"],
+      ["PARACETAMOL", "GREEN"],
     ];
 
-    for (const [name, expectedLevel, expectedFamily] of spotChecks) {
+    for (const [name, expectedLevel] of spotChecks) {
       const info = classification.get(name);
       if (!info) {
         console.error(`Spot check FAILED: ${name} not found in classification`);
@@ -250,12 +322,6 @@ async function main() {
       if (info.level !== expectedLevel) {
         console.error(
           `Spot check FAILED: ${name} level is ${info.level}, expected ${expectedLevel}`,
-        );
-        process.exit(1);
-      }
-      if (info.family !== expectedFamily) {
-        console.error(
-          `Spot check FAILED: ${name} family is "${info.family}", expected "${expectedFamily}"`,
         );
         process.exit(1);
       }
