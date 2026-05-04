@@ -12,11 +12,11 @@
 ## 3. Enable Web Analytics on Vercel project
 
 - [x] 3.1 Run `vercel analytics enable` (or enable via Vercel Dashboard)
-- [ ] 3.2 Commit: `chore(analytics): enable Web Analytics on Vercel project`
+- [x] 3.2 Commit: `chore(analytics): enable Web Analytics on Vercel project`
 
 ## 4. Verify end-to-end
 
-- [ ] 4.1 Deploy to Vercel and confirm analytics data appears in the Vercel Dashboard after visiting the site
+- [x] 4.1 Deploy to Vercel and confirm analytics data appears in the Vercel Dashboard after visiting the site
 
 ## 5. Push and Create PR
 
