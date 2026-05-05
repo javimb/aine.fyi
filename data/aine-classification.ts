@@ -64,8 +64,14 @@ export const principioClassification: PrincipleClassification = {
   ACETILCOLINA: { level: "YELLOW", family: "" },
   "ACETILCOLINA CLORURO": { level: "GREEN", family: "" },
   ACETILENO: { level: "GREEN", family: "" },
-  "ACETILSALICILATO LISINA": { level: "AMBER", family: "Salicilato" },
-  "ACETILSALICILICO ACIDO": { level: "AMBER", family: "Salicilato" },
+  "ACETILSALICILATO LISINA": {
+    level: "AMBER",
+    family: "Acido salicilico y derivados",
+  },
+  "ACETILSALICILICO ACIDO": {
+    level: "AMBER",
+    family: "Acido salicilico y derivados",
+  },
   "ACETOHIDROXAMICO ACIDO": { level: "GREEN", family: "" },
   "ACEXAMATO ZINC": { level: "GREEN", family: "" },
   "ACEXAMICO ACIDO": { level: "YELLOW", family: "" },

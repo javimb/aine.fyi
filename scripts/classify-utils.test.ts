@@ -58,35 +58,35 @@ describe("classifyPrincipio", () => {
     });
   });
 
-  it("classifies B01AC06 as AMBER", () => {
-    expect(classifyPrincipio(new Set(["B01AC06"]), ATC_FAMILY_MAP)).toEqual({
+  it("classifies B01AC06 as AMBER with AEMPS-derived family", () => {
+    expect(classifyPrincipio(new Set(["B01AC06"]), AEMPS_FAMILY_MAP)).toEqual({
       level: "AMBER",
-      family: "Salicilato",
+      family: "Salicilatos",
     });
   });
 
-  it("classifies N02BA prefix as AMBER", () => {
-    expect(classifyPrincipio(new Set(["N02BA01"]), ATC_FAMILY_MAP)).toEqual({
+  it("classifies N02BA prefix as AMBER with AEMPS-derived family", () => {
+    expect(classifyPrincipio(new Set(["N02BA01"]), AEMPS_FAMILY_MAP)).toEqual({
       level: "AMBER",
-      family: "Salicilato",
+      family: "Salicilatos",
     });
   });
 
   it("RED takes precedence over AMBER", () => {
     expect(
-      classifyPrincipio(new Set(["M01AE01", "N02BA01"]), ATC_FAMILY_MAP),
+      classifyPrincipio(new Set(["M01AE01", "N02BA01"]), AEMPS_FAMILY_MAP),
     ).toEqual({
       level: "RED",
-      family: "Propiónico",
+      family: "Derivados del acido propionico",
     });
   });
 
   it("AMBER takes precedence over GREEN", () => {
     expect(
-      classifyPrincipio(new Set(["N02BA01", "N02BE01"]), ATC_FAMILY_MAP),
+      classifyPrincipio(new Set(["N02BA01", "N02BE01"]), AEMPS_FAMILY_MAP),
     ).toEqual({
       level: "AMBER",
-      family: "Salicilato",
+      family: "Salicilatos",
     });
   });
 
@@ -128,14 +128,24 @@ describe("classifyPrincipio", () => {
     });
   });
 
-  it("AMBER family is always Salicilato regardless of custom familyMap", () => {
+  it("AMBER family is derived from familyMap for N02BA codes", () => {
     const customMap = {
       ...ATC_FAMILY_MAP,
       N02BA: "Aspirina derivados",
     };
     expect(classifyPrincipio(new Set(["N02BA01"]), customMap)).toEqual({
       level: "AMBER",
-      family: "Salicilato",
+      family: "Aspirina derivados",
+    });
+  });
+
+  it("returns Otros AINE for AMBER codes when N02BA is not in familyMap", () => {
+    const customMap = {
+      M01AE: "Custom Propiónico",
+    };
+    expect(classifyPrincipio(new Set(["N02BA01"]), customMap)).toEqual({
+      level: "AMBER",
+      family: "Otros AINE",
     });
   });
 
