@@ -14,6 +14,22 @@ test.describe("exhaustive", () => {
   });
 
   test("search returns results with status banner", async ({ page }) => {
+    await page.route("/api/cima*", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          resultados: [
+            {
+              nombre: "Paracetamol 650mg",
+              pactivos: "paracetamol",
+              aineAnalysis: { status: "GREEN", matchedAines: [] },
+            },
+          ],
+        }),
+      });
+    });
+
     await page.fill('input[type="text"]', "paracetamol");
     await page.click('button[type="submit"]');
     await page.waitForSelector("[role='article']", { timeout: 10000 });
