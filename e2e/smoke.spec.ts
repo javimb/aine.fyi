@@ -79,9 +79,7 @@ test.describe("smoke", () => {
     await expect(page.locator("h1")).toContainText("¿Es un AINE?");
   });
 
-  test("after search, compact search and results are horizontally centered", async ({
-    page,
-  }) => {
+  test("search results are horizontally centered", async ({ page }) => {
     await page.goto("/");
     await page.fill('input[type="text"]', "ibuprofeno");
     await page.click('button[type="submit"]');
@@ -96,19 +94,5 @@ test.describe("smoke", () => {
       const pageCenter = pageBox.x + pageBox.width / 2;
       expect(Math.abs(formCenter - pageCenter)).toBeLessThan(50);
     }
-  });
-
-  test("clearing search restores hero centered layout", async ({ page }) => {
-    await page.goto("/");
-    await page.fill('input[type="text"]', "ibuprofeno");
-    await page.click('button[type="submit"]');
-    await page.waitForSelector("[role='article']", { timeout: 10000 });
-
-    const clearButton = page.getByRole("button", { name: "Limpiar" });
-    await clearButton.click();
-    await page.waitForTimeout(500);
-
-    const main = page.locator("main");
-    await expect(main).toHaveClass(/justify-center/);
   });
 });

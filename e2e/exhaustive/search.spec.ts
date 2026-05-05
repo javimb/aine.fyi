@@ -239,16 +239,16 @@ test.describe("exhaustive", () => {
     await expect(page.getByText("1 resultado")).toBeVisible();
   });
 
-  test("search transitions from hero to compact mode", async ({ page }) => {
+  test("search input remains full size after search", async ({ page }) => {
     await page.goto("/");
-    const heroInput = page.locator('input[type="text"]');
-    await expect(heroInput).toHaveClass(/h-12/);
+    const input = page.locator('input[type="text"]');
+    await expect(input).toHaveClass(/h-12/);
 
     await page.fill('input[type="text"]', "ibuprofeno");
     await page.click('button[type="submit"]');
     await page.waitForSelector("[role='article']", { timeout: 10000 });
 
-    await expect(page.locator('input[type="text"]')).toHaveClass(/h-10/);
+    await expect(page.locator('input[type="text"]')).toHaveClass(/h-12/);
   });
 
   test("API server error shows error feedback", async ({ page }) => {

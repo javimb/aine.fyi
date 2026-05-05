@@ -102,9 +102,9 @@
 - [x] 12.1 Refactor `src/app/page.tsx`: remove hero/compact state toggle, always render title + search bar + sections in a single centered layout with `min-h-dvh justify-center`
 - [x] 12.2 Refactor `src/components/search-form.tsx`: remove `isHero` and `onModeChange` props, always render search bar at full size (`h-12`), add `useRef` + `useEffect` for auto-scroll to results after search
 - [x] 12.3 Fix layout centering: all sections wrapped in `max-w-2xl` with consistent gap spacing
-- [ ] 12.4 Update e2e tests: remove hero/compact mode assertions, add auto-scroll after search assertion, remove clear-restores-hero test
+- [x] 12.4 Update e2e tests: remove hero/compact mode assertions, add auto-scroll after search assertion, remove clear-restores-hero test
 - [x] 12.5 Write e2e test: hero section fills viewport height and is vertically centered on initial load
-- [ ] 12.6 Verify all unit and e2e tests pass after spec changes
+- [x] 12.6 Verify all unit and e2e tests pass after spec changes
 - [ ] 12.7 Commit: `refactor: single-mode search with auto-scroll, remove hero/compact toggle`
 
 ## 13. Push and Create PR

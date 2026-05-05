@@ -5,24 +5,6 @@ import { afterEach } from "vitest";
 
 afterEach(cleanup);
 
-vi.mock("@/components/search-form", () => ({
-  default: ({
-    isHero,
-  }: {
-    isHero: boolean;
-    onModeChange: (hero: boolean) => void;
-  }) =>
-    isHero ? (
-      <div data-testid="search-form" data-mode="hero">
-        Search Form (hero)
-      </div>
-    ) : (
-      <div data-testid="search-form" data-mode="compact">
-        Search Form (compact)
-      </div>
-    ),
-}));
-
 vi.mock("../../data/aine-classification", () => ({
   principioClassification: {},
   lastUpdated: "2026-05-05",
@@ -59,7 +41,7 @@ describe("Home page", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders hero layout with min-h-dvh on initial load", async () => {
+  it("renders hero layout with min-h-dvh and justify-center", async () => {
     const { default: Home } = await import("./page");
     const { container } = render(<Home />);
     const main = container.querySelector("main");

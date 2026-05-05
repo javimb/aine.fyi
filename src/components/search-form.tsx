@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ResultList from "@/components/result-list";
@@ -18,16 +18,18 @@ export interface SearchResult {
   };
 }
 
-interface SearchFormProps {
-  isHero: boolean;
-  onModeChange: (hero: boolean) => void;
-}
-
-export default function SearchForm({ isHero, onModeChange }: SearchFormProps) {
+export default function SearchForm() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (results.length > 0 && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [results]);
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -46,7 +48,6 @@ export default function SearchForm({ isHero, onModeChange }: SearchFormProps) {
       } else {
         setResults([data]);
       }
-      onModeChange(false);
     } catch {
       setError("Error al buscar");
       setResults([]);
@@ -59,38 +60,28 @@ export default function SearchForm({ isHero, onModeChange }: SearchFormProps) {
     setQuery("");
     setResults([]);
     setError("");
-    onModeChange(true);
   }
 
   return (
-    <>
+    <div className="w-full max-w-2xl">
       <form
         onSubmit={handleSearch}
         aria-label="Buscar medicamento"
         aria-busy={loading}
-        className="flex w-full max-w-2xl gap-2"
+        className="flex w-full gap-2"
       >
         <Input
           type="text"
           value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            if (!e.target.value && results.length === 0) {
-              onModeChange(true);
-            }
-          }}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar medicamento..."
           aria-label="Nombre del medicamento"
-          className={isHero ? "h-12 text-lg" : "h-10"}
+          className="h-12 text-lg"
         />
-        <Button
-          type="submit"
-          disabled={loading}
-          className={isHero ? "h-12 px-6" : "h-10"}
-        >
+        <Button type="submit" disabled={loading} className="h-12 px-6">
           {loading ? "Buscando..." : "Buscar"}
         </Button>
-        {!isHero && results.length > 0 && (
+        {results.length > 0 && (
           <Button type="button" variant="outline" onClick={handleClear}>
             Limpiar
           </Button>
@@ -98,16 +89,20 @@ export default function SearchForm({ isHero, onModeChange }: SearchFormProps) {
       </form>
 
       {error && (
-        <p role="alert" aria-live="polite" className="text-status-red text-sm">
+        <p
+          role="alert"
+          aria-live="polite"
+          className="mt-2 text-status-red text-sm"
+        >
           {error}
         </p>
       )}
 
       {results.length > 0 && !error && (
-        <div className="mt-4 w-full max-w-2xl">
+        <div ref={resultsRef} className="mt-4">
           <ResultList results={results} />
         </div>
       )}
-    </>
+    </div>
   );
 }
