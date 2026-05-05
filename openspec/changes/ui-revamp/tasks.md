@@ -99,5 +99,5 @@
 
 ## 12. Push and Create PR
 
-- [ ] 12.1 Push the `ui-revamp` branch to remote
-- [ ] 12.2 Create a pull request via `gh pr create`
+- [x] 12.1 Push the `ui-revamp` branch to remote
+- [x] 12.2 Create a pull request via `gh pr create`
