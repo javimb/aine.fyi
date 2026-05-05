@@ -18,6 +18,17 @@ const ATC_FAMILY_MAP: Record<string, string> = {
   M01AX: "Otros AINE",
 };
 
+const AEMPS_FAMILY_MAP: Record<string, string> = {
+  M01AA: "Butilpirazolidinas",
+  M01AB: "Derivados del acido acetico y sustancias relacionadas",
+  M01AC: "Oxicams",
+  M01AE: "Derivados del acido propionico",
+  M01AG: "Fenamatos",
+  M01AH: "Coxibs",
+  M01AX: "Otros agentes antiinflamatorios y antirreumaticos no esteroideos",
+  N02BA: "Salicilatos",
+};
+
 describe("classifyPrincipio", () => {
   it("returns YELLOW for undefined ATC codes", () => {
     expect(classifyPrincipio(undefined, ATC_FAMILY_MAP)).toEqual({
@@ -127,6 +138,13 @@ describe("classifyPrincipio", () => {
       family: "Salicilato",
     });
   });
+
+  it("returns empty family for GREEN-level principios with AEMPS map", () => {
+    expect(classifyPrincipio(new Set(["N02BE01"]), AEMPS_FAMILY_MAP)).toEqual({
+      level: "GREEN",
+      family: "",
+    });
+  });
 });
 
 describe("getAtcFamily", () => {
@@ -154,6 +172,32 @@ describe("getAtcFamily", () => {
       M01AE: "Propiónico",
     };
     expect(getAtcFamily("M01AB01", customMap)).toBe("Otros AINE");
+  });
+
+  it("returns AEMPS-derived family names for M01A subgroups", () => {
+    expect(getAtcFamily("M01AA01", AEMPS_FAMILY_MAP)).toBe(
+      "Butilpirazolidinas",
+    );
+    expect(getAtcFamily("M01AB01", AEMPS_FAMILY_MAP)).toBe(
+      "Derivados del acido acetico y sustancias relacionadas",
+    );
+    expect(getAtcFamily("M01AC01", AEMPS_FAMILY_MAP)).toBe("Oxicams");
+    expect(getAtcFamily("M01AE01", AEMPS_FAMILY_MAP)).toBe(
+      "Derivados del acido propionico",
+    );
+    expect(getAtcFamily("M01AG01", AEMPS_FAMILY_MAP)).toBe("Fenamatos");
+    expect(getAtcFamily("M01AH01", AEMPS_FAMILY_MAP)).toBe("Coxibs");
+    expect(getAtcFamily("M01AX01", AEMPS_FAMILY_MAP)).toBe(
+      "Otros agentes antiinflamatorios y antirreumaticos no esteroideos",
+    );
+  });
+
+  it("returns AEMPS-derived salicilato family for N02BA", () => {
+    expect(getAtcFamily("N02BA01", AEMPS_FAMILY_MAP)).toBe("Salicilatos");
+  });
+
+  it("returns Otros AINE for unrecognized M01A subgroups with AEMPS map", () => {
+    expect(getAtcFamily("M01AZ99", AEMPS_FAMILY_MAP)).toBe("Otros AINE");
   });
 
   it("matches longer prefix before shorter when order allows", () => {
