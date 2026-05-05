@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import ResultList from "@/components/result-list";
 
-interface SearchResult {
+export interface SearchResult {
   nombre: string;
   pactivos: string;
   aineAnalysis: {
@@ -15,17 +18,22 @@ interface SearchResult {
   };
 }
 
-export default function SearchForm() {
+interface SearchFormProps {
+  hero?: boolean;
+}
+
+export default function SearchForm({ hero = true }: SearchFormProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isHero, setIsHero] = useState(hero);
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
+    if (!query.trim()) return;
     setLoading(true);
     setError("");
-    setResults([]);
 
     try {
       const res = await fetch(`/api/cima?nombre=${encodeURIComponent(query)}`);
@@ -34,78 +42,77 @@ export default function SearchForm() {
         setResults(data.resultados);
       } else if (data.error) {
         setError(data.error);
+        setResults([]);
       } else {
         setResults([data]);
       }
+      setIsHero(false);
     } catch {
       setError("Error al buscar");
+      setResults([]);
     } finally {
       setLoading(false);
     }
   }
 
+  function handleClear() {
+    setQuery("");
+    setResults([]);
+    setError("");
+    setIsHero(true);
+  }
+
   return (
-    <div className="w-full max-w-md space-y-4">
+    <div
+      className={
+        isHero ? "flex flex-col items-center justify-center gap-4" : "w-full"
+      }
+    >
       <form
         onSubmit={handleSearch}
-        className="flex gap-2"
         aria-label="Buscar medicamento"
+        aria-busy={loading}
+        className={
+          isHero ? "flex w-full max-w-2xl gap-2" : "flex w-full max-w-2xl gap-2"
+        }
       >
-        <input
+        <Input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            if (!e.target.value && results.length === 0) {
+              setIsHero(true);
+            }
+          }}
           placeholder="Buscar medicamento..."
           aria-label="Nombre del medicamento"
-          className="flex-1 rounded border px-3 py-2"
-          data-testid="search-input"
+          className={isHero ? "h-12 text-lg" : "h-10"}
         />
-        <button
+        <Button
           type="submit"
           disabled={loading}
-          className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
-          data-testid="search-button"
+          className={isHero ? "h-12 px-6" : "h-10"}
         >
           {loading ? "Buscando..." : "Buscar"}
-        </button>
+        </Button>
+        {!isHero && results.length > 0 && (
+          <Button type="button" variant="outline" onClick={handleClear}>
+            Limpiar
+          </Button>
+        )}
       </form>
 
       {error && (
-        <p className="text-red-600" data-testid="error-message">
+        <p role="alert" aria-live="polite" className="text-status-red text-sm">
           {error}
         </p>
       )}
 
-      {results.length > 0 && (
-        <ul className="space-y-2" data-testid="search-results">
-          {results.map((r, i) => (
-            <li key={i} className="rounded border p-3">
-              <p className="font-semibold">{r.nombre}</p>
-              <p className="text-sm text-gray-600">{r.pactivos}</p>
-              <p
-                className={`mt-1 font-bold ${
-                  r.aineAnalysis.status === "RED"
-                    ? "text-red-600"
-                    : r.aineAnalysis.status === "AMBER"
-                      ? "text-amber-600"
-                      : r.aineAnalysis.status === "GREEN"
-                        ? "text-green-600"
-                        : "text-yellow-600"
-                }`}
-                data-testid="aine-status"
-                data-aine-status={r.aineAnalysis.status}
-              >
-                {r.aineAnalysis.status === "RED"
-                  ? `⚠️ AINE detectado: ${r.aineAnalysis.matchedAines?.map((a) => a.name).join(", ")}`
-                  : r.aineAnalysis.status === "AMBER"
-                    ? `⚠️ Salicilato: ${r.aineAnalysis.matchedAines?.map((a) => a.name).join(", ")}`
-                    : r.aineAnalysis.status === "GREEN"
-                      ? "✅ No es un AINE"
-                      : "⚠️ Estado desconocido"}
-              </p>
-            </li>
-          ))}
-        </ul>
+      {results.length > 0 && !error && (
+        <div className="mt-4 w-full max-w-2xl">
+          <ResultList results={results} />
+        </div>
       )}
     </div>
   );

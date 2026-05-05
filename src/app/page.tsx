@@ -1,11 +1,23 @@
 import SearchForm from "@/components/search-form";
+import AineExplainer from "@/components/aine-explainer";
+import Disclaimer from "@/components/disclaimer";
+import DataSource from "@/components/data-source";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-4">
-      <h1 className="text-2xl font-bold">Es un AINE?</h1>
-      <SearchForm />
-      <p className="text-sm text-gray-500">Datos proporcionados por la AEMPS</p>
+    <main className="flex min-h-dvh flex-col items-center gap-8 px-4 py-8">
+      <div className="flex w-full max-w-2xl flex-col items-center gap-2">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          ¿Es un AINE?
+        </h1>
+        <p className="text-muted-foreground">
+          Comprueba si un medicamento contiene algún AINE
+        </p>
+      </div>
+      <SearchForm hero />
+      <AineExplainer />
+      <Disclaimer />
+      <DataSource />
     </main>
   );
 }
