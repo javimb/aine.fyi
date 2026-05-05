@@ -8,12 +8,12 @@ Display a visible attribution line crediting AEMPS as the data source, rendered 
 
 ### Requirement: AEMPS attribution is visible on the page
 
-The application SHALL display a visible attribution line "Datos proporcionados por la AEMPS" to credit the data source. This attribution SHALL be rendered as secondary/subtle text below the main content area.
+The application SHALL display a data source line crediting AEMPS as the data source. The attribution SHALL include the text "Datos: AEMPS (CIMA)" followed by "· Actualizado:" and the `lastUpdated` date from `data/aine-classification.ts`. The attribution SHALL be rendered as part of the homepage footer section, styled as secondary/subtle text.
 
 #### Scenario: Attribution is visible to users
 
 - **WHEN** a user loads the application
-- **THEN** the page SHALL display the text "Datos proporcionados por la AEMPS"
+- **THEN** the page SHALL display "Datos: AEMPS (CIMA) · Actualizado:" followed by the classification data date
 
 #### Scenario: Attribution is accessible to screen readers
 
