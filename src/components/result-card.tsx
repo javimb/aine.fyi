@@ -1,6 +1,6 @@
 import CompoundPill from "@/components/compound-pill";
 import StatusBanner from "@/components/status-banner";
-import type { SearchResult } from "@/components/search-form";
+import type { SearchResult } from "@/components/search-bar";
 
 const STATUS_CONFIG = {
   RED: {

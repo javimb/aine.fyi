@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { afterEach } from "vitest";
-import type { SearchResult } from "./search-form";
+import type { SearchResult } from "./search-bar";
 
 afterEach(cleanup);
 

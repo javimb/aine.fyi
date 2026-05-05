@@ -1,5 +1,5 @@
 import ResultCard from "@/components/result-card";
-import type { SearchResult } from "@/components/search-form";
+import type { SearchResult } from "@/components/search-bar";
 
 interface ResultListProps {
   results: SearchResult[];

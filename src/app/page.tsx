@@ -1,4 +1,4 @@
-import SearchForm from "@/components/search-form";
+import SearchBar from "@/components/search-bar";
 import AineExplainer from "@/components/aine-explainer";
 import Disclaimer from "@/components/disclaimer";
 import DataSource from "@/components/data-source";
@@ -12,7 +12,7 @@ export default function Home() {
           Comprueba si un medicamento contiene algún AINE
         </p>
       </div>
-      <SearchForm />
+      <SearchBar />
       <div className="w-full max-w-2xl">
         <AineExplainer />
       </div>

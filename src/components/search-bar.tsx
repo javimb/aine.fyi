@@ -18,7 +18,7 @@ export interface SearchResult {
   };
 }
 
-export default function SearchForm() {
+export default function SearchBar() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
