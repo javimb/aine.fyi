@@ -18,38 +18,36 @@ The `<form>` element containing the search input and button SHALL have an `aria-
 
 ### Requirement: Search input has an accessible label
 
-The search input SHALL have proper accessible labeling. In hero mode, a visible `<label>` or `aria-label` SHALL identify the input. In compact mode, the same accessible name SHALL persist.
+The search input SHALL have proper accessible labeling. A visible `aria-label` SHALL identify the input at all times.
 
 #### Scenario: Screen reader identifies the input
 
 - **WHEN** a screen reader user focuses on the search input
 - **THEN** the input SHALL be announced with an accessible name indicating it is a medication search field
 
-### Requirement: Search bar has hero and compact modes
+### Requirement: Search bar is single-mode with auto-scroll to results
 
-The search bar SHALL render in a large, prominent hero mode when no search has been performed (centered on the page with larger sizing) and transition to a compact mode at the top of the results view after a search is submitted. The hero mode SHALL be the default on the landing page. The compact mode SHALL show the search query pre-filled and results below.
+The search bar SHALL always render at the same size (large, prominent, `h-12`) on the hero-landing page. There is no separate compact mode. After a search is submitted and results appear, the page SHALL auto-scroll smoothly to the results so the user can see them without manual scrolling. The search bar, title, and subtitle remain visible above the results — the layout does not change between states.
 
-#### Scenario: Search bar in hero mode on landing
+#### Scenario: Search bar renders prominently on landing page
 
-- **WHEN** the user first loads the page with no search active
-- **THEN** the search bar SHALL render in hero mode — large input (`h-12`), centered within the viewport, visually prominent
-- **AND** the page title and subtitle SHALL be visible above the search bar as part of a cohesive hero section
-- **AND** the hero section (title + subtitle + search bar) SHALL be centered both horizontally and vertically, filling the viewport height with `min-h-dvh`
-- **AND** the hero section SHALL use `max-w-2xl mx-auto` for horizontal centering
+- **WHEN** the user loads the page
+- **THEN** the search bar SHALL render with a large input (`h-12`) as part of a hero section centered vertically with `min-h-dvh` and `justify-center`
+- **AND** the page title and subtitle SHALL be visible above the search bar
+- **AND** the search bar SHALL be horizontally centered with `max-w-2xl`
 
-#### Scenario: Search bar in compact mode after search
+#### Scenario: Auto-scroll to results after search
 
 - **WHEN** the user submits a search and results are displayed
-- **THEN** the search bar SHALL render in compact mode — smaller input (`h-10`), positioned above results
+- **THEN** the page SHALL smoothly scroll to the results section automatically
+- **AND** the search bar, title, and subtitle SHALL remain visible above the results
 - **AND** the search query SHALL remain in the input field
-- **AND** the compact search bar and results SHALL be centered horizontally with `max-w-2xl mx-auto`
-- **AND** the page layout SHALL transition from the full-viewport hero to a top-aligned, centered content layout
 
-#### Scenario: Hero mode is restored on clear
+#### Scenario: Clear button resets results
 
-- **WHEN** the user clears the search query and there are no results
-- **THEN** the search bar SHALL return to hero mode
-- **AND** the hero section SHALL re-center vertically with `min-h-dvh`
+- **WHEN** the user clicks the "Limpiar" (clear) button after a search
+- **THEN** the results SHALL be removed
+- **AND** the search input SHALL be cleared
 
 ### Requirement: Error and loading states are accessible
 

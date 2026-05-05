@@ -16,7 +16,7 @@ The primary user is someone with a AINE allergy checking whether a medication is
 **Goals:**
 
 - Establish a "warm clarity" visual identity: Inter typeface, warm slate-teal brand color, vivid status colors
-- Make the search bar the hero element of the landing page, transitioning to compact after search
+- Make the search bar prominent on the landing page with results appearing below and auto-scrolling into view
 - Present result status as the primary visual signal — status-driven cards with left-border accents, colored backgrounds, and clear warning messages
 - Add informational content explaining what AINEs are and why they matter for allergy sufferers
 - Display a prominent disclaimer and data source attribution with the `lastUpdated` date
@@ -65,10 +65,10 @@ The primary user is someone with a AINE allergy checking whether a medication is
 
 **Rationale**: The slate-teal hue gives the app identity without being distracting. Status colors are the only place with significant chroma — they must pop because they're the whole reason someone uses this app. All status text-on-bg combinations meet WCAG 2.1 AA (4.5:1 for normal text, 3:1 for large text).
 
-### 3. Search UX: Hero-to-compact transition
+### 3. Search UX: Single-mode search with auto-scroll to results
 
-**Choice**: The search bar starts as a large, centered hero element on the landing page. The hero section (title + subtitle + search bar) occupies the full viewport height with `min-h-dvh` and is centered both horizontally (via `max-w-2xl mx-auto`) and vertically. After a search is submitted, the page transitions from the full-viewport hero to a top-aligned, scrollable layout: the search bar becomes compact, and both it and the result list are horizontally centered within `max-w-2xl mx-auto`. The title and subtitle are hidden in compact mode — only the search bar and results are shown, keeping context while results are visible.
-**Alternative considered**: Always-compact search — rejected because the landing page has no other content competing for attention and a hero search communicates simplicity and focus.
+**Choice**: The search bar always renders at the same size (large, prominent, `h-12`) as part of a hero-landing layout centered vertically with `min-h-dvh`. There is no separate compact mode. After a search is submitted, results appear below the search bar and the page auto-scrolls smoothly to the results section so the user can see them immediately. The title, subtitle, and search bar remain visible above the results — the layout does not change between states. A "Limpiar" (clear) button appears when results are present to reset the search.
+**Alternative considered**: Hero-to-compact transition — rejected because it introduces layout mode state that can cause React unmounting bugs and makes the UI more complex without a clear UX benefit for a single-result tool.
 
 ### 4. Result cards: Status-driven with left-border accents
 
@@ -87,7 +87,7 @@ The primary user is someone with a AINE allergy checking whether a medication is
 
 **Choice**: Break the monolithic `SearchForm` into:
 
-- `SearchBar` — the input + button, hero/compact variants
+- `SearchBar` — the input + button, single mode with auto-scroll to results
 - `ResultList` — container for result cards
 - `ResultCard` — individual status-driven card
 - `CompoundPill` — pill badge for matched AINE compounds
@@ -109,16 +109,13 @@ The primary user is someone with a AINE allergy checking whether a medication is
 
 ### 7. Homepage content structure
 
-**Choice**: The landing page (idle state, no search yet) shows a hero section that fills the viewport (`min-h-dvh`) with title, subtitle, and search bar vertically and horizontally centered:
+**Choice**: The landing page shows a hero section with title, subtitle, and search bar centered vertically using `min-h-dvh` with `justify-center`. Results, and all other content sections, appear below the search bar. After search, the page auto-scrolls to results. The layout is a single continuous page — no mode switching.
 
-1. Hero section: Title "¿Es un AINE?" + subtitle "Comprueba si un medicamento contiene algún AINE" + hero search bar — fully centered in viewport with `min-h-dvh` `flex flex-col items-center justify-center`
-
-After search, the page transitions to a scrollable content layout. All sections are horizontally centered within `max-w-2xl mx-auto`:
-
-1. Compact search bar + result cards
-2. Explainer section: "¿Qué son los AINE?" — brief paragraph explaining AINEs are non-steroidal anti-inflammatories (ibuprofen, aspirin, naproxen, etc.), one of the most commonly prescribed and OTC drug groups, and that a single dose can cause a severe reaction in allergic individuals
-3. Disclaimer section: Warning callout stating this is an informational tool, not a substitute for professional medical advice, and recommending verifying the physical medication leaflet
-4. Data source line: "Datos: AEMPS (CIMA)" with the `lastUpdated` date
+1. Title "¿Es un AINE?" + subtitle + search bar — centered in viewport
+2. Results (when present) — auto-scroll here after search
+3. Explainer section: "¿Qué son los AINE?" — brief paragraph explaining AINEs are non-steroidal anti-inflammatories (ibuprofen, aspirin, naproxen, etc.), one of the most commonly prescribed and OTC drug groups, and that a single dose can cause a severe reaction in allergic individuals
+4. Disclaimer section: Warning callout stating this is an informational tool, not a substitute for professional medical advice, and recommending verifying the physical medication leaflet
+5. Data source line: "Datos: AEMPS (CIMA)" with the `lastUpdated` date
 
 ## Risks / Trade-offs
 

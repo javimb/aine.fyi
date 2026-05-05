@@ -46,21 +46,20 @@ The homepage SHALL display a data source line crediting AEMPS (CIMA) and showing
 
 ### Requirement: Mobile-first responsive layout
 
-All homepage sections SHALL be designed mobile-first with full-width content on viewports below 640px and centered content with `max-w-2xl` on viewports 640px and above. The search bar in hero mode SHALL be full-width on mobile. All content sections (search bar, result cards, explainer, disclaimer, data source) SHALL be horizontally centered using `mx-auto` within their `max-w-2xl` container, both in hero mode and in compact/results mode.
+All homepage sections SHALL be designed mobile-first with full-width content on viewports below 640px and centered content with `max-w-2xl` on viewports 640px and above. The page uses a single layout — no hero/compact mode toggle. All content sections (search bar, result cards, explainer, disclaimer, data source) SHALL be horizontally centered within `max-w-2xl`.
 
 #### Scenario: Homepage renders on mobile viewport
 
 - **WHEN** the page renders on a 375px viewport
 - **THEN** all sections SHALL be full-width with appropriate padding
-- **AND** the hero search bar SHALL be full-width within the content area
+- **AND** the search bar SHALL be full-width within the content area
 
 #### Scenario: Homepage renders on desktop viewport
 
 - **WHEN** the page renders on a 1024px viewport
 - **THEN** the content SHALL be centered with `max-w-2xl` (672px maximum)
-- **AND** the compact search bar and result cards SHALL also be centered with `max-w-2xl mx-auto`
 
-#### Scenario: Content centering after search
+#### Scenario: All sections are centered after search
 
 - **WHEN** the user has performed a search and results are displayed
-- **THEN** the compact search bar, result list, and remaining page sections (explainer, disclaimer, data source) SHALL all be horizontally centered within a `max-w-2xl mx-auto` container
+- **THEN** the search bar, result list, and remaining page sections (explainer, disclaimer, data source) SHALL all be horizontally centered within `max-w-2xl`
