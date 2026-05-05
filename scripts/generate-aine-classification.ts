@@ -4,7 +4,12 @@ import path from "node:path";
 import os from "node:os";
 import { XMLParser } from "fast-xml-parser";
 import { execSync } from "node:child_process";
-import { type Level, classifyPrincipio, mergeAtcCodes } from "./classify-utils";
+import {
+  type Level,
+  classifyPrincipio,
+  mergeAtcCodes,
+  updateReadmeMarker,
+} from "./classify-utils";
 
 const AEMPS_URL = "https://listadomedicamentos.aemps.gob.es/prescripcion.zip";
 
@@ -219,8 +224,9 @@ function buildFamilyMap(
   return familyMap;
 }
 
-function generateTsFile(
+export function generateTsFile(
   classification: Map<string, { level: Level; family: string }>,
+  date: string,
 ): string {
   const entries = Array.from(classification.entries()).sort(([a], [b]) =>
     a.localeCompare(b),
@@ -247,6 +253,7 @@ function generateTsFile(
   }
 
   lines.push("};");
+  lines.push(`export const lastUpdated = "${date}";`);
   lines.push(
     "export const validatedClassification = PrincipleClassificationSchema.parse(principioClassification);",
   );
@@ -355,7 +362,8 @@ async function main() {
     }
     console.log("Spot check OK: all RED/AMBER entries have non-empty family");
 
-    const tsContent = generateTsFile(classification);
+    const date = new Date().toISOString().slice(0, 10);
+    const tsContent = generateTsFile(classification, date);
     const scriptDir = path.dirname(new URL(import.meta.url).pathname);
     const outputPath = path.resolve(
       scriptDir,
@@ -363,12 +371,24 @@ async function main() {
     );
     fs.writeFileSync(outputPath, tsContent, "utf-8");
     console.log(`Written ${outputPath}`);
+
+    const readmePath = path.resolve(scriptDir, "../README.md");
+    const readmeContent = fs.readFileSync(readmePath, "utf-8");
+    const updatedReadme = updateReadmeMarker(readmeContent, date);
+    fs.writeFileSync(readmePath, updatedReadme, "utf-8");
+    console.log(`Updated ${readmePath}`);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 }
 
-main().catch((err) => {
-  console.error("Error:", err.message);
-  process.exit(1);
-});
+const _scriptPath = new URL(import.meta.url).pathname;
+if (
+  process.argv[1] &&
+  process.argv[1].endsWith("generate-aine-classification.ts")
+) {
+  main().catch((err) => {
+    console.error("Error:", err.message);
+    process.exit(1);
+  });
+}

@@ -49,6 +49,42 @@ export function classifyPrincipio(
   return { level: maxLevel, family };
 }
 
+export function updateReadmeMarker(content: string, date: string): string {
+  const markerPattern = /<!-- last-updated: \d{4}-\d{2}-\d{2} -->/;
+  const dateLinePattern = /Principios activos last updated: \d{4}-\d{2}-\d{2}/;
+
+  const newMarker = `<!-- last-updated: ${date} -->`;
+  const newDateLine = `Principios activos last updated: ${date}`;
+
+  if (markerPattern.test(content)) {
+    let updated = content.replace(markerPattern, newMarker);
+    if (dateLinePattern.test(updated)) {
+      updated = updated.replace(dateLinePattern, newDateLine);
+    }
+    return updated;
+  }
+
+  if (dateLinePattern.test(content)) {
+    return content.replace(dateLinePattern, `${newDateLine} ${newMarker}`);
+  }
+
+  const fullLine = `${newDateLine} ${newMarker}`;
+  const tableEndPattern = /\| 🟡.*\|\n/;
+  const tableMatch = content.match(tableEndPattern);
+  if (tableMatch && tableMatch.index !== undefined) {
+    const insertPos = tableMatch.index + tableMatch[0].length;
+    return (
+      content.slice(0, insertPos) +
+      "\n" +
+      fullLine +
+      "\n" +
+      content.slice(insertPos)
+    );
+  }
+
+  return content + "\n" + fullLine + "\n";
+}
+
 export function mergeAtcCodes(
   singleAtc: Set<string>,
   comboAtc: Set<string>,
