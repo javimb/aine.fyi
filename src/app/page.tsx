@@ -12,9 +12,13 @@ export default function Home() {
     setIsHero(hero);
   }, []);
 
-  if (isHero) {
-    return (
-      <main className="flex min-h-dvh flex-col items-center justify-center px-4">
+  return (
+    <main
+      className={`flex min-h-dvh flex-col items-center px-4 ${
+        isHero ? "justify-center" : "gap-6 py-8"
+      }`}
+    >
+      {isHero && (
         <div className="flex w-full max-w-2xl flex-col items-center gap-2 mb-6">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             ¿Es un AINE?
@@ -23,24 +27,9 @@ export default function Home() {
             Comprueba si un medicamento contiene algún AINE
           </p>
         </div>
-        <SearchForm isHero={true} onModeChange={handleModeChange} />
-        <div className="mt-8 w-full max-w-2xl">
-          <AineExplainer />
-        </div>
-        <div className="mt-6 w-full max-w-2xl">
-          <Disclaimer />
-        </div>
-        <div className="mt-4 w-full max-w-2xl">
-          <DataSource />
-        </div>
-      </main>
-    );
-  }
-
-  return (
-    <main className="flex min-h-dvh flex-col items-center gap-6 px-4 py-8">
+      )}
       <div className="w-full max-w-2xl">
-        <SearchForm isHero={false} onModeChange={handleModeChange} />
+        <SearchForm isHero={isHero} onModeChange={handleModeChange} />
       </div>
       <div className="w-full max-w-2xl">
         <AineExplainer />
