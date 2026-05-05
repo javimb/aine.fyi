@@ -94,7 +94,7 @@
 - [x] 11.9 Add e2e exhaustive test: GREEN status result renders with "LIBRE DE AINE" banner and safe message, no compound pills (using route mock)
 - [x] 11.10 Add e2e exhaustive test: result count heading shows "N resultados" (plural) or "1 resultado" (singular)
 - [x] 11.11 Add e2e exhaustive test: search input switches from hero mode to compact mode after search
-- [ ] 11.12 Verify all e2e tests pass: `npm run test:e2e:smoke` and `npm run test:e2e:exhaustive`
+- [x] 11.12 Verify all e2e tests pass: `npm run test:e2e:smoke` and `npm run test:e2e:exhaustive`
 - [x] 11.13 Commit: `test: update e2e tests for UI revamp`
 
 ## 12. Push and Create PR
