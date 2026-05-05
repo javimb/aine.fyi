@@ -59,10 +59,11 @@ The project SHALL include Playwright exhaustive E2E tests in an `e2e/exhaustive/
 - **WHEN** a search returns N results
 - **THEN** the result list SHALL display "N resultados" (plural) or "1 resultado" (singular)
 
-#### Scenario: Search transitions from hero to compact mode
+#### Scenario: Search remains full-size after search with auto-scroll
 
 - **WHEN** a user submits a search and results appear
-- **THEN** the search bar SHALL switch from hero mode to compact mode
+- **THEN** the search bar SHALL remain at full size (`h-12`)
+- **AND** the page SHALL smoothly auto-scroll to the results section
 - **AND** the search query SHALL remain in the input field
 
 #### Scenario: Exhaustive E2E suite covers error states
