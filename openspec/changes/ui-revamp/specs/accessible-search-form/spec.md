@@ -32,19 +32,24 @@ The search bar SHALL render in a large, prominent hero mode when no search has b
 #### Scenario: Search bar in hero mode on landing
 
 - **WHEN** the user first loads the page with no search active
-- **THEN** the search bar SHALL render in hero mode — large input, centered, prominent
-- **AND** the page title and subtitle SHALL be visible above the search bar
+- **THEN** the search bar SHALL render in hero mode — large input (`h-12`), centered within the viewport, visually prominent
+- **AND** the page title and subtitle SHALL be visible above the search bar as part of a cohesive hero section
+- **AND** the hero section (title + subtitle + search bar) SHALL be centered both horizontally and vertically, filling the viewport height with `min-h-dvh`
+- **AND** the hero section SHALL use `max-w-2xl mx-auto` for horizontal centering
 
 #### Scenario: Search bar in compact mode after search
 
 - **WHEN** the user submits a search and results are displayed
-- **THEN** the search bar SHALL render in compact mode — smaller input, positioned above results
+- **THEN** the search bar SHALL render in compact mode — smaller input (`h-10`), positioned above results
 - **AND** the search query SHALL remain in the input field
+- **AND** the compact search bar and results SHALL be centered horizontally with `max-w-2xl mx-auto`
+- **AND** the page layout SHALL transition from the full-viewport hero to a top-aligned, centered content layout
 
 #### Scenario: Hero mode is restored on clear
 
 - **WHEN** the user clears the search query and there are no results
 - **THEN** the search bar SHALL return to hero mode
+- **AND** the hero section SHALL re-center vertically with `min-h-dvh`
 
 ### Requirement: Error and loading states are accessible
 

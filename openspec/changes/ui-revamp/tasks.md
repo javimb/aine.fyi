@@ -97,7 +97,18 @@
 - [x] 11.12 Verify all e2e tests pass: `npm run test:e2e:smoke` and `npm run test:e2e:exhaustive`
 - [x] 11.13 Commit: `test: update e2e tests for UI revamp`
 
-## 12. Push and Create PR
+## 12. Layout Refinements — Hero Centering and Compact Alignment
 
-- [x] 12.1 Push the `ui-revamp` branch to remote
-- [x] 12.2 Create a pull request via `gh pr create`
+- [ ] 12.1 Refactor `src/app/page.tsx`: move title and subtitle INSIDE the hero section so they are part of the vertically-centered hero layout (`min-h-dvh flex flex-col items-center justify-center`), and pass them as children/props to SearchForm or render them within the same centered container
+- [ ] 12.2 Refactor `src/components/search-form.tsx`: in hero mode, render the full-viewport centered layout (`min-h-dvh flex flex-col items-center justify-center`) with title, subtitle, and search bar grouped together; in compact mode, render only the search bar with `max-w-2xl mx-auto` centering
+- [ ] 12.3 Fix compact/post-search layout: ensure the search bar, result list, and all remaining sections (explainer, disclaimer, data source) are horizontally centered within `max-w-2xl mx-auto` both in `search-form.tsx` and `page.tsx`
+- [ ] 12.4 Write failing e2e test: hero section fills viewport height and search bar + title are vertically centered on initial load
+- [ ] 12.5 Write failing e2e test: after search, compact search bar and result cards are horizontally centered with `max-w-2xl`
+- [ ] 12.6 Write failing e2e test: clearing search with no results restores the hero centered layout
+- [ ] 12.7 Verify all unit and e2e tests pass
+- [ ] 12.8 Commit: `fix: hero centering and compact layout alignment`
+
+## 13. Push and Create PR
+
+- [x] 13.1 Push the `ui-revamp` branch to remote
+- [x] 13.2 Create a pull request via `gh pr create`

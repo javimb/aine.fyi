@@ -67,7 +67,7 @@ The primary user is someone with a AINE allergy checking whether a medication is
 
 ### 3. Search UX: Hero-to-compact transition
 
-**Choice**: The search bar starts as a large, centered hero element on the landing page. After a search is submitted, it transitions to a compact bar at the top of the results view, keeping context while results are visible.
+**Choice**: The search bar starts as a large, centered hero element on the landing page. The hero section (title + subtitle + search bar) occupies the full viewport height with `min-h-dvh` and is centered both horizontally (via `max-w-2xl mx-auto`) and vertically. After a search is submitted, the page transitions from the full-viewport hero to a top-aligned, scrollable layout: the search bar becomes compact, and both it and the result list are horizontally centered within `max-w-2xl mx-auto`. The title and subtitle are hidden in compact mode — only the search bar and results are shown, keeping context while results are visible.
 **Alternative considered**: Always-compact search — rejected because the landing page has no other content competing for attention and a hero search communicates simplicity and focus.
 
 ### 4. Result cards: Status-driven with left-border accents
@@ -109,14 +109,16 @@ The primary user is someone with a AINE allergy checking whether a medication is
 
 ### 7. Homepage content structure
 
-**Choice**: The landing page (idle state, no search yet) shows:
+**Choice**: The landing page (idle state, no search yet) shows a hero section that fills the viewport (`min-h-dvh`) with title, subtitle, and search bar vertically and horizontally centered:
 
-1. Hero section: Title "¿Es un AINE?" + subtitle "Comprueba si un medicamento contiene algún AINE" + hero search bar
+1. Hero section: Title "¿Es un AINE?" + subtitle "Comprueba si un medicamento contiene algún AINE" + hero search bar — fully centered in viewport with `min-h-dvh` `flex flex-col items-center justify-center`
+
+After search, the page transitions to a scrollable content layout. All sections are horizontally centered within `max-w-2xl mx-auto`:
+
+1. Compact search bar + result cards
 2. Explainer section: "¿Qué son los AINE?" — brief paragraph explaining AINEs are non-steroidal anti-inflammatories (ibuprofen, aspirin, naproxen, etc.), one of the most commonly prescribed and OTC drug groups, and that a single dose can cause a severe reaction in allergic individuals
 3. Disclaimer section: Warning callout stating this is an informational tool, not a substitute for professional medical advice, and recommending verifying the physical medication leaflet
 4. Data source line: "Datos: AEMPS (CIMA)" with the `lastUpdated` date
-
-After search, the explainer and disclaimer sections remain below the compact search bar and result cards.
 
 ## Risks / Trade-offs
 
