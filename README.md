@@ -5,6 +5,7 @@ A web application that helps people with NSAID (AINE) allergies check whether co
 | Color     | Meaning                                                           |
 | :-------- | :---------------------------------------------------------------- |
 | 🔴 Red    | **Contains AINE** — critical alert showing the detected compound  |
+| 🟠 Amber  | **Contains salicilato** — caution, AINE-related compound          |
 | 🟢 Green  | **No AINE detected** — safe based on official composition         |
 | 🟡 Yellow | **Uncertain / not found** — incomplete data, consult a pharmacist |
 
