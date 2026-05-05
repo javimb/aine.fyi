@@ -46,12 +46,17 @@ export default function SearchForm() {
 
   return (
     <div className="w-full max-w-md space-y-4">
-      <form onSubmit={handleSearch} className="flex gap-2">
+      <form
+        onSubmit={handleSearch}
+        className="flex gap-2"
+        aria-label="Buscar medicamento"
+      >
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar medicamento..."
+          aria-label="Nombre del medicamento"
           className="flex-1 rounded border px-3 py-2"
           data-testid="search-input"
         />

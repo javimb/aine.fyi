@@ -49,4 +49,20 @@ describe("RootLayout", () => {
     );
     expect(getByText("Hello from child")).toBeInTheDocument();
   });
+
+  it("renders <html> with lang='es-ES'", async () => {
+    const { default: RootLayout } = await import("./layout");
+    const { baseElement } = render(
+      <RootLayout>
+        <p>Test content</p>
+      </RootLayout>,
+    );
+    const html = baseElement.ownerDocument.documentElement;
+    expect(html).toHaveAttribute("lang", "es-ES");
+  });
+
+  it("exports metadata with openGraph.locale='es_ES'", async () => {
+    const { metadata } = await import("./layout");
+    expect(metadata.openGraph?.locale).toBe("es_ES");
+  });
 });

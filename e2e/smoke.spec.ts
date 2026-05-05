@@ -1,6 +1,25 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("smoke", () => {
+  test("page has html lang='es-ES'", async ({ page }) => {
+    await page.goto("/");
+    const html = page.locator("html");
+    await expect(html).toHaveAttribute("lang", "es-ES");
+  });
+
+  test("AEMPS attribution is visible", async ({ page }) => {
+    await page.goto("/");
+    await expect(
+      page.getByText("Datos proporcionados por la AEMPS"),
+    ).toBeVisible();
+  });
+
+  test("search input has aria-label", async ({ page }) => {
+    await page.goto("/");
+    const input = page.locator('input[type="text"]');
+    await expect(input).toHaveAttribute("aria-label", "Nombre del medicamento");
+  });
+
   test("page loads and shows app title", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("h1")).toContainText("Es un AINE?");
