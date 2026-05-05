@@ -7,7 +7,7 @@ Each search result SHALL be rendered as a `<div>` card with a thick left border 
 #### Scenario: RED result card renders
 
 - **WHEN** a search result has `aineAnalysis.status` of `"RED"`
-- **THEN** the card SHALL have `border-left: 4px solid var(--status-red-border)`, `background-color: var(--status-red-bg)`
+- **THEN** the card SHALL have `border-l-4 border-l-status-red-border bg-status-red-bg`
 - **AND** a status banner SHALL display "🔴 AINE DETECTADO" in `text-status-red` color
 - **AND** the medication name SHALL display as a heading
 - **AND** the composition (`pactivos`) SHALL display as body text
@@ -15,21 +15,21 @@ Each search result SHALL be rendered as a `<div>` card with a thick left border 
 #### Scenario: AMBER result card renders
 
 - **WHEN** a search result has `aineAnalysis.status` of `"AMBER"`
-- **THEN** the card SHALL have `border-left: 4px solid var(--status-amber-border)`, `background-color: var(--status-amber-bg)`
+- **THEN** the card SHALL have `border-l-4 border-l-status-amber-border bg-status-amber-bg`
 - **AND** a status banner SHALL display "🟠 SALICILATO DETECTADO" in `text-status-amber` color
 - **AND** the medication name and composition SHALL display
 
 #### Scenario: GREEN result card renders
 
 - **WHEN** a search result has `aineAnalysis.status` of `"GREEN"`
-- **THEN** the card SHALL have `border-left: 4px solid var(--status-green-border)`, `background-color: var(--status-green-bg)`
+- **THEN** the card SHALL have `border-l-4 border-l-status-green-border bg-status-green-bg`
 - **AND** a status banner SHALL display "🟢 LIBRE DE AINE" in `text-status-green` color
 - **AND** the medication name and composition SHALL display
 
 #### Scenario: YELLOW result card renders
 
 - **WHEN** a search result has `aineAnalysis.status` of `"YELLOW"`
-- **THEN** the card SHALL have `border-left: 4px solid var(--status-yellow-border)`, `background-color: var(--status-yellow-bg)`
+- **THEN** the card SHALL have `border-l-4 border-l-status-yellow-border bg-status-yellow-bg`
 - **AND** a status banner SHALL display "🟡 NO PUDIMOS VERIFICAR" in `text-status-yellow` color
 
 ### Requirement: Compound pills for matched AINE compounds
