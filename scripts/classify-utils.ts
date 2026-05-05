@@ -7,8 +7,6 @@ export const LEVEL_ORDER: Record<Level, number> = {
   GREEN: 0,
 };
 
-const SALICILATO_FAMILY = "Salicilato";
-
 export function getAtcFamily(
   atcCode: string,
   familyMap: Record<string, string>,
@@ -41,7 +39,8 @@ export function classifyPrincipio(
     } else if (atc === "B01AC06" || atc.startsWith("N02BA")) {
       if (LEVEL_ORDER.AMBER > LEVEL_ORDER[maxLevel]) {
         maxLevel = "AMBER";
-        family = SALICILATO_FAMILY;
+        const lookupCode = atc.startsWith("N02BA") ? atc : "N02BA";
+        family = getAtcFamily(lookupCode, familyMap);
       }
     }
   }

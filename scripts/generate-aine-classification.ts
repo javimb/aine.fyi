@@ -165,7 +165,7 @@ function parsePrescripcion(xmlDir: string): Map<number, Set<string>> {
   return principioToAtc;
 }
 
-function parseAtcDictionary(xmlDir: string): Map<string, string> {
+export function parseAtcDictionary(xmlDir: string): Map<string, string> {
   const filePath = path.join(xmlDir, "DICCIONARIO_ATC.xml");
   if (!fs.existsSync(filePath)) {
     console.error(`Missing file: ${filePath}`);
@@ -191,9 +191,9 @@ function parseAtcDictionary(xmlDir: string): Map<string, string> {
   const map = new Map<string, string>();
 
   for (const entry of items) {
-    const code = String(entry.cod_atc ?? "").trim();
+    const code = String(entry.codigoatc ?? entry.cod_atc ?? "").trim();
     const description = String(
-      entry.des_atc ?? entry.descripcion ?? entry.nombre ?? "",
+      entry.descatc ?? entry.des_atc ?? entry.descripcion ?? entry.nombre ?? "",
     ).trim();
     if (code && description) {
       map.set(code, description);
@@ -203,20 +203,22 @@ function parseAtcDictionary(xmlDir: string): Map<string, string> {
   return map;
 }
 
-function buildFamilyMap(
+export function buildFamilyMap(
   atcDictionary: Map<string, string>,
 ): Record<string, string> {
   const familyMap: Record<string, string> = {};
 
   for (const [code, description] of atcDictionary) {
-    if (code.length === 4 && code.startsWith("M01A")) {
-      familyMap[code] = description;
+    if (code.length === 5 && code.startsWith("M01A")) {
+      const stripped = description.replace(/^[A-Z0-9]+\s*[-–]\s*/, "");
+      familyMap[code] = stripped;
     }
   }
 
   for (const [code, description] of atcDictionary) {
     if (code === "N02BA") {
-      familyMap["N02BA"] = description;
+      const stripped = description.replace(/^[A-Z0-9]+\s*[-–]\s*/, "");
+      familyMap["N02BA"] = stripped;
       break;
     }
   }
