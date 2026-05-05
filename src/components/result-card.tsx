@@ -1,4 +1,5 @@
 import CompoundPill from "@/components/compound-pill";
+import StatusBanner from "@/components/status-banner";
 import type { SearchResult } from "@/components/search-form";
 
 const STATUS_CONFIG = {
@@ -51,11 +52,7 @@ export default function ResultCard({ result }: ResultCardProps) {
       aria-label={`${nombre} — ${status === "RED" ? "AINE detectado" : status === "AMBER" ? "Salicilato detectado" : status === "GREEN" ? "Libre de AINE" : "No pudimos verificar"}`}
       className={`rounded-lg border-l-4 ${config.border} ${config.bg} p-4`}
     >
-      <div
-        className={`mb-2 text-sm font-bold uppercase tracking-wide ${config.text}`}
-      >
-        {config.banner}
-      </div>
+      <StatusBanner banner={config.banner} textClass={config.text} />
       <h3 className="text-lg font-bold">{nombre}</h3>
       <p className="text-sm text-muted-foreground">{pactivos}</p>
 
