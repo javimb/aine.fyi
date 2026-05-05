@@ -263,7 +263,7 @@ test.describe("exhaustive", () => {
     await page.fill('input[type="text"]', "ibuprofeno");
     await page.click('button[type="submit"]');
 
-    const error = page.locator("[role='alert']");
+    const error = page.locator("p[role='alert']");
     await expect(error).toBeVisible();
   });
 
@@ -275,7 +275,7 @@ test.describe("exhaustive", () => {
     await page.fill('input[type="text"]', "ibuprofeno");
     await page.click('button[type="submit"]');
 
-    const error = page.locator("[role='alert']");
+    const error = page.locator("p[role='alert']");
     await expect(error).toBeVisible();
   });
 });
