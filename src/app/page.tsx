@@ -5,6 +5,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-4">
       <h1 className="text-2xl font-bold">Es un AINE?</h1>
       <SearchForm />
+      <p className="text-sm text-gray-500">Datos proporcionados por la AEMPS</p>
     </main>
   );
 }
