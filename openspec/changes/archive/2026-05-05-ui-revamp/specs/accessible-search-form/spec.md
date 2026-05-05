@@ -1,10 +1,4 @@
-# Accessible Search Form
-
-## Purpose
-
-Ensure the search form is accessible to screen readers by providing Spanish-language ARIA labels on both the `<form>` and `<input>` elements, using shadcn/ui components, supporting a single-mode layout with auto-scroll to results, and providing accessible error and loading states.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Search form has an accessible name
 

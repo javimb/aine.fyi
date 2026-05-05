@@ -1,22 +1,4 @@
-## Purpose
-
-TBD
-
-## Requirements
-
-### Requirement: Tailwind CSS integration
-
-The project SHALL include Tailwind CSS configured as the primary styling utility with Next.js.
-
-#### Scenario: Using Tailwind classes in components
-
-- **WHEN** a component uses Tailwind utility classes (e.g., `flex`, `p-4`, `text-lg`)
-- **THEN** the styles SHALL be applied correctly in the rendered output
-
-#### Scenario: Tailwind IntelliSense in editor
-
-- **WHEN** a developer edits a file with Tailwind classes
-- **THEN** IDE autocompletion SHALL suggest available Tailwind classes
+## MODIFIED Requirements
 
 ### Requirement: shadcn/ui setup
 

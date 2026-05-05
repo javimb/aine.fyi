@@ -6,8 +6,7 @@ import { afterEach } from "vitest";
 afterEach(cleanup);
 
 vi.mock("next/font/google", () => ({
-  Geist: () => ({ variable: "--font-geist-sans", style: {} }),
-  Geist_Mono: () => ({ variable: "--font-geist-mono", style: {} }),
+  Inter: () => ({ variable: "--font-sans", style: {} }),
 }));
 
 vi.mock("@vercel/analytics/react", () => ({

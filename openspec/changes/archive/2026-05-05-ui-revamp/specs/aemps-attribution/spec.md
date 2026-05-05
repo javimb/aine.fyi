@@ -1,10 +1,4 @@
-# AEMPS Attribution
-
-## Purpose
-
-Display a visible attribution line crediting AEMPS as the data source, rendered as secondary/subtle text.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: AEMPS attribution is visible on the page
 
