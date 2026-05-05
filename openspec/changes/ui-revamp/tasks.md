@@ -74,14 +74,30 @@
 - [ ] 9.6 Implement responsive layout: mobile-first with `max-w-2xl` centering at `sm:` breakpoint
 - [ ] 9.7 Commit: `feat: add accessibility and responsive layout polish`
 
-## 10. Update Existing Tests
+## 10. Update Existing Unit Tests
 
 - [ ] 10.1 Update `src/components/search-form.test.tsx` to match new component structure (hero/compact modes, shadcn components, ResultList)
 - [ ] 10.2 Update `src/app/page.test.tsx` to verify new page sections (explainer, disclaimer, data source)
 - [ ] 10.3 Verify all existing tests pass with the new component structure
-- [ ] 10.4 Commit: `test: update tests for UI revamp`
+- [ ] 10.4 Commit: `test: update unit tests for UI revamp`
 
-## 11. Push and Create PR
+## 11. Update E2E Tests
 
-- [ ] 11.1 Push the `ui-revamp` branch to remote
-- [ ] 11.2 Create a pull request via `gh pr create`
+- [ ] 11.1 Update `e2e/smoke.spec.ts` — update selectors from old `data-testid` structure to new component selectors (result cards with `role="article"`, status banners, shadcn Input/Button)
+- [ ] 11.2 Update `e2e/smoke.spec.ts` — change AEMPS attribution test from old "Datos proporcionados por la AEMPS" text to new "Datos: AEMPS (CIMA) · Actualizado:" format
+- [ ] 11.3 Add e2e smoke test: explainer section "¿Qué son los AINE?" is visible on landing page
+- [ ] 11.4 Add e2e smoke test: medical disclaimer callout is visible on landing page
+- [ ] 11.5 Add e2e smoke test: data source attribution with lastUpdated date is visible
+- [ ] 11.6 Update `e2e/exhaustive/search.spec.ts` — update all selectors from old `data-testid="search-results" li` and `data-testid="aine-status"` to new result card and status banner selectors
+- [ ] 11.7 Add e2e exhaustive test: AMBER status result renders with salicilato banner, compound pills, and warning message (using route mock)
+- [ ] 11.8 Add e2e exhaustive test: YELLOW status result renders with "NO PUDIMOS VERIFICAR" banner and warning message (using route mock)
+- [ ] 11.9 Add e2e exhaustive test: GREEN status result renders with "LIBRE DE AINE" banner and safe message, no compound pills (using route mock)
+- [ ] 11.10 Add e2e exhaustive test: result count heading shows "N resultados" (plural) or "1 resultado" (singular)
+- [ ] 11.11 Add e2e exhaustive test: search input switches from hero mode to compact mode after search
+- [ ] 11.12 Verify all e2e tests pass: `npm run test:e2e:smoke` and `npm run test:e2e:exhaustive`
+- [ ] 11.13 Commit: `test: update e2e tests for UI revamp`
+
+## 12. Push and Create PR
+
+- [ ] 12.1 Push the `ui-revamp` branch to remote
+- [ ] 12.2 Create a pull request via `gh pr create`

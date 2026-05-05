@@ -25,6 +25,7 @@ The current UI is a minimal, achromatic wireframe with no visual identity. Geist
 - `ui-framework`: Typefaces and color variables are changing — font-family from Geist Sans to Inter, all color tokens from achromatic to warm slate-teal with status chroma
 - `accessible-search-form`: Search form UX is changing from inline to hero-sized on landing / compact after search, and from raw HTML to shadcn/ui components — accessibility requirements need updating
 - `aemps-attribution`: Attribution is moving from a subtle one-liner to a more prominent section that includes the `lastUpdated` date — requirement scope is expanding
+- `e2e-tests`: All Playwright selectors and test assertions must be updated to match the new component structure (result cards instead of raw list items, status banners instead of colored text, hero/compact search states, and new homepage content sections)
 
 ## Impact
 
