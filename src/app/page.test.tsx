@@ -6,7 +6,21 @@ import { afterEach } from "vitest";
 afterEach(cleanup);
 
 vi.mock("@/components/search-form", () => ({
-  default: () => <div data-testid="search-form">Search Form</div>,
+  default: ({
+    isHero,
+  }: {
+    isHero: boolean;
+    onModeChange: (hero: boolean) => void;
+  }) =>
+    isHero ? (
+      <div data-testid="search-form" data-mode="hero">
+        Search Form (hero)
+      </div>
+    ) : (
+      <div data-testid="search-form" data-mode="compact">
+        Search Form (compact)
+      </div>
+    ),
 }));
 
 vi.mock("../../data/aine-classification", () => ({
@@ -43,5 +57,20 @@ describe("Home page", () => {
     expect(
       getByText(/no sustituye el consejo médico profesional/),
     ).toBeInTheDocument();
+  });
+
+  it("renders hero layout with min-h-dvh on initial load", async () => {
+    const { default: Home } = await import("./page");
+    const { container } = render(<Home />);
+    const main = container.querySelector("main");
+    expect(main?.className).toContain("min-h-dvh");
+    expect(main?.className).toContain("justify-center");
+  });
+
+  it("renders all sections within max-w-2xl containers", async () => {
+    const { default: Home } = await import("./page");
+    const { container } = render(<Home />);
+    const maxWidthElements = container.querySelectorAll(".max-w-2xl");
+    expect(maxWidthElements.length).toBeGreaterThanOrEqual(2);
   });
 });

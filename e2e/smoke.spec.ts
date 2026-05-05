@@ -67,4 +67,48 @@ test.describe("smoke", () => {
     await expect(page.getByText(/Datos: AEMPS \(CIMA\)/)).toBeVisible();
     await expect(page.getByText(/Actualizado:/)).toBeVisible();
   });
+
+  test("hero section fills viewport and is vertically centered on initial load", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto("/");
+    const main = page.locator("main");
+    await expect(main).toHaveClass(/min-h-dvh/);
+    await expect(main).toHaveClass(/justify-center/);
+    await expect(page.locator("h1")).toContainText("¿Es un AINE?");
+  });
+
+  test("after search, compact search and results are horizontally centered", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.fill('input[type="text"]', "ibuprofeno");
+    await page.click('button[type="submit"]');
+    await page.waitForSelector("[role='article']", { timeout: 10000 });
+    const searchForm = page.locator('form[aria-label="Buscar medicamento"]');
+    const formBox = await searchForm.boundingBox();
+    const pageBox = await page.locator("body").boundingBox();
+    expect(formBox).not.toBeNull();
+    expect(pageBox).not.toBeNull();
+    if (formBox && pageBox) {
+      const formCenter = formBox.x + formBox.width / 2;
+      const pageCenter = pageBox.x + pageBox.width / 2;
+      expect(Math.abs(formCenter - pageCenter)).toBeLessThan(50);
+    }
+  });
+
+  test("clearing search restores hero centered layout", async ({ page }) => {
+    await page.goto("/");
+    await page.fill('input[type="text"]', "ibuprofeno");
+    await page.click('button[type="submit"]');
+    await page.waitForSelector("[role='article']", { timeout: 10000 });
+
+    const clearButton = page.getByRole("button", { name: "Limpiar" });
+    await clearButton.click();
+    await page.waitForTimeout(500);
+
+    const main = page.locator("main");
+    await expect(main).toHaveClass(/justify-center/);
+  });
 });

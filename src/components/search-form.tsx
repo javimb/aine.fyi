@@ -19,15 +19,15 @@ export interface SearchResult {
 }
 
 interface SearchFormProps {
-  hero?: boolean;
+  isHero: boolean;
+  onModeChange: (hero: boolean) => void;
 }
 
-export default function SearchForm({ hero = true }: SearchFormProps) {
+export default function SearchForm({ isHero, onModeChange }: SearchFormProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isHero, setIsHero] = useState(hero);
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -46,7 +46,7 @@ export default function SearchForm({ hero = true }: SearchFormProps) {
       } else {
         setResults([data]);
       }
-      setIsHero(false);
+      onModeChange(false);
     } catch {
       setError("Error al buscar");
       setResults([]);
@@ -59,22 +59,16 @@ export default function SearchForm({ hero = true }: SearchFormProps) {
     setQuery("");
     setResults([]);
     setError("");
-    setIsHero(true);
+    onModeChange(true);
   }
 
   return (
-    <div
-      className={
-        isHero ? "flex flex-col items-center justify-center gap-4" : "w-full"
-      }
-    >
+    <>
       <form
         onSubmit={handleSearch}
         aria-label="Buscar medicamento"
         aria-busy={loading}
-        className={
-          isHero ? "flex w-full max-w-2xl gap-2" : "flex w-full max-w-2xl gap-2"
-        }
+        className="flex w-full max-w-2xl gap-2"
       >
         <Input
           type="text"
@@ -82,7 +76,7 @@ export default function SearchForm({ hero = true }: SearchFormProps) {
           onChange={(e) => {
             setQuery(e.target.value);
             if (!e.target.value && results.length === 0) {
-              setIsHero(true);
+              onModeChange(true);
             }
           }}
           placeholder="Buscar medicamento..."
@@ -114,6 +108,6 @@ export default function SearchForm({ hero = true }: SearchFormProps) {
           <ResultList results={results} />
         </div>
       )}
-    </div>
+    </>
   );
 }
