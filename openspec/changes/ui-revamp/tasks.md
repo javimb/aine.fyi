@@ -105,7 +105,7 @@
 - [x] 12.4 Update e2e tests: remove hero/compact mode assertions, add auto-scroll after search assertion, remove clear-restores-hero test
 - [x] 12.5 Write e2e test: hero section fills viewport height and is vertically centered on initial load
 - [x] 12.6 Verify all unit and e2e tests pass after spec changes
-- [ ] 12.7 Commit: `refactor: single-mode search with auto-scroll, remove hero/compact toggle`
+- [x] 12.7 Commit: `refactor: single-mode search with auto-scroll, remove hero/compact toggle`
 
 ## 13. Push and Create PR
 
