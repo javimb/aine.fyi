@@ -3,7 +3,10 @@ import {
   classifyPrincipio,
   getAtcFamily,
   mergeAtcCodes,
+  updateReadmeMarker,
 } from "./classify-utils";
+import { generateTsFile } from "./generate-aine-classification";
+import { Level } from "./classify-utils";
 
 const ATC_FAMILY_MAP: Record<string, string> = {
   M01AA: "Pirazolona",
@@ -233,5 +236,53 @@ describe("mergeAtcCodes", () => {
     expect(result.has("M01AE01")).toBe(true);
     expect(result.has("A01AB01")).toBe(true);
     expect(result.has("N02BA01")).toBe(false);
+  });
+});
+
+describe("generateTsFile", () => {
+  const classification = new Map<string, { level: Level; family: string }>([
+    ["IBUPROFENO", { level: "RED", family: "Propiónico" }],
+    ["PARACETAMOL", { level: "GREEN", family: "" }],
+  ]);
+
+  it("includes lastUpdated export with the provided date string in YYYY-MM-DD format", () => {
+    const output = generateTsFile(classification, "2026-05-05");
+    expect(output).toContain('export const lastUpdated = "2026-05-05";');
+  });
+
+  it("includes principleClassification entries sorted alphabetically", () => {
+    const output = generateTsFile(classification, "2026-05-05");
+    const ibuIndex = output.indexOf('"IBUPROFENO"');
+    const paraIndex = output.indexOf('"PARACETAMOL"');
+    expect(ibuIndex).toBeLessThan(paraIndex);
+  });
+});
+
+describe("updateReadmeMarker", () => {
+  it("replaces existing last-updated marker with new date", () => {
+    const content =
+      "Some intro\nPrincipios activos last updated: 2026-04-01 <!-- last-updated: 2026-04-01 -->\nMore text";
+    const result = updateReadmeMarker(content, "2026-05-05");
+    expect(result).toContain("<!-- last-updated: 2026-05-05 -->");
+    expect(result).toContain("Principios activos last updated: 2026-05-05");
+    expect(result).not.toContain("2026-04-01");
+  });
+
+  it("inserts marker and date when marker does not exist in README content", () => {
+    const content =
+      "# ¿Es un AINE?\n\nSome text\n\n| 🟡 Yellow | test |\n\n## Dev Setup";
+    const result = updateReadmeMarker(content, "2026-05-05");
+    expect(result).toContain("Principios activos last updated: 2026-05-05");
+    expect(result).toContain("<!-- last-updated: 2026-05-05 -->");
+  });
+
+  it("adds marker to existing date line when marker is missing", () => {
+    const content =
+      "Principios activos last updated: 2026-04-01\n\n## Dev Setup";
+    const result = updateReadmeMarker(content, "2026-05-05");
+    expect(result).toContain(
+      "Principios activos last updated: 2026-05-05 <!-- last-updated: 2026-05-05 -->",
+    );
+    expect(result).not.toContain("2026-04-01");
   });
 });
