@@ -56,12 +56,6 @@ export default function SearchForm() {
     }
   }
 
-  function handleClear() {
-    setQuery("");
-    setResults([]);
-    setError("");
-  }
-
   return (
     <div className="w-full max-w-2xl">
       <form
@@ -81,11 +75,6 @@ export default function SearchForm() {
         <Button type="submit" disabled={loading} className="h-12 px-6">
           {loading ? "Buscando..." : "Buscar"}
         </Button>
-        {results.length > 0 && (
-          <Button type="button" variant="outline" onClick={handleClear}>
-            Limpiar
-          </Button>
-        )}
       </form>
 
       {error && (

@@ -67,7 +67,7 @@ The primary user is someone with a AINE allergy checking whether a medication is
 
 ### 3. Search UX: Single-mode search with auto-scroll to results
 
-**Choice**: The search bar always renders at the same size (large, prominent, `h-12`) as part of a hero-landing layout centered vertically with `min-h-dvh`. There is no separate compact mode. After a search is submitted, results appear below the search bar and the page auto-scrolls smoothly to the results section so the user can see them immediately. The title, subtitle, and search bar remain visible above the results — the layout does not change between states. A "Limpiar" (clear) button appears when results are present to reset the search.
+**Choice**: The search bar always renders at the same size (large, prominent, `h-12`) as part of a hero-landing layout centered vertically with `min-h-dvh`. There is no separate compact mode. After a search is submitted, results appear below the search bar and the page auto-scrolls smoothly to the results section so the user can see them immediately. The title, subtitle, and search bar remain visible above the results — the layout does not change between states.
 **Alternative considered**: Hero-to-compact transition — rejected because it introduces layout mode state that can cause React unmounting bugs and makes the UI more complex without a clear UX benefit for a single-result tool.
 
 ### 4. Result cards: Status-driven with left-border accents

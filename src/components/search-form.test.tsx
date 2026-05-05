@@ -41,32 +41,10 @@ describe("SearchForm", () => {
     expect(button).toBeInTheDocument();
   });
 
-  it("shows Limpiar button when results are present", async () => {
+  it("renders search button with Buscar text", async () => {
     const { default: SearchForm } = await import("./search-form");
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(() =>
-        Promise.resolve({
-          json: () =>
-            Promise.resolve({
-              resultados: [
-                {
-                  nombre: "Test",
-                  pactivos: "test",
-                  aineAnalysis: {
-                    status: "GREEN",
-                    matchedAines: [],
-                  },
-                },
-              ],
-            }),
-        }),
-      ),
-    );
-    const { container, getByRole } = render(<SearchForm />);
-    const form = container.querySelector("form")!;
-    await form.dispatchEvent(
-      new Event("submit", { bubbles: true, cancelable: true }),
-    );
+    const { getByRole } = render(<SearchForm />);
+    const button = getByRole("button", { name: /buscar/i });
+    expect(button).toBeInTheDocument();
   });
 });

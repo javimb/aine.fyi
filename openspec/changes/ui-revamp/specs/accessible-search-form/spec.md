@@ -43,11 +43,11 @@ The search bar SHALL always render at the same size (large, prominent, `h-12`) o
 - **AND** the search bar, title, and subtitle SHALL remain visible above the results
 - **AND** the search query SHALL remain in the input field
 
-#### Scenario: Clear button resets results
+#### Scenario: Clearing the search input resets results
 
-- **WHEN** the user clicks the "Limpiar" (clear) button after a search
+- **WHEN** the user clears the search input text and submits an empty query
 - **THEN** the results SHALL be removed
-- **AND** the search input SHALL be cleared
+- **AND** the search input SHALL be empty
 
 ### Requirement: Error and loading states are accessible
 
