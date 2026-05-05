@@ -43,12 +43,6 @@ The search bar SHALL always render at the same size (large, prominent, `h-12`) o
 - **AND** the search bar, title, and subtitle SHALL remain visible above the results
 - **AND** the search query SHALL remain in the input field
 
-#### Scenario: Clearing the search input resets results
-
-- **WHEN** the user clears the search input text and submits an empty query
-- **THEN** the results SHALL be removed
-- **AND** the search input SHALL be empty
-
 ### Requirement: Error and loading states are accessible
 
 When the search form is in a loading state, the submit button SHALL indicate loading both visually (disabled state with "Buscando..." text) and to screen readers (`aria-busy="true"` on the form). When an error occurs, the error message SHALL be announced via `aria-live="polite"` and use `role="alert"`.
