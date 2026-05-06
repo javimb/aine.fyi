@@ -14,11 +14,11 @@ const LEVEL_ORDER: Record<Level, number> = {
   GREEN: 0,
 };
 
-function stripAccents(str: string): string {
+export function stripAccents(str: string): string {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-function normalizePactivos(pactivos: string): string[] {
+export function normalizePactivos(pactivos: string): string[] {
   return pactivos
     .split(",")
     .map((token) => stripAccents(token.trim().toUpperCase()));

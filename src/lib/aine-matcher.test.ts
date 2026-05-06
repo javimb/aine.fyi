@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { matchAines } from "./aine-matcher";
+import { matchAines, normalizePactivos, stripAccents } from "./aine-matcher";
 import type { PrincipleClassification } from "../../data/aine-classification.schema";
 
 const classification: PrincipleClassification = {
@@ -139,5 +139,23 @@ describe("matchAines (4-level)", () => {
     const result = matchAines("UNKNOWN_DRUG, PARACETAMOL", classification);
     expect(result.status).toBe("YELLOW");
     expect(result.matchedAines).toEqual([]);
+  });
+});
+
+describe("normalizePactivos", () => {
+  it("splits by comma, strips accents, uppercases, and trims", () => {
+    const result = normalizePactivos("ibuprofeno,  ácido acetilsalicílico ");
+    expect(result).toEqual(["IBUPROFENO", "ACIDO ACETILSALICILICO"]);
+  });
+
+  it("handles single token", () => {
+    expect(normalizePactivos("paracetamol")).toEqual(["PARACETAMOL"]);
+  });
+});
+
+describe("stripAccents", () => {
+  it("removes Spanish accents", () => {
+    expect(stripAccents("Ácido")).toBe("Acido");
+    expect(stripAccents("Propiónico")).toBe("Propionico");
   });
 });

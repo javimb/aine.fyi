@@ -11,7 +11,7 @@ describe("CompoundPill", () => {
     const { getByText } = render(
       <CompoundPill name="IBUPROFENO" family="Arylpropionicos" level="RED" />,
     );
-    expect(getByText(/IBUPROFENO/)).toBeInTheDocument();
+    expect(getByText(/Ibuprofeno/)).toBeInTheDocument();
     expect(getByText(/Arylpropionicos/)).toBeInTheDocument();
   });
 
@@ -22,7 +22,7 @@ describe("CompoundPill", () => {
     );
     const pill = container.querySelector("[role='listitem']");
     expect(pill).toBeInTheDocument();
-    expect(pill).toHaveAttribute("aria-label", "IBUPROFENO, Arylpropionicos");
+    expect(pill).toHaveAttribute("aria-label", "Ibuprofeno, Arylpropionicos");
   });
 
   it("applies RED styling for RED level", async () => {
@@ -43,5 +43,46 @@ describe("CompoundPill", () => {
     const pill = container.querySelector("[role='listitem']");
     expect(pill?.className).toContain("bg-status-amber-bg");
     expect(pill?.className).toContain("text-status-amber");
+  });
+
+  it("renders name only without family or dot for NEUTRAL level", async () => {
+    const { default: CompoundPill } = await import("./compound-pill");
+    const { getByText, queryByText } = render(
+      <CompoundPill name="PARACETAMOL" family="" level="NEUTRAL" />,
+    );
+    expect(getByText(/Paracetamol/)).toBeInTheDocument();
+    expect(queryByText(/·/)).not.toBeInTheDocument();
+  });
+
+  it("has correct aria-label with name only for NEUTRAL level", async () => {
+    const { default: CompoundPill } = await import("./compound-pill");
+    const { container } = render(
+      <CompoundPill name="PARACETAMOL" family="" level="NEUTRAL" />,
+    );
+    const pill = container.querySelector("[role='listitem']");
+    expect(pill).toHaveAttribute("aria-label", "Paracetamol");
+  });
+
+  it("applies muted styling for NEUTRAL level", async () => {
+    const { default: CompoundPill } = await import("./compound-pill");
+    const { container } = render(
+      <CompoundPill name="PARACETAMOL" family="" level="NEUTRAL" />,
+    );
+    const pill = container.querySelector("[role='listitem']");
+    expect(pill?.className).toContain("bg-muted");
+    expect(pill?.className).toContain("text-muted-foreground");
+  });
+
+  it("applies toTitleCase to name and family props", async () => {
+    const { default: CompoundPill } = await import("./compound-pill");
+    const { getByText } = render(
+      <CompoundPill
+        name="DICLOFENACO SODICO"
+        family="Derivados del acido propionico"
+        level="RED"
+      />,
+    );
+    expect(getByText(/Diclofenaco Sodico/)).toBeInTheDocument();
+    expect(getByText(/Derivados del Acido Propionico/)).toBeInTheDocument();
   });
 });

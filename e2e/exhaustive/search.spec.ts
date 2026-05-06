@@ -13,7 +13,9 @@ test.describe("exhaustive", () => {
     await expect(results).toHaveCount(0);
   });
 
-  test("search returns results with status banner", async ({ page }) => {
+  test("search returns results with status banner and active ingredient pills", async ({
+    page,
+  }) => {
     await page.route("/api/cima*", async (route) => {
       await route.fulfill({
         status: 200,
@@ -36,6 +38,9 @@ test.describe("exhaustive", () => {
 
     const cards = page.locator("[role='article']");
     expect(await cards.count()).toBeGreaterThan(0);
+    const card = cards.first();
+    await expect(card).toContainText("Principios activos:");
+    await expect(card.locator("[role='listitem']").first()).toBeVisible();
   });
 
   test("search for AINE medication returns RED results", async ({ page }) => {
@@ -45,7 +50,10 @@ test.describe("exhaustive", () => {
 
     const cards = page.locator("[role='article']");
     expect(await cards.count()).toBeGreaterThan(0);
-    await expect(cards.first()).toContainText("AINE DETECTADO");
+    const card = cards.first();
+    await expect(card).toContainText("AINE DETECTADO");
+    await expect(card).toContainText("Principios activos:");
+    await expect(card.locator("[role='listitem']").first()).toBeVisible();
   });
 
   test("search with special characters handles gracefully", async ({
@@ -96,6 +104,7 @@ test.describe("exhaustive", () => {
 
     const card = page.locator("[role='article']").first();
     await expect(card).toContainText("AINE DETECTADO");
+    await expect(card).toContainText("Principios activos:");
     await expect(card.locator("[role='listitem']").first()).toBeVisible();
   });
 
@@ -133,6 +142,7 @@ test.describe("exhaustive", () => {
 
     const card = page.locator("[role='article']").first();
     await expect(card).toContainText("SALICILATO DETECTADO");
+    await expect(card).toContainText("Principios activos:");
     await expect(card.locator("[role='listitem']").first()).toBeVisible();
   });
 
@@ -164,9 +174,11 @@ test.describe("exhaustive", () => {
 
     const card = page.locator("[role='article']").first();
     await expect(card).toContainText("NO PUDIMOS VERIFICAR");
+    await expect(card).toContainText("Principios activos:");
+    await expect(card.locator("[role='listitem']").first()).toBeVisible();
   });
 
-  test("GREEN status result renders with libre de AINE banner and no pills", async ({
+  test("GREEN status result renders with libre de AINE banner and neutral pills", async ({
     page,
   }) => {
     await page.route("/api/cima*", async (route) => {
@@ -194,7 +206,10 @@ test.describe("exhaustive", () => {
 
     const card = page.locator("[role='article']").first();
     await expect(card).toContainText("LIBRE DE AINE");
-    await expect(card.locator("[role='listitem']")).toHaveCount(0);
+    await expect(card).toContainText("Principios activos:");
+    const pills = card.locator("[role='listitem']");
+    await expect(pills).toHaveCount(1);
+    await expect(pills.first()).toBeVisible();
   });
 
   test("result count heading shows correct count", async ({ page }) => {
