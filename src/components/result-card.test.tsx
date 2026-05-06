@@ -12,7 +12,7 @@ const makeResult = (overrides: Partial<SearchResult> = {}): SearchResult => ({
   aineAnalysis: {
     status: "RED",
     matchedAines: [
-      { name: "Ibuprofeno", family: "Arylpropionicos", level: "RED" },
+      { name: "IBUPROFENO", family: "Arylpropionicos", level: "RED" },
     ],
   },
   ...overrides,
@@ -43,7 +43,7 @@ describe("ResultCard", () => {
         status: "AMBER",
         matchedAines: [
           {
-            name: "Ácido Acetilsalicílico",
+            name: "ACIDO ACETILSALICILICO",
             family: "Salicilato",
             level: "AMBER",
           },
@@ -57,7 +57,7 @@ describe("ResultCard", () => {
     expect(card?.className).toContain("bg-status-amber-bg");
   });
 
-  it("renders GREEN card with libre de AINE banner, safe message, no pills", async () => {
+  it("renders GREEN card with libre de AINE banner, safe message, and neutral pills", async () => {
     const { default: ResultCard } = await import("./result-card");
     const result: SearchResult = {
       nombre: "Paracetamol 650mg",
@@ -72,12 +72,13 @@ describe("ResultCard", () => {
     const card = container.querySelector("[role='article']");
     expect(card?.className).toContain("border-l-status-green-border");
     expect(card?.className).toContain("bg-status-green-bg");
-    expect(
-      container.querySelector("[role='listitem']"),
-    ).not.toBeInTheDocument();
+    expect(getByText("Principios activos:")).toBeInTheDocument();
+    const pills = container.querySelectorAll("[role='listitem']");
+    expect(pills.length).toBe(1);
+    expect(pills[0]?.className).toContain("bg-muted");
   });
 
-  it("renders YELLOW card with unverifiable banner and warning", async () => {
+  it("renders YELLOW card with unverifiable banner and neutral pills", async () => {
     const { default: ResultCard } = await import("./result-card");
     const result: SearchResult = {
       nombre: "Desconocido",
@@ -89,6 +90,10 @@ describe("ResultCard", () => {
     const card = container.querySelector("[role='article']");
     expect(card?.className).toContain("border-l-status-yellow-border");
     expect(card?.className).toContain("bg-status-yellow-bg");
+    expect(getByText("Principios activos:")).toBeInTheDocument();
+    const pills = container.querySelectorAll("[role='listitem']");
+    expect(pills.length).toBe(1);
+    expect(pills[0]?.className).toContain("bg-muted");
   });
 
   it("has role=article with aria-label including medication name and status", async () => {
@@ -98,5 +103,60 @@ describe("ResultCard", () => {
     const card = container.querySelector("[role='article']");
     expect(card).toHaveAttribute("aria-label");
     expect(card?.getAttribute("aria-label")).toContain("Ibuprofeno 400mg");
+  });
+
+  it("shows 'Principios activos:' label for all results", async () => {
+    const { default: ResultCard } = await import("./result-card");
+    const redResult = makeResult();
+    const { getByText: getRed } = render(<ResultCard result={redResult} />);
+    expect(getRed("Principios activos:")).toBeInTheDocument();
+  });
+
+  it("renders all tokens from pactivos as pills", async () => {
+    const { default: ResultCard } = await import("./result-card");
+    const result: SearchResult = {
+      nombre: "Combo",
+      pactivos: "IBUPROFENO, PARACETAMOL",
+      aineAnalysis: {
+        status: "RED",
+        matchedAines: [
+          { name: "IBUPROFENO", family: "Arylpropionicos", level: "RED" },
+        ],
+      },
+    };
+    const { container } = render(<ResultCard result={result} />);
+    const pills = container.querySelectorAll("[role='listitem']");
+    expect(pills.length).toBe(2);
+  });
+
+  it("correlates tokens with matchedAines and renders RED/AMBER pills correctly", async () => {
+    const { default: ResultCard } = await import("./result-card");
+    const result: SearchResult = {
+      nombre: "Combo",
+      pactivos: "IBUPROFENO, PARACETAMOL",
+      aineAnalysis: {
+        status: "RED",
+        matchedAines: [
+          { name: "IBUPROFENO", family: "Arylpropionicos", level: "RED" },
+        ],
+      },
+    };
+    const { container } = render(<ResultCard result={result} />);
+    const pills = container.querySelectorAll("[role='listitem']");
+    expect(pills[0]?.className).toContain("bg-status-red-bg");
+    expect(pills[1]?.className).toContain("bg-muted");
+  });
+
+  it("renders unmatched tokens as NEUTRAL pills", async () => {
+    const { default: ResultCard } = await import("./result-card");
+    const result: SearchResult = {
+      nombre: "Desconocido",
+      pactivos: "UNKNOWN_COMPOUND",
+      aineAnalysis: { status: "YELLOW", matchedAines: [] },
+    };
+    const { container } = render(<ResultCard result={result} />);
+    const pills = container.querySelectorAll("[role='listitem']");
+    expect(pills.length).toBe(1);
+    expect(pills[0]?.className).toContain("bg-muted");
   });
 });

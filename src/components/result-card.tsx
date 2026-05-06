@@ -1,6 +1,7 @@
 import CompoundPill from "@/components/compound-pill";
 import StatusBanner from "@/components/status-banner";
 import type { SearchResult } from "@/components/search-bar";
+import { normalizePactivos } from "@/lib/aine-matcher";
 
 const STATUS_CONFIG = {
   RED: {
@@ -46,6 +47,32 @@ export default function ResultCard({ result }: ResultCardProps) {
   const config = STATUS_CONFIG[status];
   const matchedAines = aineAnalysis.matchedAines ?? [];
 
+  const tokens = pactivos.split(",").map((t) => t.trim());
+  const normalizedTokens = normalizePactivos(pactivos);
+  const usedMatches = new Set<number>();
+
+  const pills = tokens.map((token, index) => {
+    const normalized = normalizedTokens[index];
+    const matchIndex = matchedAines.findIndex(
+      (m, i) => !usedMatches.has(i) && m.name === normalized,
+    );
+
+    if (matchIndex !== -1) {
+      usedMatches.add(matchIndex);
+      const match = matchedAines[matchIndex];
+      return (
+        <CompoundPill
+          key={index}
+          name={match.name}
+          family={match.family}
+          level={match.level}
+        />
+      );
+    }
+
+    return <CompoundPill key={index} name={token} family="" level="NEUTRAL" />;
+  });
+
   return (
     <div
       role="article"
@@ -54,20 +81,15 @@ export default function ResultCard({ result }: ResultCardProps) {
     >
       <StatusBanner banner={config.banner} textClass={config.text} />
       <h3 className="text-lg font-bold">{nombre}</h3>
-      <p className="text-sm text-muted-foreground">{pactivos}</p>
 
-      {matchedAines.length > 0 && (
-        <div role="list" className="mt-2 flex flex-wrap gap-1.5">
-          {matchedAines.map((a, i) => (
-            <CompoundPill
-              key={i}
-              name={a.name}
-              family={a.family}
-              level={a.level}
-            />
-          ))}
+      <div className="mt-2">
+        <p className="text-sm font-medium text-muted-foreground">
+          Principios activos:
+        </p>
+        <div role="list" className="mt-1 flex flex-wrap gap-1.5">
+          {pills}
         </div>
-      )}
+      </div>
 
       <p className={`mt-3 text-sm font-medium ${config.text}`}>
         {config.message}
