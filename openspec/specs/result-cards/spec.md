@@ -8,7 +8,7 @@ Render medication search results as status-driven cards with color-coded borders
 
 ### Requirement: Result card status-driven layout
 
-Each search result SHALL be rendered as a `<div>` card with a thick left border (4px) in the corresponding status color, a tinted background matching the status, and a status banner as the card header. The card SHALL display the medication name as a heading. Below the heading, the card SHALL display a "Principios activos:" label followed by a pills section that renders all active ingredients as CompoundPill elements. RED/AMBER active ingredients SHALL render as status-colored pills with name and family. All other active ingredients SHALL render as NEUTRAL pills with name only. The raw `pactivos` comma-separated string SHALL NOT be displayed.
+Each search result SHALL be rendered as a `<div>` card with a thick left border (4px) in the corresponding status color, a tinted background matching the status, and a status banner as the card header. The card SHALL display the medication name as a heading. Below the heading, the card SHALL display a pills section that renders all active ingredients as CompoundPill elements. The pills section container SHALL have `role="list"` and `aria-label="Principios activos"` for screen reader accessibility. RED/AMBER active ingredients SHALL render as status-colored pills with name and family. All other active ingredients SHALL render as NEUTRAL pills with name only. The raw `pactivos` comma-separated string SHALL NOT be displayed. A visible "Principios activos:" label SHALL NOT appear.
 
 #### Scenario: RED result card renders
 
@@ -16,7 +16,7 @@ Each search result SHALL be rendered as a `<div>` card with a thick left border 
 - **THEN** the card SHALL have `border-l-4 border-l-status-red-border bg-status-red-bg`
 - **AND** a status banner SHALL display "🔴 AINE DETECTADO" in `text-status-red` color
 - **AND** the medication name SHALL display as a heading
-- **AND** a "Principios activos:" label SHALL appear below the heading
+- **AND** the pills section SHALL have `role="list"` and `aria-label="Principios activos"`
 - **AND** all active ingredient tokens from `pactivos` SHALL be rendered as pills (RED/AMBER/NEUTRAL based on classification)
 
 #### Scenario: AMBER result card renders
