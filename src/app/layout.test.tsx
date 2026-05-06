@@ -64,4 +64,9 @@ describe("RootLayout", () => {
     const { metadata } = await import("./layout");
     expect(metadata.openGraph?.locale).toBe("es_ES");
   });
+
+  it("exports metadata with title='¿Es un AINE?'", async () => {
+    const { metadata } = await import("./layout");
+    expect(metadata.title).toBe("¿Es un AINE?");
+  });
 });
