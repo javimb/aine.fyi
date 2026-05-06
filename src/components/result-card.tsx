@@ -5,7 +5,6 @@ import { normalizePactivos } from "@/lib/aine-matcher";
 
 const STATUS_CONFIG = {
   RED: {
-    border: "border-l-status-red-border",
     bg: "bg-status-red-bg",
     text: "text-status-red",
     banner: "🔴 AINE DETECTADO",
@@ -13,7 +12,6 @@ const STATUS_CONFIG = {
       "⚠️ Evita este medicamento si tienes alergia a AINE. Consulta con tu farmacéutico.",
   },
   AMBER: {
-    border: "border-l-status-amber-border",
     bg: "bg-status-amber-bg",
     text: "text-status-amber",
     banner: "🟠 SALICILATO DETECTADO",
@@ -21,14 +19,12 @@ const STATUS_CONFIG = {
       "⚠️ Los salicilatos pueden provocar reacción cruzada con alergia a AINE. Consulta con tu farmacéutico.",
   },
   GREEN: {
-    border: "border-l-status-green-border",
     bg: "bg-status-green-bg",
     text: "text-status-green",
     banner: "🟢 LIBRE DE AINE",
     message: "No se han detectado compuestos AINE.",
   },
   YELLOW: {
-    border: "border-l-status-yellow-border",
     bg: "bg-status-yellow-bg",
     text: "text-status-yellow",
     banner: "🟡 NO PUDIMOS VERIFICAR",
@@ -77,7 +73,7 @@ export default function ResultCard({ result }: ResultCardProps) {
     <div
       role="article"
       aria-label={`${nombre} — ${status === "RED" ? "AINE detectado" : status === "AMBER" ? "Salicilato detectado" : status === "GREEN" ? "Libre de AINE" : "No pudimos verificar"}`}
-      className={`rounded-lg border-l-4 ${config.border} ${config.bg} p-4`}
+      className={`rounded-lg ${config.bg} p-4`}
     >
       <StatusBanner banner={config.banner} textClass={config.text} />
       <h3 className="text-lg font-bold">{nombre}</h3>
