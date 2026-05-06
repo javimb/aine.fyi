@@ -9,9 +9,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Es un AINE?",
+  title: "¿Es un AINE?",
   description: "Comprueba si un medicamento contiene AINEs",
   openGraph: {
+    title: "¿Es un AINE?",
     locale: "es_ES",
   },
 };
