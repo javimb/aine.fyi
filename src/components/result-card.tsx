@@ -83,10 +83,11 @@ export default function ResultCard({ result }: ResultCardProps) {
       <h3 className="text-lg font-bold">{nombre}</h3>
 
       <div className="mt-2">
-        <p className="text-sm font-medium text-muted-foreground">
-          Principios activos:
-        </p>
-        <div role="list" className="mt-1 flex flex-wrap gap-1.5">
+        <div
+          role="list"
+          aria-label="Principios activos"
+          className="flex flex-wrap gap-1.5"
+        >
           {pills}
         </div>
       </div>

@@ -39,7 +39,10 @@ test.describe("exhaustive", () => {
     const cards = page.locator("[role='article']");
     expect(await cards.count()).toBeGreaterThan(0);
     const card = cards.first();
-    await expect(card).toContainText("Principios activos:");
+    await expect(card.locator("[role='list']")).toHaveAttribute(
+      "aria-label",
+      "Principios activos",
+    );
     await expect(card.locator("[role='listitem']").first()).toBeVisible();
   });
 
@@ -52,7 +55,10 @@ test.describe("exhaustive", () => {
     expect(await cards.count()).toBeGreaterThan(0);
     const card = cards.first();
     await expect(card).toContainText("AINE DETECTADO");
-    await expect(card).toContainText("Principios activos:");
+    await expect(card.locator("[role='list']")).toHaveAttribute(
+      "aria-label",
+      "Principios activos",
+    );
     await expect(card.locator("[role='listitem']").first()).toBeVisible();
   });
 
@@ -104,7 +110,10 @@ test.describe("exhaustive", () => {
 
     const card = page.locator("[role='article']").first();
     await expect(card).toContainText("AINE DETECTADO");
-    await expect(card).toContainText("Principios activos:");
+    await expect(card.locator("[role='list']")).toHaveAttribute(
+      "aria-label",
+      "Principios activos",
+    );
     await expect(card.locator("[role='listitem']").first()).toBeVisible();
   });
 
@@ -142,7 +151,10 @@ test.describe("exhaustive", () => {
 
     const card = page.locator("[role='article']").first();
     await expect(card).toContainText("SALICILATO DETECTADO");
-    await expect(card).toContainText("Principios activos:");
+    await expect(card.locator("[role='list']")).toHaveAttribute(
+      "aria-label",
+      "Principios activos",
+    );
     await expect(card.locator("[role='listitem']").first()).toBeVisible();
   });
 
@@ -174,7 +186,10 @@ test.describe("exhaustive", () => {
 
     const card = page.locator("[role='article']").first();
     await expect(card).toContainText("NO PUDIMOS VERIFICAR");
-    await expect(card).toContainText("Principios activos:");
+    await expect(card.locator("[role='list']")).toHaveAttribute(
+      "aria-label",
+      "Principios activos",
+    );
     await expect(card.locator("[role='listitem']").first()).toBeVisible();
   });
 
@@ -206,7 +221,10 @@ test.describe("exhaustive", () => {
 
     const card = page.locator("[role='article']").first();
     await expect(card).toContainText("LIBRE DE AINE");
-    await expect(card).toContainText("Principios activos:");
+    await expect(card.locator("[role='list']")).toHaveAttribute(
+      "aria-label",
+      "Principios activos",
+    );
     const pills = card.locator("[role='listitem']");
     await expect(pills).toHaveCount(1);
     await expect(pills.first()).toBeVisible();

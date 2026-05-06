@@ -72,7 +72,8 @@ describe("ResultCard", () => {
     const card = container.querySelector("[role='article']");
     expect(card?.className).toContain("border-l-status-green-border");
     expect(card?.className).toContain("bg-status-green-bg");
-    expect(getByText("Principios activos:")).toBeInTheDocument();
+    const pillsList = container.querySelector("[role='list']");
+    expect(pillsList).toHaveAttribute("aria-label", "Principios activos");
     const pills = container.querySelectorAll("[role='listitem']");
     expect(pills.length).toBe(1);
     expect(pills[0]?.className).toContain("bg-muted");
@@ -90,7 +91,8 @@ describe("ResultCard", () => {
     const card = container.querySelector("[role='article']");
     expect(card?.className).toContain("border-l-status-yellow-border");
     expect(card?.className).toContain("bg-status-yellow-bg");
-    expect(getByText("Principios activos:")).toBeInTheDocument();
+    const pillsList = container.querySelector("[role='list']");
+    expect(pillsList).toHaveAttribute("aria-label", "Principios activos");
     const pills = container.querySelectorAll("[role='listitem']");
     expect(pills.length).toBe(1);
     expect(pills[0]?.className).toContain("bg-muted");
@@ -105,11 +107,12 @@ describe("ResultCard", () => {
     expect(card?.getAttribute("aria-label")).toContain("Ibuprofeno 400mg");
   });
 
-  it("shows 'Principios activos:' label for all results", async () => {
+  it("pills section has aria-label='Principios activos' for all results", async () => {
     const { default: ResultCard } = await import("./result-card");
     const redResult = makeResult();
-    const { getByText: getRed } = render(<ResultCard result={redResult} />);
-    expect(getRed("Principios activos:")).toBeInTheDocument();
+    const { container } = render(<ResultCard result={redResult} />);
+    const pillsList = container.querySelector("[role='list']");
+    expect(pillsList).toHaveAttribute("aria-label", "Principios activos");
   });
 
   it("renders all tokens from pactivos as pills", async () => {
