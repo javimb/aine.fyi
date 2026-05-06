@@ -6,13 +6,13 @@
 ## 2. Implementation
 
 - [x] 2.1 In `result-card.tsx`: remove the `<p className="text-sm font-medium text-muted-foreground">Principios activos:</p>` element; add `aria-label="Principios activos"` to the `<div role="list">` element
-- [ ] 2.2 Commit: `refactor(result-card): remove visible principios activos label, use aria-label for accessibility`
+- [x] 2.2 Commit: `refactor(result-card): remove visible principios activos label, use aria-label for accessibility`
 
 ## 3. Verify
 
-- [ ] 3.1 Run unit tests and confirm all pass
-- [ ] 3.2 Run E2E tests and confirm all pass
-- [ ] 3.3 Run lint and typecheck
+- [x] 3.1 Run unit tests and confirm all pass
+- [x] 3.2 Run E2E tests and confirm all pass
+- [x] 3.3 Run lint and typecheck
 
 ## 4. Push and Create PR
 
