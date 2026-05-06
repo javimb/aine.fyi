@@ -3548,7 +3548,7 @@ export const principioClassification: PrincipleClassification = {
   "ZUCLOPENTIXOL DECANOATO": { level: "GREEN", family: "" },
   "ZUCLOPENTIXOL DIHIDROCLORURO": { level: "GREEN", family: "" },
 };
-export const lastUpdated = "2026-05-05";
+export const lastUpdated = "2026-05-06";
 export const validatedClassification = PrincipleClassificationSchema.parse(
   principioClassification,
 );
