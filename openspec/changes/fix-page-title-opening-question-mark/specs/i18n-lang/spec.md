@@ -12,4 +12,4 @@ The page `<title>` metadata SHALL use correct Spanish orthography for interrogat
 #### Scenario: Open Graph title is correct
 
 - **WHEN** a social platform or search engine reads the page metadata
-- **THEN** the page title SHALL render as `"¿Es un AINE?"` with proper Spanish punctuation
+- **THEN** the `openGraph.title` SHALL be explicitly set to `"¿Es un AINE?"` with proper Spanish punctuation
