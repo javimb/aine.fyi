@@ -42,7 +42,7 @@ The function SHALL normalize `pactivos` by splitting on commas, stripping accent
 
 ### Requirement: pactivos normalization for matching
 
-The matching function SHALL normalize `pactivos` before lookup: split by comma, strip accents, uppercase, and trim whitespace on each token. Each normalized token SHALL be used as a key for exact lookup in the classification map.
+The matching function SHALL normalize `pactivos` before lookup: split by comma, strip accents, uppercase, and trim whitespace on each token. Each normalized token SHALL be used as a key for exact lookup in the classification map. The `normalizePactivos` function SHALL be exported from the module for use by other components that need to correlate raw token strings with matched entries.
 
 #### Scenario: Accent stripping in pactivos
 
@@ -53,6 +53,11 @@ The matching function SHALL normalize `pactivos` before lookup: split by comma, 
 
 - **WHEN** a normalized token like `"IBUPROFENO"` is looked up in the classification map
 - **THEN** it SHALL match the key `"IBUPROFENO"` exactly (no substring matching)
+
+#### Scenario: Export of normalizePactivos
+
+- **WHEN** another module imports from `aine-matcher.ts`
+- **THEN** the `normalizePactivos` function SHALL be available as a named export
 
 ### Requirement: Multiple AINE detection in a single medication
 

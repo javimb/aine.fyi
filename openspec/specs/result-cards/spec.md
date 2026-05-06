@@ -8,7 +8,7 @@ Render medication search results as status-driven cards with color-coded borders
 
 ### Requirement: Result card status-driven layout
 
-Each search result SHALL be rendered as a `<div>` card with a thick left border (4px) in the corresponding status color, a tinted background matching the status, and a status banner as the card header. The card SHALL display the medication name as a heading and the composition (`pactivos`) as body text.
+Each search result SHALL be rendered as a `<div>` card with a thick left border (4px) in the corresponding status color, a tinted background matching the status, and a status banner as the card header. The card SHALL display the medication name as a heading. Below the heading, the card SHALL display a "Principios activos:" label followed by a pills section that renders all active ingredients as CompoundPill elements. RED/AMBER active ingredients SHALL render as status-colored pills with name and family. All other active ingredients SHALL render as NEUTRAL pills with name only. The raw `pactivos` comma-separated string SHALL NOT be displayed.
 
 #### Scenario: RED result card renders
 
@@ -16,49 +16,29 @@ Each search result SHALL be rendered as a `<div>` card with a thick left border 
 - **THEN** the card SHALL have `border-l-4 border-l-status-red-border bg-status-red-bg`
 - **AND** a status banner SHALL display "🔴 AINE DETECTADO" in `text-status-red` color
 - **AND** the medication name SHALL display as a heading
-- **AND** the composition (`pactivos`) SHALL display as body text
+- **AND** a "Principios activos:" label SHALL appear below the heading
+- **AND** all active ingredient tokens from `pactivos` SHALL be rendered as pills (RED/AMBER/NEUTRAL based on classification)
 
 #### Scenario: AMBER result card renders
 
 - **WHEN** a search result has `aineAnalysis.status` of `"AMBER"`
 - **THEN** the card SHALL have `border-l-4 border-l-status-amber-border bg-status-amber-bg`
 - **AND** a status banner SHALL display "🟠 SALICILATO DETECTADO" in `text-status-amber` color
-- **AND** the medication name and composition SHALL display
+- **AND** the medication name and active ingredient pills SHALL display
 
 #### Scenario: GREEN result card renders
 
 - **WHEN** a search result has `aineAnalysis.status` of `"GREEN"`
 - **THEN** the card SHALL have `border-l-4 border-l-status-green-border bg-status-green-bg`
 - **AND** a status banner SHALL display "🟢 LIBRE DE AINE" in `text-status-green` color
-- **AND** the medication name and composition SHALL display
+- **AND** the medication name and active ingredient pills SHALL display (all as NEUTRAL)
 
 #### Scenario: YELLOW result card renders
 
 - **WHEN** a search result has `aineAnalysis.status` of `"YELLOW"`
 - **THEN** the card SHALL have `border-l-4 border-l-status-yellow-border bg-status-yellow-bg`
 - **AND** a status banner SHALL display "🟡 NO PUDIMOS VERIFICAR" in `text-status-yellow` color
-
-### Requirement: Compound pills for matched AINE compounds
-
-For search results with `aineAnalysis.status` of `"RED"` or `"AMBER"`, the card SHALL display each matched AINE compound as an accessible pill element. Each pill SHALL show the compound name and its family, styled as a small rounded badge with the status color as background. The pill container SHALL use `role="list"` and each pill SHALL use `role="listitem"` with an `aria-label` describing the compound (e.g., "IBUPROFENO, Arylpropionicos").
-
-#### Scenario: RED result displays compound pills
-
-- **WHEN** a RED result has `matchedAines` containing `[{name: "IBUPROFENO", family: "Arylpropionicos"}]`
-- **THEN** the card SHALL render a pill element displaying "IBUPROFENO · Arylpropionicos"
-- **AND** the pill SHALL have `role="listitem"` and `aria-label="IBUPROFENO, Arylpropionicos"`
-- **AND** the pill container SHALL have `role="list"`
-
-#### Scenario: Multiple compound pills wrap on mobile
-
-- **WHEN** a result has multiple matched AINE compounds
-- **THEN** the pills SHALL wrap using `flex-wrap` with `gap` between items
-- **AND** each pill SHALL be readable on a 320px viewport width
-
-#### Scenario: GREEN result shows no compound pills
-
-- **WHEN** a GREEN result renders
-- **THEN** no compound pills SHALL be displayed
+- **AND** the medication name and active ingredient pills SHALL display (all as NEUTRAL)
 
 ### Requirement: Contextual warning messages per status
 
