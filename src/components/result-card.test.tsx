@@ -19,7 +19,7 @@ const makeResult = (overrides: Partial<SearchResult> = {}): SearchResult => ({
 });
 
 describe("ResultCard", () => {
-  it("renders RED card with status banner, border, bg, compound pills, and warning", async () => {
+  it("renders RED card with status banner, bg, compound pills, and warning", async () => {
     const { default: ResultCard } = await import("./result-card");
     const result = makeResult();
     const { container, getByText } = render(<ResultCard result={result} />);
@@ -30,7 +30,8 @@ describe("ResultCard", () => {
       ),
     ).toBeInTheDocument();
     const card = container.querySelector("[role='article']");
-    expect(card?.className).toContain("border-l-status-red-border");
+    expect(card?.className).not.toContain("border-l-4");
+    expect(card?.className).not.toContain("border-l-status-red-border");
     expect(card?.className).toContain("bg-status-red-bg");
   });
 
@@ -53,7 +54,8 @@ describe("ResultCard", () => {
     const { container, getByText } = render(<ResultCard result={result} />);
     expect(getByText("🟠 SALICILATO DETECTADO")).toBeInTheDocument();
     const card = container.querySelector("[role='article']");
-    expect(card?.className).toContain("border-l-status-amber-border");
+    expect(card?.className).not.toContain("border-l-4");
+    expect(card?.className).not.toContain("border-l-status-amber-border");
     expect(card?.className).toContain("bg-status-amber-bg");
   });
 
@@ -70,7 +72,8 @@ describe("ResultCard", () => {
       getByText("No se han detectado compuestos AINE."),
     ).toBeInTheDocument();
     const card = container.querySelector("[role='article']");
-    expect(card?.className).toContain("border-l-status-green-border");
+    expect(card?.className).not.toContain("border-l-4");
+    expect(card?.className).not.toContain("border-l-status-green-border");
     expect(card?.className).toContain("bg-status-green-bg");
     const pillsList = container.querySelector("[role='list']");
     expect(pillsList).toHaveAttribute("aria-label", "Principios activos");
@@ -89,7 +92,8 @@ describe("ResultCard", () => {
     const { container, getByText } = render(<ResultCard result={result} />);
     expect(getByText("🟡 NO PUDIMOS VERIFICAR")).toBeInTheDocument();
     const card = container.querySelector("[role='article']");
-    expect(card?.className).toContain("border-l-status-yellow-border");
+    expect(card?.className).not.toContain("border-l-4");
+    expect(card?.className).not.toContain("border-l-status-yellow-border");
     expect(card?.className).toContain("bg-status-yellow-bg");
     const pillsList = container.querySelector("[role='list']");
     expect(pillsList).toHaveAttribute("aria-label", "Principios activos");
