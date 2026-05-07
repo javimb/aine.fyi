@@ -1,10 +1,56 @@
 {
-  "app": {},
-  "search": {},
-  "status": {},
-  "results": {},
-  "explainer": {},
-  "disclaimer": {},
-  "dataSource": {},
-  "api": {}
+  "app": {
+    "title": "¿Es un AINE?",
+    "description": "Comprueba si un medicamento contiene algún AINE"
+  },
+  "search": {
+    "formLabel": "Buscar medicamento",
+    "inputLabel": "Nombre del medicamento",
+    "placeholder": "Buscar medicamento...",
+    "button": "Buscar",
+    "buttonLoading": "Buscando...",
+    "error": "Error al buscar"
+  },
+  "status": {
+    "activeIngredientsLabel": "Principios activos",
+    "RED": {
+      "banner": "🔴 AINE DETECTADO",
+      "message": "⚠️ Evita este medicamento si tienes alergia a AINE. Consulta con tu farmacéutico.",
+      "ariaLabel": "AINE detectado"
+    },
+    "AMBER": {
+      "banner": "🟠 SALICILATO DETECTADO",
+      "message": "⚠️ Los salicilatos pueden provocar reacción cruzada con alergia a AINE. Consulta con tu farmacéutico.",
+      "ariaLabel": "Salicilato detectado"
+    },
+    "GREEN": {
+      "banner": "🟢 LIBRE DE AINE",
+      "message": "No se han detectado compuestos AINE.",
+      "ariaLabel": "Libre de AINE"
+    },
+    "YELLOW": {
+      "banner": "🟡 NO PUDIMOS VERIFICAR",
+      "message": "⚠️ No pudimos verificar los componentes de este medicamento. Consulta con tu farmacéutico.",
+      "ariaLabel": "No pudimos verificar"
+    }
+  },
+  "results": {
+    "count": "{count, plural, one {# resultado} other {# resultados}}"
+  },
+  "explainer": {
+    "heading": "¿Qué son los AINE?",
+    "body": "Los AINE (antiinflamatorios no esteroideos) son uno de los grupos de medicamentos más prescritos y consumidos sin receta, incluyendo ibuprofeno, ácido acetilsalicílico (aspirina) y naproxeno. Para una persona con alergia a AINE, incluso una sola dosis puede provocar una reacción grave."
+  },
+  "disclaimer": {
+    "heading": "⚠️ Aviso importante",
+    "body": "Esta herramienta es informativa y no sustituye el consejo médico profesional. Verifica siempre el prospecto del medicamento físico y consulta con tu médico o farmacéutico."
+  },
+  "dataSource": {
+    "attribution": "Datos: AEMPS (CIMA) · Actualizado: {date}"
+  },
+  "api": {
+    "missingParams": "Se requiere al menos uno de los parámetros: nombre, nregistro o cn",
+    "internalError": "Error interno del servidor",
+    "upstreamError": "Error al consultar la API de CIMA"
+  }
 }
