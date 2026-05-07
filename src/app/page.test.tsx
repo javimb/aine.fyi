@@ -64,6 +64,14 @@ vi.mock("@/components/data-source", () => ({
   default: () => <p>Datos: AEMPS (CIMA) · Actualizado: 2026-05-05</p>,
 }));
 
+vi.mock("@/components/search-bar", () => ({
+  default: () => (
+    <form aria-label="Buscar medicamento">
+      <input />
+    </form>
+  ),
+}));
+
 describe("Home page", () => {
   it("displays the page title", async () => {
     const { default: Home } = await import("./page");

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ResultList from "@/components/result-list";
@@ -19,6 +20,7 @@ export interface SearchResult {
 }
 
 export default function SearchBar() {
+  const t = useTranslations("search");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -49,7 +51,7 @@ export default function SearchBar() {
         setResults([data]);
       }
     } catch {
-      setError("Error al buscar");
+      setError(t("error"));
       setResults([]);
     } finally {
       setLoading(false);
@@ -60,7 +62,7 @@ export default function SearchBar() {
     <div className="w-full max-w-2xl">
       <form
         onSubmit={handleSearch}
-        aria-label="Buscar medicamento"
+        aria-label={t("formLabel")}
         aria-busy={loading}
         className="flex w-full gap-2"
       >
@@ -68,12 +70,12 @@ export default function SearchBar() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Buscar medicamento..."
-          aria-label="Nombre del medicamento"
+          placeholder={t("placeholder")}
+          aria-label={t("inputLabel")}
           className="h-12 text-lg"
         />
         <Button type="submit" disabled={loading} className="h-12 px-6">
-          {loading ? "Buscando..." : "Buscar"}
+          {loading ? t("buttonLoading") : t("button")}
         </Button>
       </form>
 
