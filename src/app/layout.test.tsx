@@ -37,6 +37,14 @@ vi.mock("next-intl/server", () => ({
       dataSource: {},
       api: {},
     }),
+  getTranslations: () =>
+    Promise.resolve((key: string) => {
+      const app: Record<string, string> = {
+        title: "¿Es un AINE?",
+        description: "Comprueba si un medicamento contiene algún AINE",
+      };
+      return app[key] ?? key;
+    }),
 }));
 
 describe("RootLayout", () => {
@@ -76,18 +84,21 @@ describe("RootLayout", () => {
     expect(html).toHaveAttribute("lang", "es-ES");
   });
 
-  it("exports metadata with openGraph.locale='es_ES'", async () => {
-    const { metadata } = await import("./layout");
+  it("generateMetadata returns title from message catalog", async () => {
+    const { generateMetadata } = await import("./layout");
+    const metadata = await generateMetadata();
+    expect(metadata.title).toBe("¿Es un AINE?");
+  });
+
+  it("generateMetadata returns openGraph.locale='es_ES'", async () => {
+    const { generateMetadata } = await import("./layout");
+    const metadata = await generateMetadata();
     expect(metadata.openGraph?.locale).toBe("es_ES");
   });
 
-  it("exports metadata with openGraph.title='¿Es un AINE?'", async () => {
-    const { metadata } = await import("./layout");
+  it("generateMetadata returns openGraph.title from message catalog", async () => {
+    const { generateMetadata } = await import("./layout");
+    const metadata = await generateMetadata();
     expect(metadata.openGraph?.title).toBe("¿Es un AINE?");
-  });
-
-  it("exports metadata with title='¿Es un AINE?'", async () => {
-    const { metadata } = await import("./layout");
-    expect(metadata.title).toBe("¿Es un AINE?");
   });
 });
