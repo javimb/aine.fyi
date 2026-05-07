@@ -74,11 +74,11 @@
 - [x] 8.8 Update e2e tests (`e2e/smoke.spec.ts`, `e2e/exhaustive/search.spec.ts`) if they assert on hardcoded Spanish strings
 - [x] 8.9 Run full test suite and confirm all tests pass with no coverage decrease
 
-- [ ] Commit: `test: update existing tests for next-intl message catalog`
+- [x] Commit: `test: update existing tests for next-intl message catalog`
 
 ## 9. Update i18n-lang spec
 
-- [ ] 9.1 Update `openspec/specs/i18n-lang/spec.md` to reflect that `lang` attribute and `openGraph.locale` are now derived from next-intl locale config, and that page metadata is sourced from the message catalog
+- [x] 9.1 Update `openspec/specs/i18n-lang/spec.md` to reflect that `lang` attribute and `openGraph.locale` are now derived from next-intl locale config, and that page metadata is sourced from the message catalog
 
 - [ ] Commit: `docs: update i18n-lang spec for next-intl integration`
 
