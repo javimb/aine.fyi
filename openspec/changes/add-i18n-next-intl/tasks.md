@@ -80,9 +80,9 @@
 
 - [x] 9.1 Update `openspec/specs/i18n-lang/spec.md` to reflect that `lang` attribute and `openGraph.locale` are now derived from next-intl locale config, and that page metadata is sourced from the message catalog
 
-- [ ] Commit: `docs: update i18n-lang spec for next-intl integration`
+- [x] Commit: `docs: update i18n-lang spec for next-intl integration`
 
 ## 10. Push and Create PR
 
-- [ ] 10.1 Push branch to remote
-- [ ] 10.2 Create pull request via `gh` CLI
+- [x] 10.1 Push branch to remote
+- [x] 10.2 Create pull request via `gh` CLI
