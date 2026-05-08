@@ -44,4 +44,4 @@
 
 - [x] 8.1 Grep all spec files under `openspec/specs/` for literal Spanish strings (emoji characters, quoted text like `"¿Es un AINE?"`, `"🔴"`, `"Principios activos"`, `"Buscando..."`) to confirm complete de-referencing
 - [x] 8.2 Confirm `messages/es-ES.json` is unchanged (this is a spec-only refactor, no app code changes)
-- [ ] 8.3 Commit: `chore(specs): verify complete de-referencing of literal strings`
+- [x] 8.3 Commit: `chore(specs): verify complete de-referencing of literal strings`
