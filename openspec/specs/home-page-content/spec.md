@@ -8,12 +8,12 @@ TBD
 
 ### Requirement: AINE explainer section
 
-The homepage SHALL include an informational section with the heading "¿Qué son los AINE?" that explains what NSAIDs (AINE) are, lists common examples (ibuprofen, aspirin, naproxen), notes they are one of the most commonly prescribed and over-the-counter drug groups, and states that for someone with a AINE allergy, even a single dose can cause a severe reaction.
+The homepage SHALL include an informational section with the heading from i18n key `explainer.heading` that explains what NSAIDs (AINE) are, lists common examples (ibuprofen, aspirin, naproxen), notes they are one of the most commonly prescribed and over-the-counter drug groups, and states that for someone with a AINE allergy, even a single dose can cause a severe reaction. The body text SHALL come from i18n key `explainer.body`.
 
 #### Scenario: Explainer section is visible on landing page
 
 - **WHEN** a user loads the application on the homepage with no search active
-- **THEN** the page SHALL display a section with heading "¿Qué son los AINE?"
+- **THEN** the page SHALL display a section with heading from i18n key `explainer.heading`
 - **AND** the section SHALL contain text explaining that AINE are antiinflamatorios no esteroideos, listing common examples, and noting the allergy risk
 
 #### Scenario: Explainer remains visible after search
@@ -23,26 +23,28 @@ The homepage SHALL include an informational section with the heading "¿Qué son
 
 ### Requirement: Medical disclaimer callout
 
-The homepage SHALL include a prominent disclaimer callout with a warning icon (⚠️) stating that this tool is informational and does not replace professional medical advice, that the user should always verify the physical medication leaflet, and that they should consult a doctor or pharmacist. The disclaimer SHALL be visually distinct from regular body text (e.g., using a callout/bordered box style).
+The homepage SHALL include a prominent disclaimer callout with the heading and body from i18n keys `disclaimer.heading` and `disclaimer.body`. The disclaimer SHALL be visually distinct from regular body text (e.g., using a callout/bordered box style). The heading string from the message catalog SHALL NOT contain a warning emoji prefix. A `<WarningIcon />` component SHALL be rendered immediately before the heading text within a flex container with `gap-1`.
 
 #### Scenario: Disclaimer is visible on landing page
 
 - **WHEN** a user loads the application
 - **THEN** the page SHALL display a disclaimer callout containing a warning about the tool being informational and not replacing professional advice
+- **AND** a `<WarningIcon />` SHALL be rendered before the heading text
 
 #### Scenario: Disclaimer is accessible
 
 - **WHEN** a screen reader navigates the page
 - **THEN** the disclaimer content SHALL be announced in the page reading order
+- **AND** the `<WarningIcon />` SHALL NOT be announced (it SHALL have `aria-hidden="true"`)
 
 ### Requirement: Data source attribution with lastUpdated date
 
-The homepage SHALL display a data source line crediting AEMPS (CIMA) and showing the date the AINE classification data was last updated, using the `lastUpdated` export from `data/aine-classification.ts`. The format SHALL be "Datos: AEMPS (CIMA) · Actualizado: YYYY-MM-DD".
+The homepage SHALL display a data source line crediting AEMPS (CIMA) and showing the date the AINE classification data was last updated, sourced from i18n key `dataSource.attribution` with ICU interpolation for `{date}`, using the `lastUpdated` export from `data/aine-classification.ts`.
 
 #### Scenario: Attribution shows lastUpdated date
 
 - **WHEN** the homepage renders
-- **THEN** a data source line SHALL display "Datos: AEMPS (CIMA) · Actualizado:" followed by the `lastUpdated` date from the AINE classification data
+- **THEN** a data source line SHALL display the string from i18n key `dataSource.attribution` with the `{date}` placeholder replaced by the `lastUpdated` date from the AINE classification data
 
 #### Scenario: Attribution updates when data is regenerated
 

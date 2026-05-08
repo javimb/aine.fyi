@@ -1,35 +1,28 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import CompoundPill from "@/components/compound-pill";
 import StatusBanner from "@/components/status-banner";
+import WarningIcon from "@/components/warning-icon";
 import type { SearchResult } from "@/components/search-bar";
 import { normalizePactivos } from "@/lib/aine-matcher";
 
-const STATUS_CONFIG = {
+const STATUS_STYLES = {
   RED: {
     bg: "bg-status-red-bg",
     text: "text-status-red",
-    banner: "🔴 AINE DETECTADO",
-    message:
-      "⚠️ Evita este medicamento si tienes alergia a AINE. Consulta con tu farmacéutico.",
   },
   AMBER: {
     bg: "bg-status-amber-bg",
     text: "text-status-amber",
-    banner: "🟠 SALICILATO DETECTADO",
-    message:
-      "⚠️ Los salicilatos pueden provocar reacción cruzada con alergia a AINE. Consulta con tu farmacéutico.",
   },
   GREEN: {
     bg: "bg-status-green-bg",
     text: "text-status-green",
-    banner: "🟢 LIBRE DE AINE",
-    message: "No se han detectado compuestos AINE.",
   },
   YELLOW: {
     bg: "bg-status-yellow-bg",
     text: "text-status-yellow",
-    banner: "🟡 NO PUDIMOS VERIFICAR",
-    message:
-      "⚠️ No pudimos verificar los componentes de este medicamento. Consulta con tu farmacéutico.",
   },
 } as const;
 
@@ -38,10 +31,13 @@ interface ResultCardProps {
 }
 
 export default function ResultCard({ result }: ResultCardProps) {
+  const t = useTranslations("status");
   const { nombre, pactivos, aineAnalysis } = result;
   const status = aineAnalysis.status;
-  const config = STATUS_CONFIG[status];
+  const style = STATUS_STYLES[status];
   const matchedAines = aineAnalysis.matchedAines ?? [];
+
+  const statusKey = status as "RED" | "AMBER" | "GREEN" | "YELLOW";
 
   const tokens = pactivos.split(",").map((t) => t.trim());
   const normalizedTokens = normalizePactivos(pactivos);
@@ -72,24 +68,31 @@ export default function ResultCard({ result }: ResultCardProps) {
   return (
     <div
       role="article"
-      aria-label={`${nombre} — ${status === "RED" ? "AINE detectado" : status === "AMBER" ? "Salicilato detectado" : status === "GREEN" ? "Libre de AINE" : "No pudimos verificar"}`}
-      className={`rounded-lg ${config.bg} p-4`}
+      aria-label={`${nombre} — ${t(`${statusKey}.ariaLabel`)}`}
+      className={`rounded-lg ${style.bg} p-4`}
     >
-      <StatusBanner banner={config.banner} textClass={config.text} />
+      <StatusBanner banner={t(`${statusKey}.banner`)} textClass={style.text} />
       <h3 className="text-lg font-bold">{nombre}</h3>
 
       <div className="mt-2">
         <div
           role="list"
-          aria-label="Principios activos"
+          aria-label={t("activeIngredientsLabel")}
           className="flex flex-wrap gap-1.5"
         >
           {pills}
         </div>
       </div>
 
-      <p className={`mt-3 text-sm font-medium ${config.text}`}>
-        {config.message}
+      <p className={`mt-3 text-sm font-medium ${style.text}`}>
+        {status === "GREEN" ? (
+          t(`${statusKey}.message`)
+        ) : (
+          <span className="flex items-start gap-1">
+            <WarningIcon />
+            {t(`${statusKey}.message`)}
+          </span>
+        )}
       </p>
     </div>
   );

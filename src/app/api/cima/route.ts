@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { matchAines, YELLOW_ANALYSIS } from "@/lib/aine-matcher";
 import { principioClassification } from "../../../../data/aine-classification";
+import messages from "../../../../messages/es-ES.json";
+
+const apiMessages = messages.api;
 
 const CIMA_BASE_URL = "https://cima.aemps.es/cima/rest";
 
@@ -38,8 +41,7 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(
     {
-      error:
-        "Se requiere al menos uno de los parámetros: nombre, nregistro o cn",
+      error: apiMessages.missingParams,
     },
     { status: 400 },
   );
@@ -68,7 +70,7 @@ async function handleDetail(url: string) {
     return NextResponse.json(enrichWithAineAnalysis(data));
   } catch {
     return NextResponse.json(
-      { error: "Error interno del servidor", aineAnalysis: YELLOW_ANALYSIS },
+      { error: apiMessages.internalError, aineAnalysis: YELLOW_ANALYSIS },
       { status: 502 },
     );
   }
@@ -101,7 +103,7 @@ async function handleSearch(nombre: string) {
     if (!response.ok) {
       return NextResponse.json(
         {
-          error: "Error al consultar la API de CIMA",
+          error: apiMessages.upstreamError,
           aineAnalysis: YELLOW_ANALYSIS,
         },
         { status: 502 },
@@ -145,7 +147,7 @@ async function handleSearch(nombre: string) {
     return NextResponse.json(data);
   } catch {
     return NextResponse.json(
-      { error: "Error interno del servidor", aineAnalysis: YELLOW_ANALYSIS },
+      { error: apiMessages.internalError, aineAnalysis: YELLOW_ANALYSIS },
       { status: 502 },
     );
   }

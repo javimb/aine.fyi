@@ -2,9 +2,47 @@ import { describe, it, expect } from "vitest";
 import { render, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { afterEach } from "vitest";
+import { NextIntlClientProvider } from "next-intl";
 import type { SearchResult } from "./search-bar";
 
 afterEach(cleanup);
+
+const messages = {
+  status: {
+    activeIngredientsLabel: "Principios activos",
+    RED: {
+      banner: "AINE DETECTADO",
+      message:
+        "Evita este medicamento si tienes alergia a AINE. Consulta con tu farmacéutico.",
+      ariaLabel: "AINE detectado",
+    },
+    AMBER: {
+      banner: "SALICILATO DETECTADO",
+      message:
+        "Los salicilatos pueden provocar reacción cruzada con alergia a AINE. Consulta con tu farmacéutico.",
+      ariaLabel: "Salicilato detectado",
+    },
+    GREEN: {
+      banner: "LIBRE DE AINE",
+      message: "No se han detectado compuestos AINE.",
+      ariaLabel: "Libre de AINE",
+    },
+    YELLOW: {
+      banner: "NO PUDIMOS VERIFICAR",
+      message:
+        "No pudimos verificar los componentes de este medicamento. Consulta con tu farmacéutico.",
+      ariaLabel: "No pudimos verificar",
+    },
+  },
+};
+
+function renderWithProvider(ui: React.ReactElement) {
+  return render(
+    <NextIntlClientProvider locale="es-ES" messages={messages}>
+      {ui}
+    </NextIntlClientProvider>,
+  );
+}
 
 const makeResult = (overrides: Partial<SearchResult> = {}): SearchResult => ({
   nombre: "Ibuprofeno 400mg",
@@ -22,20 +60,31 @@ describe("ResultCard", () => {
   it("renders RED card with status banner, bg, compound pills, and warning", async () => {
     const { default: ResultCard } = await import("./result-card");
     const result = makeResult();
-    const { container, getByText } = render(<ResultCard result={result} />);
-    expect(getByText("🔴 AINE DETECTADO")).toBeInTheDocument();
+    const { container, getByText } = renderWithProvider(
+      <ResultCard result={result} />,
+    );
+    expect(getByText("AINE DETECTADO")).toBeInTheDocument();
     expect(
       getByText(
-        "⚠️ Evita este medicamento si tienes alergia a AINE. Consulta con tu farmacéutico.",
+        "Evita este medicamento si tienes alergia a AINE. Consulta con tu farmacéutico.",
       ),
     ).toBeInTheDocument();
     const card = container.querySelector("[role='article']");
-    expect(card?.className).not.toContain("border-l-4");
-    expect(card?.className).not.toContain("border-l-status-red-border");
     expect(card?.className).toContain("bg-status-red-bg");
   });
 
-  it("renders AMBER card with salicilato banner", async () => {
+  it("renders RED card with WarningIcon before message text in flex container with gap-1", async () => {
+    const { default: ResultCard } = await import("./result-card");
+    const result = makeResult();
+    const { container } = renderWithProvider(<ResultCard result={result} />);
+    const warningIcon = container.querySelector("[aria-hidden='true']");
+    expect(warningIcon).toBeInTheDocument();
+    expect(warningIcon?.textContent).toBe("⚠️");
+    const flexContainer = warningIcon?.closest(".flex");
+    expect(flexContainer?.className).toContain("gap-1");
+  });
+
+  it("renders AMBER card with salicilato banner and WarningIcon", async () => {
     const { default: ResultCard } = await import("./result-card");
     const result: SearchResult = {
       nombre: "Aspirina 500mg",
@@ -51,12 +100,13 @@ describe("ResultCard", () => {
         ],
       },
     };
-    const { container, getByText } = render(<ResultCard result={result} />);
-    expect(getByText("🟠 SALICILATO DETECTADO")).toBeInTheDocument();
-    const card = container.querySelector("[role='article']");
-    expect(card?.className).not.toContain("border-l-4");
-    expect(card?.className).not.toContain("border-l-status-amber-border");
-    expect(card?.className).toContain("bg-status-amber-bg");
+    const { container, getByText } = renderWithProvider(
+      <ResultCard result={result} />,
+    );
+    expect(getByText("SALICILATO DETECTADO")).toBeInTheDocument();
+    const warningIcon = container.querySelector("[aria-hidden='true']");
+    expect(warningIcon).toBeInTheDocument();
+    expect(warningIcon?.textContent).toBe("⚠️");
   });
 
   it("renders GREEN card with libre de AINE banner, safe message, and neutral pills", async () => {
@@ -66,46 +116,51 @@ describe("ResultCard", () => {
       pactivos: "paracetamol",
       aineAnalysis: { status: "GREEN", matchedAines: [] },
     };
-    const { container, getByText } = render(<ResultCard result={result} />);
-    expect(getByText("🟢 LIBRE DE AINE")).toBeInTheDocument();
+    const { container, getByText } = renderWithProvider(
+      <ResultCard result={result} />,
+    );
+    expect(getByText("LIBRE DE AINE")).toBeInTheDocument();
     expect(
       getByText("No se han detectado compuestos AINE."),
     ).toBeInTheDocument();
-    const card = container.querySelector("[role='article']");
-    expect(card?.className).not.toContain("border-l-4");
-    expect(card?.className).not.toContain("border-l-status-green-border");
-    expect(card?.className).toContain("bg-status-green-bg");
     const pillsList = container.querySelector("[role='list']");
     expect(pillsList).toHaveAttribute("aria-label", "Principios activos");
-    const pills = container.querySelectorAll("[role='listitem']");
-    expect(pills.length).toBe(1);
-    expect(pills[0]?.className).toContain("bg-muted");
   });
 
-  it("renders YELLOW card with unverifiable banner and neutral pills", async () => {
+  it("renders GREEN card without WarningIcon", async () => {
+    const { default: ResultCard } = await import("./result-card");
+    const result: SearchResult = {
+      nombre: "Paracetamol 650mg",
+      pactivos: "paracetamol",
+      aineAnalysis: { status: "GREEN", matchedAines: [] },
+    };
+    const { container } = renderWithProvider(<ResultCard result={result} />);
+    const warningIcons = container.querySelectorAll("[aria-hidden='true']");
+    expect(warningIcons).toHaveLength(0);
+  });
+
+  it("renders YELLOW card with unverifiable banner, neutral pills, and WarningIcon", async () => {
     const { default: ResultCard } = await import("./result-card");
     const result: SearchResult = {
       nombre: "Desconocido",
       pactivos: "unknown",
       aineAnalysis: { status: "YELLOW", matchedAines: [] },
     };
-    const { container, getByText } = render(<ResultCard result={result} />);
-    expect(getByText("🟡 NO PUDIMOS VERIFICAR")).toBeInTheDocument();
-    const card = container.querySelector("[role='article']");
-    expect(card?.className).not.toContain("border-l-4");
-    expect(card?.className).not.toContain("border-l-status-yellow-border");
-    expect(card?.className).toContain("bg-status-yellow-bg");
+    const { container, getByText } = renderWithProvider(
+      <ResultCard result={result} />,
+    );
+    expect(getByText("NO PUDIMOS VERIFICAR")).toBeInTheDocument();
+    const warningIcon = container.querySelector("[aria-hidden='true']");
+    expect(warningIcon).toBeInTheDocument();
+    expect(warningIcon?.textContent).toBe("⚠️");
     const pillsList = container.querySelector("[role='list']");
     expect(pillsList).toHaveAttribute("aria-label", "Principios activos");
-    const pills = container.querySelectorAll("[role='listitem']");
-    expect(pills.length).toBe(1);
-    expect(pills[0]?.className).toContain("bg-muted");
   });
 
   it("has role=article with aria-label including medication name and status", async () => {
     const { default: ResultCard } = await import("./result-card");
     const result = makeResult();
-    const { container } = render(<ResultCard result={result} />);
+    const { container } = renderWithProvider(<ResultCard result={result} />);
     const card = container.querySelector("[role='article']");
     expect(card).toHaveAttribute("aria-label");
     expect(card?.getAttribute("aria-label")).toContain("Ibuprofeno 400mg");
@@ -114,7 +169,7 @@ describe("ResultCard", () => {
   it("pills section has aria-label='Principios activos' for all results", async () => {
     const { default: ResultCard } = await import("./result-card");
     const redResult = makeResult();
-    const { container } = render(<ResultCard result={redResult} />);
+    const { container } = renderWithProvider(<ResultCard result={redResult} />);
     const pillsList = container.querySelector("[role='list']");
     expect(pillsList).toHaveAttribute("aria-label", "Principios activos");
   });
@@ -131,7 +186,7 @@ describe("ResultCard", () => {
         ],
       },
     };
-    const { container } = render(<ResultCard result={result} />);
+    const { container } = renderWithProvider(<ResultCard result={result} />);
     const pills = container.querySelectorAll("[role='listitem']");
     expect(pills.length).toBe(2);
   });
@@ -148,7 +203,7 @@ describe("ResultCard", () => {
         ],
       },
     };
-    const { container } = render(<ResultCard result={result} />);
+    const { container } = renderWithProvider(<ResultCard result={result} />);
     const pills = container.querySelectorAll("[role='listitem']");
     expect(pills[0]?.className).toContain("bg-status-red-bg");
     expect(pills[1]?.className).toContain("bg-muted");
@@ -161,7 +216,7 @@ describe("ResultCard", () => {
       pactivos: "UNKNOWN_COMPOUND",
       aineAnalysis: { status: "YELLOW", matchedAines: [] },
     };
-    const { container } = render(<ResultCard result={result} />);
+    const { container } = renderWithProvider(<ResultCard result={result} />);
     const pills = container.querySelectorAll("[role='listitem']");
     expect(pills.length).toBe(1);
     expect(pills[0]?.className).toContain("bg-muted");

@@ -15,13 +15,43 @@ vi.mock("@vercel/analytics/react", () => ({
 
 vi.mock("./globals.css", () => ({}));
 
+vi.mock("next-intl", () => ({
+  NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+}));
+
+vi.mock("next-intl/server", () => ({
+  getLocale: () => Promise.resolve("es-ES"),
+  getMessages: () =>
+    Promise.resolve({
+      app: {
+        title: "¿Es un AINE?",
+        description: "Comprueba si un medicamento contiene algún AINE",
+      },
+      search: {},
+      status: {},
+      results: {},
+      explainer: {},
+      disclaimer: {},
+      dataSource: {},
+      api: {},
+    }),
+  getTranslations: () =>
+    Promise.resolve((key: string) => {
+      const app: Record<string, string> = {
+        title: "¿Es un AINE?",
+        description: "Comprueba si un medicamento contiene algún AINE",
+      };
+      return app[key] ?? key;
+    }),
+}));
+
 describe("RootLayout", () => {
   it("renders the Analytics component inside <body>", async () => {
     const { default: RootLayout } = await import("./layout");
     const { getByTestId } = render(
-      <RootLayout>
-        <p>Test content</p>
-      </RootLayout>,
+      await RootLayout({ children: <p>Test content</p> }),
     );
     expect(getByTestId("vercel-analytics")).toBeInTheDocument();
   });
@@ -29,9 +59,7 @@ describe("RootLayout", () => {
   it("renders Analytics after children inside <body>", async () => {
     const { default: RootLayout } = await import("./layout");
     const { baseElement } = render(
-      <RootLayout>
-        <p>Test content</p>
-      </RootLayout>,
+      await RootLayout({ children: <p>Test content</p> }),
     );
     const html = baseElement.innerHTML;
     const contentPos = html.indexOf("Test content");
@@ -42,9 +70,7 @@ describe("RootLayout", () => {
   it("renders children inside <body>", async () => {
     const { default: RootLayout } = await import("./layout");
     const { getByText } = render(
-      <RootLayout>
-        <span>Hello from child</span>
-      </RootLayout>,
+      await RootLayout({ children: <span>Hello from child</span> }),
     );
     expect(getByText("Hello from child")).toBeInTheDocument();
   });
@@ -52,26 +78,27 @@ describe("RootLayout", () => {
   it("renders <html> with lang='es-ES'", async () => {
     const { default: RootLayout } = await import("./layout");
     const { baseElement } = render(
-      <RootLayout>
-        <p>Test content</p>
-      </RootLayout>,
+      await RootLayout({ children: <p>Test content</p> }),
     );
     const html = baseElement.ownerDocument.documentElement;
     expect(html).toHaveAttribute("lang", "es-ES");
   });
 
-  it("exports metadata with openGraph.locale='es_ES'", async () => {
-    const { metadata } = await import("./layout");
+  it("generateMetadata returns title from message catalog", async () => {
+    const { generateMetadata } = await import("./layout");
+    const metadata = await generateMetadata();
+    expect(metadata.title).toBe("¿Es un AINE?");
+  });
+
+  it("generateMetadata returns openGraph.locale='es_ES'", async () => {
+    const { generateMetadata } = await import("./layout");
+    const metadata = await generateMetadata();
     expect(metadata.openGraph?.locale).toBe("es_ES");
   });
 
-  it("exports metadata with openGraph.title='¿Es un AINE?'", async () => {
-    const { metadata } = await import("./layout");
+  it("generateMetadata returns openGraph.title from message catalog", async () => {
+    const { generateMetadata } = await import("./layout");
+    const metadata = await generateMetadata();
     expect(metadata.openGraph?.title).toBe("¿Es un AINE?");
-  });
-
-  it("exports metadata with title='¿Es un AINE?'", async () => {
-    const { metadata } = await import("./layout");
-    expect(metadata.title).toBe("¿Es un AINE?");
   });
 });
