@@ -8,7 +8,7 @@ Declare Spanish (Spain) as the page language via the HTML `lang` attribute and O
 
 ### Requirement: HTML lang attribute declares es-ES
 
-The root `<html>` element SHALL declare `lang` set to the locale configured in next-intl (`es-ES`) to indicate that the page content is in Spanish as used in Spain. The `lang` attribute SHALL be derived from `getLocale()` rather than hardcoded.
+The root `<html>` element SHALL declare `lang="es-ES"` to indicate that the page content is in Spanish as used in Spain. The next-intl configuration SHALL provide the locale value, and the layout SHALL derive the `lang` attribute from the next-intl locale configuration rather than hardcoding it.
 
 #### Scenario: Screen reader language announcement
 
@@ -27,7 +27,7 @@ The root `<html>` element SHALL declare `lang` set to the locale configured in n
 
 ### Requirement: og:locale metadata declares es_ES
 
-The page metadata SHALL include `openGraph.locale` derived from the next-intl locale configuration (with hyphen replaced by underscore) so that social platforms and search engines identify the page locale as Spanish (Spain).
+The page metadata SHALL include `openGraph.locale` set to the locale from next-intl configuration so that social platforms and search engines identify the page locale as Spanish (Spain).
 
 #### Scenario: Metadata includes og:locale from locale config
 
