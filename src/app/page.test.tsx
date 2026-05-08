@@ -20,7 +20,7 @@ const allMessages: Record<string, Record<string, string>> = {
     body: "Los AINE (antiinflamatorios no esteroideos)...",
   },
   disclaimer: {
-    heading: "⚠️ Aviso importante",
+    heading: "Aviso importante",
     body: "Esta herramienta es informativa...",
   },
   dataSource: {
@@ -54,7 +54,7 @@ vi.mock("@/components/aine-explainer", () => ({
 vi.mock("@/components/disclaimer", () => ({
   default: () => (
     <div role="note">
-      <p>⚠️ Aviso importante</p>
+      <p>Aviso importante</p>
       <p>Esta herramienta es informativa...</p>
     </div>
   ),
