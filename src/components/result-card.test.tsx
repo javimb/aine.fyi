@@ -11,26 +11,26 @@ const messages = {
   status: {
     activeIngredientsLabel: "Principios activos",
     RED: {
-      banner: "🔴 AINE DETECTADO",
+      banner: "AINE DETECTADO",
       message:
-        "⚠️ Evita este medicamento si tienes alergia a AINE. Consulta con tu farmacéutico.",
+        "Evita este medicamento si tienes alergia a AINE. Consulta con tu farmacéutico.",
       ariaLabel: "AINE detectado",
     },
     AMBER: {
-      banner: "🟠 SALICILATO DETECTADO",
+      banner: "SALICILATO DETECTADO",
       message:
-        "⚠️ Los salicilatos pueden provocar reacción cruzada con alergia a AINE. Consulta con tu farmacéutico.",
+        "Los salicilatos pueden provocar reacción cruzada con alergia a AINE. Consulta con tu farmacéutico.",
       ariaLabel: "Salicilato detectado",
     },
     GREEN: {
-      banner: "🟢 LIBRE DE AINE",
+      banner: "LIBRE DE AINE",
       message: "No se han detectado compuestos AINE.",
       ariaLabel: "Libre de AINE",
     },
     YELLOW: {
-      banner: "🟡 NO PUDIMOS VERIFICAR",
+      banner: "NO PUDIMOS VERIFICAR",
       message:
-        "⚠️ No pudimos verificar los componentes de este medicamento. Consulta con tu farmacéutico.",
+        "No pudimos verificar los componentes de este medicamento. Consulta con tu farmacéutico.",
       ariaLabel: "No pudimos verificar",
     },
   },
@@ -63,17 +63,28 @@ describe("ResultCard", () => {
     const { container, getByText } = renderWithProvider(
       <ResultCard result={result} />,
     );
-    expect(getByText("🔴 AINE DETECTADO")).toBeInTheDocument();
+    expect(getByText("AINE DETECTADO")).toBeInTheDocument();
     expect(
       getByText(
-        "⚠️ Evita este medicamento si tienes alergia a AINE. Consulta con tu farmacéutico.",
+        "Evita este medicamento si tienes alergia a AINE. Consulta con tu farmacéutico.",
       ),
     ).toBeInTheDocument();
     const card = container.querySelector("[role='article']");
     expect(card?.className).toContain("bg-status-red-bg");
   });
 
-  it("renders AMBER card with salicilato banner", async () => {
+  it("renders RED card with WarningIcon before message text in flex container with gap-1", async () => {
+    const { default: ResultCard } = await import("./result-card");
+    const result = makeResult();
+    const { container } = renderWithProvider(<ResultCard result={result} />);
+    const warningIcon = container.querySelector("[aria-hidden='true']");
+    expect(warningIcon).toBeInTheDocument();
+    expect(warningIcon?.textContent).toBe("⚠️");
+    const flexContainer = warningIcon?.closest(".flex");
+    expect(flexContainer?.className).toContain("gap-1");
+  });
+
+  it("renders AMBER card with salicilato banner and WarningIcon", async () => {
     const { default: ResultCard } = await import("./result-card");
     const result: SearchResult = {
       nombre: "Aspirina 500mg",
@@ -89,8 +100,13 @@ describe("ResultCard", () => {
         ],
       },
     };
-    const { getByText } = renderWithProvider(<ResultCard result={result} />);
-    expect(getByText("🟠 SALICILATO DETECTADO")).toBeInTheDocument();
+    const { container, getByText } = renderWithProvider(
+      <ResultCard result={result} />,
+    );
+    expect(getByText("SALICILATO DETECTADO")).toBeInTheDocument();
+    const warningIcon = container.querySelector("[aria-hidden='true']");
+    expect(warningIcon).toBeInTheDocument();
+    expect(warningIcon?.textContent).toBe("⚠️");
   });
 
   it("renders GREEN card with libre de AINE banner, safe message, and neutral pills", async () => {
@@ -103,7 +119,7 @@ describe("ResultCard", () => {
     const { container, getByText } = renderWithProvider(
       <ResultCard result={result} />,
     );
-    expect(getByText("🟢 LIBRE DE AINE")).toBeInTheDocument();
+    expect(getByText("LIBRE DE AINE")).toBeInTheDocument();
     expect(
       getByText("No se han detectado compuestos AINE."),
     ).toBeInTheDocument();
@@ -111,7 +127,19 @@ describe("ResultCard", () => {
     expect(pillsList).toHaveAttribute("aria-label", "Principios activos");
   });
 
-  it("renders YELLOW card with unverifiable banner and neutral pills", async () => {
+  it("renders GREEN card without WarningIcon", async () => {
+    const { default: ResultCard } = await import("./result-card");
+    const result: SearchResult = {
+      nombre: "Paracetamol 650mg",
+      pactivos: "paracetamol",
+      aineAnalysis: { status: "GREEN", matchedAines: [] },
+    };
+    const { container } = renderWithProvider(<ResultCard result={result} />);
+    const warningIcons = container.querySelectorAll("[aria-hidden='true']");
+    expect(warningIcons).toHaveLength(0);
+  });
+
+  it("renders YELLOW card with unverifiable banner, neutral pills, and WarningIcon", async () => {
     const { default: ResultCard } = await import("./result-card");
     const result: SearchResult = {
       nombre: "Desconocido",
@@ -121,7 +149,10 @@ describe("ResultCard", () => {
     const { container, getByText } = renderWithProvider(
       <ResultCard result={result} />,
     );
-    expect(getByText("🟡 NO PUDIMOS VERIFICAR")).toBeInTheDocument();
+    expect(getByText("NO PUDIMOS VERIFICAR")).toBeInTheDocument();
+    const warningIcon = container.querySelector("[aria-hidden='true']");
+    expect(warningIcon).toBeInTheDocument();
+    expect(warningIcon?.textContent).toBe("⚠️");
     const pillsList = container.querySelector("[role='list']");
     expect(pillsList).toHaveAttribute("aria-label", "Principios activos");
   });

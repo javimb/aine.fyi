@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import CompoundPill from "@/components/compound-pill";
 import StatusBanner from "@/components/status-banner";
+import WarningIcon from "@/components/warning-icon";
 import type { SearchResult } from "@/components/search-bar";
 import { normalizePactivos } from "@/lib/aine-matcher";
 
@@ -84,7 +85,14 @@ export default function ResultCard({ result }: ResultCardProps) {
       </div>
 
       <p className={`mt-3 text-sm font-medium ${style.text}`}>
-        {t(`${statusKey}.message`)}
+        {status === "GREEN" ? (
+          t(`${statusKey}.message`)
+        ) : (
+          <span className="flex items-start gap-1">
+            <WarningIcon />
+            {t(`${statusKey}.message`)}
+          </span>
+        )}
       </p>
     </div>
   );

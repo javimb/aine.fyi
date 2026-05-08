@@ -14,22 +14,22 @@ const messages = {
   status: {
     activeIngredientsLabel: "Principios activos",
     RED: {
-      banner: "🔴 AINE DETECTADO",
+      banner: "AINE DETECTADO",
       message: "msg",
       ariaLabel: "AINE detectado",
     },
     AMBER: {
-      banner: "🟠 SALICILATO DETECTADO",
+      banner: "SALICILATO DETECTADO",
       message: "msg",
       ariaLabel: "Salicilato detectado",
     },
     GREEN: {
-      banner: "🟢 LIBRE DE AINE",
+      banner: "LIBRE DE AINE",
       message: "msg",
       ariaLabel: "Libre de AINE",
     },
     YELLOW: {
-      banner: "🟡 NO PUDIMOS VERIFICAR",
+      banner: "NO PUDIMOS VERIFICAR",
       message: "msg",
       ariaLabel: "No pudimos verificar",
     },
