@@ -1,35 +1,6 @@
 # Accessible Search Form
 
-## Purpose
-
-Ensure the search form is accessible to screen readers by providing Spanish-language ARIA labels on both the `<form>` and `<input>` elements, using shadcn/ui components, supporting a single-mode layout with auto-scroll to results, and providing accessible error and loading states.
-
-## Requirements
-
-### Requirement: Search form has an accessible name
-
-The `<form>` element containing the search input and button SHALL have an `aria-label` attribute with a Spanish-language description so that screen readers can identify the form's purpose. The form SHALL use shadcn/ui `Input` and `Button` components.
-
-#### Scenario: Screen reader identifies the form
-
-- **WHEN** a screen reader user navigates to the search form
-- **THEN** the form SHALL be announced with its accessible name
-
-#### Scenario: Form renders with aria-label and shadcn/ui components
-
-- **WHEN** the search form is rendered
-- **THEN** the `<form>` element SHALL have an `aria-label`
-- **AND** the input SHALL be a shadcn/ui `Input` component
-- **AND** the button SHALL be a shadcn/ui `Button` component
-
-### Requirement: Search input has an accessible label
-
-The search input SHALL have proper accessible labeling. A visible `aria-label` SHALL identify the input at all times.
-
-#### Scenario: Screen reader identifies the input
-
-- **WHEN** a screen reader user focuses on the search input
-- **THEN** the input SHALL be announced with an accessible name indicating it is a medication search field
+## MODIFIED Requirements
 
 ### Requirement: Search bar is single-mode with auto-scroll to results
 
