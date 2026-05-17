@@ -1,10 +1,34 @@
-# I18N Messages
+# I18N
 
 ## Purpose
 
-Centralized message catalog and next-intl string access for all UI-facing text in the application. Ensures no hardcoded strings in components and provides a single source of truth for translations.
+Internationalization configuration and centralized message catalog — declaring the page locale, configuring next-intl, and maintaining a single source of truth for all UI-facing strings.
 
 ## Requirements
+
+### Requirement: Page language and locale
+
+The application SHALL declare Spanish (Spain) as the page language via `<html lang="es-ES">` and Open Graph locale metadata (`og:locale`). The locale value SHALL be sourced from the next-intl configuration, not hardcoded. The root layout SHALL use `generateMetadata` with `getTranslations` to produce page title, description, and Open Graph metadata from the message catalog.
+
+#### Scenario: Page language is declared
+
+- **WHEN** the application renders
+- **THEN** the `<html>` element SHALL have `lang="es-ES"`
+
+#### Scenario: Open Graph locale metadata
+
+- **WHEN** the root layout generates metadata
+- **THEN** the Open Graph metadata SHALL include `og:locale` set to `es-ES`
+
+#### Scenario: Page title from message catalog
+
+- **WHEN** the root layout generates metadata
+- **THEN** the `<title>` and `openGraph.title` SHALL use the string from `messages/es-ES.json` under `app.title`
+
+#### Scenario: Page description from message catalog
+
+- **WHEN** the root layout generates metadata
+- **THEN** the `description` and `openGraph.description` SHALL use the string from `messages/es-ES.json` under `app.description`
 
 ### Requirement: Centralized message catalog
 
@@ -81,20 +105,6 @@ Server components SHALL access translated strings via the `getTranslations(names
 
 - **WHEN** the data source attribution renders
 - **THEN** it SHALL use the string from `messages/es-ES.json` under `dataSource.attribution` with ICU interpolation for `{date}`
-
-### Requirement: Metadata string access
-
-The root layout SHALL use `generateMetadata` with `getTranslations` to produce page title, description, and Open Graph metadata from the message catalog.
-
-#### Scenario: Page title from message catalog
-
-- **WHEN** the root layout generates metadata
-- **THEN** the `<title>` and `openGraph.title` SHALL use the string from `messages/es-ES.json` under `app.title`
-
-#### Scenario: Page description from message catalog
-
-- **WHEN** the root layout generates metadata
-- **THEN** the `description` and `openGraph.description` SHALL use the string from `messages/es-ES.json` under `app.description`
 
 ### Requirement: ICU pluralization for result count
 
