@@ -1,4 +1,4 @@
-schema: spec-driven
+schema: openspec-superpowers
 
 context: |
   We use conventional commits
