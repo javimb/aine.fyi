@@ -1,8 +1,8 @@
-# Home Page Content
+# Home Page
 
 ## Purpose
 
-TBD
+Homepage content and layout — AINE explainer section, medical disclaimer callout with WarningIcon, data source attribution with lastUpdated date, and mobile-first responsive layout.
 
 ## Requirements
 
@@ -51,6 +51,16 @@ The homepage SHALL display a data source line crediting AEMPS (CIMA) and showing
 - **WHEN** the AINE classification data is regenerated with a new date
 - **AND** the application is rebuilt
 - **THEN** the displayed date SHALL match the new `lastUpdated` value
+
+#### Scenario: Attribution is accessible to screen readers
+
+- **WHEN** a screen reader navigates the page
+- **THEN** the attribution text SHALL be announced as part of the page content
+
+#### Scenario: Attribution styling is secondary
+
+- **WHEN** the attribution is rendered
+- **THEN** it SHALL appear with small text size and muted color, visually subordinate to the main content
 
 ### Requirement: Mobile-first responsive layout
 
