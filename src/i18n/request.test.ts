@@ -17,6 +17,8 @@ describe("i18n/request configuration", () => {
       "explainer",
       "disclaimer",
       "dataSource",
+      "emptyState",
+      "errorState",
       "api",
     ];
     for (const ns of REQUIRED_NAMESPACES) {

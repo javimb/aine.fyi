@@ -9,6 +9,8 @@ const REQUIRED_NAMESPACES = [
   "explainer",
   "disclaimer",
   "dataSource",
+  "emptyState",
+  "errorState",
   "api",
 ];
 

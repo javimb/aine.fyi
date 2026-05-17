@@ -48,6 +48,17 @@
   "dataSource": {
     "attribution": "Datos: AEMPS (CIMA) · Actualizado: {date}"
   },
+  "emptyState": {
+    "title": "No encontramos \"{query}\"",
+    "tipHeading": "Sugerencias",
+    "tipSpelling": "Revisa la ortografía del nombre",
+    "tipGeneric": "Prueba con el nombre genérico (principio activo)",
+    "tipBrand": "Prueba con el nombre comercial del medicamento"
+  },
+  "errorState": {
+    "title": "Error al consultar",
+    "retry": "Reintentar"
+  },
   "api": {
     "missingParams": "Se requiere al menos uno de los parámetros: nombre, nregistro o cn",
     "internalError": "Error interno del servidor",
