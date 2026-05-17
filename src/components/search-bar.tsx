@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ResultList from "@/components/result-list";
+import EmptyState from "@/components/empty-state";
+import ErrorState from "@/components/error-state";
 
 export interface SearchResult {
   nombre: string;
@@ -19,42 +21,59 @@ export interface SearchResult {
   };
 }
 
+type SearchState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "success"; results: SearchResult[] }
+  | { status: "empty"; query: string }
+  | { status: "error"; message: string };
+
 export default function SearchBar() {
   const t = useTranslations("search");
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const resultsRef = useRef<HTMLDivElement>(null);
+  const [searchState, setSearchState] = useState<SearchState>({
+    status: "idle",
+  });
+  const feedbackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (results.length > 0 && resultsRef.current) {
-      resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (
+      ["success", "empty", "error"].includes(searchState.status) &&
+      feedbackRef.current
+    ) {
+      feedbackRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }
-  }, [results]);
+  }, [searchState]);
+
+  function handleRetry() {
+    if (query.trim())
+      handleSearch({ preventDefault: () => {} } as React.FormEvent);
+  }
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     if (!query.trim()) return;
-    setLoading(true);
-    setError("");
+    setSearchState({ status: "loading" });
 
     try {
       const res = await fetch(`/api/cima?nombre=${encodeURIComponent(query)}`);
       const data = await res.json();
       if (data.resultados) {
-        setResults(data.resultados);
+        setSearchState(
+          data.resultados.length > 0
+            ? { status: "success", results: data.resultados }
+            : { status: "empty", query },
+        );
       } else if (data.error) {
-        setError(data.error);
-        setResults([]);
+        setSearchState({ status: "error", message: data.error });
       } else {
-        setResults([data]);
+        setSearchState({ status: "success", results: [data] });
       }
     } catch {
-      setError(t("error"));
-      setResults([]);
-    } finally {
-      setLoading(false);
+      setSearchState({ status: "error", message: t("error") });
     }
   }
 
@@ -63,7 +82,7 @@ export default function SearchBar() {
       <form
         onSubmit={handleSearch}
         aria-label={t("formLabel")}
-        aria-busy={loading}
+        aria-busy={searchState.status === "loading"}
         className="flex w-full gap-2"
       >
         <Input
@@ -74,24 +93,28 @@ export default function SearchBar() {
           aria-label={t("inputLabel")}
           className="h-12 text-lg"
         />
-        <Button type="submit" disabled={loading} className="h-12 px-6">
-          {loading ? t("buttonLoading") : t("button")}
+        <Button
+          type="submit"
+          disabled={searchState.status === "loading"}
+          className="h-12 px-6"
+        >
+          {searchState.status === "loading" ? t("buttonLoading") : t("button")}
         </Button>
       </form>
 
-      {error && (
-        <p
-          role="alert"
-          aria-live="polite"
-          className="mt-2 text-status-red text-sm"
-        >
-          {error}
-        </p>
+      {searchState.status === "success" && (
+        <div ref={feedbackRef} className="mt-4">
+          <ResultList results={searchState.results} />
+        </div>
       )}
-
-      {results.length > 0 && !error && (
-        <div ref={resultsRef} className="mt-4">
-          <ResultList results={results} />
+      {searchState.status === "empty" && (
+        <div ref={feedbackRef}>
+          <EmptyState query={searchState.query} />
+        </div>
+      )}
+      {searchState.status === "error" && (
+        <div ref={feedbackRef}>
+          <ErrorState message={searchState.message} onRetry={handleRetry} />
         </div>
       )}
     </div>
