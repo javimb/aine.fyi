@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ResultList from "@/components/result-list";
+import EmptyResults from "@/components/empty-results";
 
 export interface SearchResult {
   nombre: string;
@@ -25,6 +26,7 @@ export default function SearchBar() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isEmpty, setIsEmpty] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,21 +40,26 @@ export default function SearchBar() {
     if (!query.trim()) return;
     setLoading(true);
     setError("");
+    setIsEmpty(false);
 
     try {
       const res = await fetch(`/api/cima?nombre=${encodeURIComponent(query)}`);
       const data = await res.json();
       if (data.resultados) {
         setResults(data.resultados);
+        setIsEmpty(data.resultados.length === 0);
       } else if (data.error) {
         setError(data.error);
         setResults([]);
+        setIsEmpty(false);
       } else {
         setResults([data]);
+        setIsEmpty(false);
       }
     } catch {
       setError(t("error"));
       setResults([]);
+      setIsEmpty(false);
     } finally {
       setLoading(false);
     }
@@ -88,6 +95,8 @@ export default function SearchBar() {
           {error}
         </p>
       )}
+
+      {isEmpty && !error && <EmptyResults />}
 
       {results.length > 0 && !error && (
         <div ref={resultsRef} className="mt-4">
