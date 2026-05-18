@@ -8,7 +8,7 @@ See the [Development Setup](README.md#development-setup) section in the README f
 
 **Prerequisites:**
 
-- [Node.js](https://nodejs.org/) >= 20
+- [Node.js](https://nodejs.org/) >= 22
 - npm
 
 ## Making Changes
