@@ -9,7 +9,8 @@
     "placeholder": "Buscar medicamento...",
     "button": "Buscar",
     "buttonLoading": "Buscando...",
-    "error": "Error al buscar"
+    "error": "Error al buscar",
+    "emptyResults": "No se han encontrado medicamentos con ese nombre. Comprueba que está bien escrito."
   },
   "status": {
     "activeIngredientsLabel": "Principios activos",
