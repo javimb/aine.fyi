@@ -6,26 +6,6 @@ Thanks for your interest in contributing! This document covers the basics for ge
 
 See the [Development Setup](README.md#development-setup) section in the README for prerequisites and instructions.
 
-**Prerequisites:**
-
-- [Node.js](https://nodejs.org/) >= 22
-- npm
-
-## Making Changes
-
-1. Create a new branch from `main`:
-   ```bash
-   git checkout -b my-feature
-   ```
-2. Make your changes.
-3. Verify everything passes:
-   ```bash
-   npm run build
-   npm run test
-   npm run lint
-   ```
-4. Commit and push your branch.
-
 ## OpenSpec Spec Changes
 
 The `.opencode/` directory and `AGENTS.md` are optional tooling for AI-assisted development — you can safely ignore them.
