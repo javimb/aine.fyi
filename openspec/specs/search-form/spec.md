@@ -1,8 +1,8 @@
-# Accessible Search Form
+# Search Form
 
 ## Purpose
 
-Ensure the search form is accessible to screen readers by providing Spanish-language ARIA labels on both the `<form>` and `<input>` elements, using shadcn/ui components, supporting a single-mode layout with auto-scroll to results, and providing accessible error, loading, and empty states.
+Ensure the search form is accessible to screen readers, supports single-mode layout with auto-scroll to results, and provides accessible error, loading, and empty states — including a neutral "not found" message when a search returns zero results.
 
 ## Requirements
 
@@ -51,7 +51,7 @@ The search bar SHALL always render at the same size (large, prominent, `h-12`) o
 
 ### Requirement: Error and loading states are accessible
 
-When the search form is in a loading state, the submit button SHALL indicate loading both visually (disabled state with the text from i18n key `search.buttonLoading`) and to screen readers (`aria-busy="true"` on the form). When an error occurs, the error message from i18n key `search.error` SHALL be announced via `aria-live="polite"` and use `role="alert"`. When a search returns zero results, an `EmptyResults` component with `role="status"` and `aria-live="polite"` SHALL be rendered in the results area. The SearchBar SHALL maintain an `isEmpty` boolean state: set to `true` when the API returns an empty `resultados` array, set to `false` when a new search starts, when results are found, or when an error occurs. The `EmptyResults` component SHALL render when `isEmpty` is `true` and `error` is falsy. The `isEmpty` state SHALL take precedence over the empty results display — the error state SHALL suppress the empty state.
+When the search form is in a loading state, the submit button SHALL indicate loading both visually (disabled state with the text from i18n key `search.buttonLoading`) and to screen readers (`aria-busy="true"` on the form). When an error occurs, the error message from i18n key `search.error` SHALL be announced via `aria-live="polite"` and use `role="alert"`.
 
 #### Scenario: Loading state accessibility
 
@@ -64,11 +64,19 @@ When the search form is in a loading state, the submit button SHALL indicate loa
 - **WHEN** a search error occurs
 - **THEN** the error message from i18n key `search.error` SHALL have `role="alert"` and `aria-live="polite"`
 
+### Requirement: Empty results state with neutral not-found message
+
+The SearchBar SHALL maintain an `isEmpty` boolean state: set to `true` when the API returns an empty `resultados` array, set to `false` when a new search starts, when results are found, or when an error occurs. When `isEmpty` is `true` and `error` is falsy, an `EmptyResults` component SHALL render with `role="status"` and `aria-live="polite"` to announce the empty state to screen readers. The component SHALL render within the same `w-full max-w-2xl` container as the search results, below the search form. The `isEmpty` state SHALL take precedence over the empty results display — the error state SHALL suppress the empty state.
+
+The `EmptyResults` component (at `src/components/empty-results.tsx`) SHALL render a neutral/muted styled message sourced from i18n key `search.emptyResults`. The component SHALL NOT use any status color tint (RED, AMBER, GREEN, YELLOW) — the empty state is visually distinct from the YELLOW uncertain status.
+
 #### Scenario: Empty results state rendering
 
 - **WHEN** a search completes and the API returns `resultados` as an empty array
 - **THEN** the SearchBar SHALL set `isEmpty` to `true`
 - **AND** the `EmptyResults` component SHALL render with `role="status"` and `aria-live="polite"`
+- **AND** the message text SHALL come from i18n key `search.emptyResults`
+- **AND** the component SHALL NOT have any status color background or text tint
 
 #### Scenario: Error state suppresses empty state
 
@@ -87,3 +95,16 @@ When the search form is in a loading state, the submit button SHALL indicate loa
 - **WHEN** a search returns one or more results
 - **THEN** `isEmpty` SHALL be `false`
 - **AND** the EmptyResults component SHALL NOT render
+
+#### Scenario: Empty results message is accessible to screen readers
+
+- **WHEN** a search completes with zero results
+- **THEN** the EmptyResults message element SHALL have `role="status"`
+- **AND** the message element SHALL have `aria-live="polite"`
+- **AND** screen readers SHALL announce the message content automatically
+
+#### Scenario: i18n key for empty results message
+
+- **WHEN** a developer inspects `messages/es-ES.json`
+- **THEN** the key `search.emptyResults` SHALL exist with a plain text message in Spanish
+- **AND** the message SHALL NOT contain emoji characters
