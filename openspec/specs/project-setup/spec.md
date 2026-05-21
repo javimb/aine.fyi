@@ -135,7 +135,7 @@ The project SHALL have Vitest installed and configured with a `npm run test` com
 
 ### Requirement: Vercel deployment configuration
 
-The project SHALL be configured for deployment on Vercel's free (Hobby) tier with no additional infrastructure. Configuration SHALL be version-controlled in code via `vercel.json` and `next.config.ts`. The deployment region SHALL be `cdg1` (Paris, the closest available Vercel region to Spain). The Next.js build SHALL skip TypeScript checks (`typescript.ignoreBuildErrors: true`) since these are enforced by the CI pipeline. Note: Next.js 16 no longer runs ESLint during builds, so `eslint.ignoreDuringBuilds` is unnecessary.
+The project SHALL be configured for deployment on Vercel's free (Hobby) tier with no additional infrastructure. Configuration SHALL be version-controlled in code via `vercel.json` and `next.config.ts`. The deployment region SHALL be `cdg1` (Paris, the closest available Vercel region to Spain), ensuring all serverless functions execute close to the CIMA API data source. The Next.js build SHALL skip TypeScript checks (`typescript.ignoreBuildErrors: true`) since these are enforced by the CI pipeline. Note: Next.js 16 no longer runs ESLint during builds, so `eslint.ignoreDuringBuilds` is unnecessary. The project SHALL also have Web Analytics enabled, either via the Vercel Dashboard or the `vercel analytics enable` CLI command.
 
 #### Scenario: Deploying to Vercel
 
@@ -151,6 +151,62 @@ The project SHALL be configured for deployment on Vercel's free (Hobby) tier wit
 
 - **WHEN** a developer clones the repository
 - **THEN** the Vercel region configuration and build optimizations SHALL be present in `vercel.json` and `next.config.ts`
+
+#### Scenario: Web Analytics is enabled on the project
+
+- **WHEN** the Vercel project is deployed
+- **THEN** Web Analytics SHALL be enabled and collecting page view and visitor data
+
+#### Scenario: Analytics data is available in Vercel Dashboard
+
+- **WHEN** a user visits the site after deployment
+- **THEN** page views, visitors, referrers, and demographics SHALL be visible in the Vercel project's Web Analytics dashboard
+
+### Requirement: Vercel Analytics component in root layout
+
+The application SHALL render the `<Analytics />` component from `@vercel/analytics/react` inside the root layout's `<body>` element, after `{children}`, to enable cookieless traffic tracking on all pages.
+
+#### Scenario: Analytics component is present in root layout
+
+- **WHEN** the root layout renders
+- **THEN** the `<Analytics />` component SHALL be rendered inside `<body>` after `{children}`
+
+#### Scenario: No cookie consent banner is shown
+
+- **WHEN** a user visits any page on the site
+- **THEN** no cookie consent dialog or banner SHALL be displayed, as Vercel Analytics does not use cookies
+
+### Requirement: Vercel Analytics package dependency
+
+The `@vercel/analytics` package SHALL be listed as a production dependency in `package.json`.
+
+#### Scenario: Package is installed as a production dependency
+
+- **WHEN** `npm install` is run
+- **THEN** `@vercel/analytics` SHALL be present in `dependencies` (not `devDependencies`) in `package.json`
+
+### Requirement: GitHub branch protection enforcement
+
+The `main` branch SHALL require the `check` CI job to pass before merging. This ensures code quality is enforced at the PR level, not at the Vercel build level.
+
+#### Scenario: PR with failing CI cannot merge
+
+- **WHEN** a pull request has a failing `check` status check
+- **THEN** GitHub SHALL prevent the pull request from being merged
+
+#### Scenario: PR with passing CI can merge
+
+- **WHEN** a pull request has a passing `check` status check
+- **THEN** GitHub SHALL allow the pull request to be merged
+
+### Requirement: Vercel output directory is gitignored
+
+The `.vercel/` directory SHALL remain in `.gitignore` to prevent committing local Vercel configuration and project metadata.
+
+#### Scenario: Running vercel pull locally
+
+- **WHEN** a developer runs `vercel pull` locally
+- **THEN** the `.vercel/` directory SHALL be created locally but SHALL NOT be tracked by git
 
 ### Requirement: README.md exists at project root
 
@@ -219,3 +275,36 @@ The README SHALL include a disclaimer stating the application is an informationa
 
 - **WHEN** a user reads the disclaimer section
 - **THEN** they SHALL be informed that the tool does not substitute professional medical consultation
+
+### Requirement: No hardcoded secrets or tokens in source code
+
+The source code in `src/`, `scripts/`, `data/`, and configuration files SHALL NOT contain hardcoded secrets, API keys, tokens, or passwords. Any sensitive values MUST be loaded from environment variables or external configuration.
+
+#### Scenario: Source code scan finds no secrets
+
+- **WHEN** the codebase is scanned with a pattern matching common secret formats (token, secret, password, api_key, api.key)
+- **THEN** no hardcoded sensitive values SHALL be found in source or config files
+
+#### Scenario: Hardcoded HTTPS URLs are only public endpoints
+
+- **WHEN** the codebase is scanned for hardcoded `https://` URLs
+- **THEN** all found URLs SHALL be either the CIMA API public endpoint (`cima.aemps.es`) or other known public resources — no internal or authenticated endpoints
+
+### Requirement: Gitignore covers sensitive patterns
+
+The `.gitignore` file SHALL include patterns that prevent sensitive files from being committed: `.env*` (environment files), `*.pem` (certificate/key files), `/coverage` (coverage output), `.vercel` (Vercel local config), and `*.tsbuildinfo` (TypeScript build artifacts).
+
+#### Scenario: Environment files are ignored
+
+- **WHEN** a developer creates a `.env` or `.env.local` file
+- **THEN** git SHALL NOT track the file
+
+#### Scenario: PEM key files are ignored
+
+- **WHEN** a developer adds a `.pem` file to the project directory
+- **THEN** git SHALL NOT track the file
+
+#### Scenario: Existing gitignore patterns are verified present
+
+- **WHEN** `.gitignore` is reviewed
+- **THEN** it SHALL contain patterns for `.env*`, `*.pem`, `/coverage`, `.vercel`, and `*.tsbuildinfo`
