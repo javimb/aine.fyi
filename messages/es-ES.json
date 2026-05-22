@@ -10,7 +10,13 @@
     "button": "Buscar",
     "buttonLoading": "Buscando...",
     "error": "Error al buscar",
-    "emptyResults": "No se han encontrado medicamentos con ese nombre. Comprueba que está bien escrito."
+    "emptyResults": "No se han encontrado medicamentos con ese nombre. Comprueba que está bien escrito.",
+    "scanButtonLabel": "Escanear código de barras",
+    "scannerTitle": "Apunta al código de barras",
+    "scannerStatus": "Escaneando...",
+    "scannerDetected": "Código detectado",
+    "scannerPermissionDenied": "No se pudo acceder a la cámara. Puedes escribir el código manualmente.",
+    "closeScannerLabel": "Cerrar escáner"
   },
   "status": {
     "activeIngredientsLabel": "Principios activos",

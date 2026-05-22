@@ -24,3 +24,18 @@ describe("messages/es-ES.json", () => {
     expect(keys.sort()).toEqual(REQUIRED_NAMESPACES.sort());
   });
 });
+
+describe("search namespace scanner keys", () => {
+  const SCANNER_KEYS = [
+    "scanButtonLabel",
+    "scannerTitle",
+    "scannerStatus",
+    "scannerDetected",
+    "scannerPermissionDenied",
+    "closeScannerLabel",
+  ];
+
+  it.each(SCANNER_KEYS)("has search.%s key", (key) => {
+    expect(messages.search).toHaveProperty(key);
+  });
+});
