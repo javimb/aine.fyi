@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import ResultList from "@/components/result-list";
 import EmptyResults from "@/components/empty-results";
 import { detectQueryType, extractCnFromEan13 } from "@/lib/query-detection";
+import BarcodeScannerButton from "@/components/barcode-scanner-button";
+import ScannerOverlay from "@/components/scanner-overlay";
+import { useBarcodeScanner } from "@/hooks/use-barcode-scanner";
 
 export interface SearchResult {
   nombre: string;
@@ -28,13 +31,23 @@ export default function SearchBar() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isEmpty, setIsEmpty] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
+
+  const { lastDetected } = useBarcodeScanner();
 
   useEffect(() => {
     if (results.length > 0 && resultsRef.current) {
       resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [results]);
+
+  useEffect(() => {
+    if (lastDetected !== null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- barcode detected from scanner, must sync to input
+      setQuery(lastDetected);
+    }
+  }, [lastDetected]);
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -122,7 +135,13 @@ export default function SearchBar() {
         <Button type="submit" disabled={loading} className="h-12 px-6">
           {loading ? t("buttonLoading") : t("button")}
         </Button>
+        <BarcodeScannerButton onOpenScanner={() => setIsScannerOpen(true)} />
       </form>
+
+      <ScannerOverlay
+        open={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+      />
 
       {error && (
         <p
