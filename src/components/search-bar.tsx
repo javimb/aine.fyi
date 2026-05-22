@@ -144,13 +144,13 @@ export default function SearchBar() {
           aria-label={t("inputLabel")}
           className="h-12 text-lg"
         />
-        <Button type="submit" disabled={loading} className="h-12 px-6">
-          {loading ? t("buttonLoading") : t("button")}
-        </Button>
         <BarcodeScannerButton
           isSupported={isSupported}
           onOpenScanner={() => setIsScannerOpen(true)}
         />
+        <Button type="submit" disabled={loading} className="h-12 px-6">
+          {loading ? t("buttonLoading") : t("button")}
+        </Button>
       </form>
 
       <ScannerOverlay

@@ -22,6 +22,7 @@ export default function BarcodeScannerButton({
       type="button"
       variant="ghost"
       size="icon"
+      className="h-12 w-12"
       aria-label={t("scanButtonLabel")}
       onClick={onOpenScanner}
     >
