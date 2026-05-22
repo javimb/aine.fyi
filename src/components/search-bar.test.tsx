@@ -1,11 +1,23 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, cleanup, waitFor } from "@testing-library/react";
+import { act } from "react";
 import "@testing-library/jest-dom/vitest";
 import { afterEach } from "vitest";
 import { NextIntlClientProvider } from "next-intl";
 import userEvent from "@testing-library/user-event";
 
 Element.prototype.scrollIntoView = vi.fn();
+
+vi.mock("@/hooks/use-barcode-scanner", () => ({
+  useBarcodeScanner: () => ({
+    isSupported: false,
+    isScanning: false,
+    lastDetected: null,
+    error: null,
+    startScanning: vi.fn(),
+    stopScanning: vi.fn(),
+  }),
+}));
 
 afterEach(cleanup);
 
@@ -20,6 +32,12 @@ const messages = {
     error: "Error al buscar",
     emptyResults:
       "No se han encontrado medicamentos con ese nombre. Comprueba que está bien escrito.",
+    scanButtonLabel: "Escanear código de barras",
+    scannerTitle: "Apunta al código de barras",
+    scannerStatus: "Escaneando...",
+    scannerDetected: "Código detectado",
+    scannerPermissionDenied: "No se pudo acceder a la cámara.",
+    closeScannerLabel: "Cerrar escáner",
   },
 };
 
@@ -38,7 +56,6 @@ async function fill(input: Element, value: string) {
 }
 
 async function submit(form: Element) {
-  const user = userEvent.setup();
   await userEvent.click(form.querySelector('button[type="submit"]')!);
 }
 
@@ -451,6 +468,163 @@ describe("SearchBar", () => {
           "No se han encontrado medicamentos",
         );
       });
+    });
+  });
+
+  describe("barcode scanner integration", () => {
+    beforeEach(() => {
+      vi.resetModules();
+      Object.defineProperty(navigator, "mediaDevices", {
+        value: { getUserMedia: vi.fn() },
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    afterEach(() => {
+      vi.doUnmock("@/hooks/use-barcode-scanner");
+      delete (navigator as unknown as Record<string, unknown>).mediaDevices;
+    });
+
+    it("renders BarcodeScannerButton next to input when camera is supported", async () => {
+      vi.doMock("@/hooks/use-barcode-scanner", () => ({
+        useBarcodeScanner: () => ({
+          isSupported: true,
+          isScanning: false,
+          lastDetected: null,
+          error: null,
+          startScanning: vi.fn(),
+          stopScanning: vi.fn(),
+        }),
+      }));
+
+      const { default: SearchBar } = await import("./search-bar");
+      const { getByRole } = renderWithProvider(<SearchBar />);
+      expect(
+        getByRole("button", { name: /escanear código de barras/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("opens ScannerOverlay when scan button is tapped", async () => {
+      vi.doMock("@/hooks/use-barcode-scanner", () => ({
+        useBarcodeScanner: () => ({
+          isSupported: true,
+          isScanning: false,
+          lastDetected: null,
+          error: null,
+          startScanning: vi.fn(),
+          stopScanning: vi.fn(),
+        }),
+      }));
+
+      const { default: SearchBar } = await import("./search-bar");
+      const { getByRole } = renderWithProvider(<SearchBar />);
+      const scanButton = getByRole("button", {
+        name: /escanear código de barras/i,
+      });
+      await userEvent.click(scanButton);
+      expect(getByRole("dialog")).toBeInTheDocument();
+    });
+
+    it("detected barcode populates search input and auto-submits", async () => {
+      let capturedOnDetected: ((code: string) => void) | undefined;
+      vi.doMock("@/hooks/use-barcode-scanner", () => ({
+        useBarcodeScanner: (
+          _ref?: unknown,
+          options?: { onDetected?: (code: string) => void },
+        ) => {
+          capturedOnDetected = options?.onDetected;
+          return {
+            isSupported: true,
+            isScanning: false,
+            lastDetected: null,
+            error: null,
+            startScanning: vi.fn(),
+            stopScanning: vi.fn(),
+          };
+        },
+      }));
+
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            resultados: [
+              {
+                nombre: "Med",
+                pactivos: "PA",
+                aineAnalysis: { status: "GREEN" },
+              },
+            ],
+          }),
+      });
+
+      const { default: SearchBar } = await import("./search-bar");
+      const { container } = renderWithProvider(<SearchBar />);
+
+      act(() => {
+        capturedOnDetected!("8470006543215");
+      });
+
+      const input = container.querySelector(
+        'input[type="text"]',
+      ) as HTMLInputElement;
+      await waitFor(() => {
+        expect(input.value).toBe("8470006543215");
+      });
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith("/api/cima?cn=654321");
+      });
+    });
+
+    it("resets scanner state when overlay closes", async () => {
+      vi.doMock("@/hooks/use-barcode-scanner", () => ({
+        useBarcodeScanner: () => ({
+          isSupported: true,
+          isScanning: false,
+          lastDetected: null,
+          error: null,
+          startScanning: vi.fn(),
+          stopScanning: vi.fn(),
+        }),
+      }));
+
+      const { default: SearchBar } = await import("./search-bar");
+      const { getByRole, queryByRole } = renderWithProvider(<SearchBar />);
+      const scanButton = getByRole("button", {
+        name: /escanear código de barras/i,
+      });
+      await userEvent.click(scanButton);
+      expect(getByRole("dialog")).toBeInTheDocument();
+
+      const closeButton = getByRole("button", { name: /cerrar escáner/i });
+      await userEvent.click(closeButton);
+
+      await waitFor(() => {
+        expect(queryByRole("dialog")).not.toBeInTheDocument();
+      });
+    });
+
+    it("hides scan button on unsupported devices", async () => {
+      vi.doMock("@/hooks/use-barcode-scanner", () => ({
+        useBarcodeScanner: () => ({
+          isSupported: false,
+          isScanning: false,
+          lastDetected: null,
+          error: null,
+          startScanning: vi.fn(),
+          stopScanning: vi.fn(),
+        }),
+      }));
+
+      delete (navigator as unknown as Record<string, unknown>).mediaDevices;
+
+      const { default: SearchBar } = await import("./search-bar");
+      const { queryByRole } = renderWithProvider(<SearchBar />);
+      expect(
+        queryByRole("button", { name: /escanear código de barras/i }),
+      ).not.toBeInTheDocument();
     });
   });
 });
