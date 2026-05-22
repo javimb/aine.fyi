@@ -177,4 +177,279 @@ describe("SearchBar", () => {
       expect(queryByRole("status")).toBeInTheDocument();
     });
   });
+
+  describe("query type routing", () => {
+    it("routes 6-digit CN query to /api/cima?cn=<query>", async () => {
+      const { default: SearchBar } = await import("./search-bar");
+      const { container } = renderWithProvider(<SearchBar />);
+      const input = container.querySelector('input[type="text"]')!;
+      const form = container.querySelector("form")!;
+
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            resultados: [
+              {
+                nombre: "Med",
+                pactivos: "PA",
+                aineAnalysis: { status: "GREEN" },
+              },
+            ],
+          }),
+      });
+
+      await fill(input, "654321");
+      await submit(form);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith("/api/cima?cn=654321");
+      });
+    });
+
+    it("routes 7-digit CN query to /api/cima?cn=<query>", async () => {
+      const { default: SearchBar } = await import("./search-bar");
+      const { container } = renderWithProvider(<SearchBar />);
+      const input = container.querySelector('input[type="text"]')!;
+      const form = container.querySelector("form")!;
+
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            resultados: [
+              {
+                nombre: "Med",
+                pactivos: "PA",
+                aineAnalysis: { status: "GREEN" },
+              },
+            ],
+          }),
+      });
+
+      await fill(input, "7654321");
+      await submit(form);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith("/api/cima?cn=7654321");
+      });
+    });
+
+    it("extracts CN from EAN-13 and routes to /api/cima?cn=<extractedCN>", async () => {
+      const { default: SearchBar } = await import("./search-bar");
+      const { container } = renderWithProvider(<SearchBar />);
+      const input = container.querySelector('input[type="text"]')!;
+      const form = container.querySelector("form")!;
+
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            resultados: [
+              {
+                nombre: "Med",
+                pactivos: "PA",
+                aineAnalysis: { status: "GREEN" },
+              },
+            ],
+          }),
+      });
+
+      await fill(input, "8470006543215");
+      await submit(form);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith("/api/cima?cn=654321");
+      });
+    });
+
+    it("routes alphanumeric name query to /api/cima?nombre=<query>", async () => {
+      const { default: SearchBar } = await import("./search-bar");
+      const { container } = renderWithProvider(<SearchBar />);
+      const input = container.querySelector('input[type="text"]')!;
+      const form = container.querySelector("form")!;
+
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            resultados: [
+              {
+                nombre: "Ibuprofeno",
+                pactivos: "IBUPROFENO",
+                aineAnalysis: { status: "RED", matchedAines: [] },
+              },
+            ],
+          }),
+      });
+
+      await fill(input, "ibuprofeno");
+      await submit(form);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          "/api/cima?nombre=ibuprofeno",
+        );
+      });
+    });
+  });
+
+  describe("CN fallback behavior", () => {
+    it("retries with nombre when CN query returns 404", async () => {
+      const { default: SearchBar } = await import("./search-bar");
+      const { container } = renderWithProvider(<SearchBar />);
+      const input = container.querySelector('input[type="text"]')!;
+      const form = container.querySelector("form")!;
+
+      global.fetch = vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 404,
+          json: () => Promise.resolve({ error: "Not found" }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              resultados: [
+                {
+                  nombre: "Med",
+                  pactivos: "PA",
+                  aineAnalysis: { status: "GREEN" },
+                },
+              ],
+            }),
+        });
+
+      await fill(input, "654321");
+      await submit(form);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledTimes(2);
+        expect(global.fetch).toHaveBeenCalledWith("/api/cima?cn=654321");
+        expect(global.fetch).toHaveBeenCalledWith("/api/cima?nombre=654321");
+      });
+    });
+
+    it("retries with nombre when CN query returns empty resultados", async () => {
+      const { default: SearchBar } = await import("./search-bar");
+      const { container } = renderWithProvider(<SearchBar />);
+      const input = container.querySelector('input[type="text"]')!;
+      const form = container.querySelector("form")!;
+
+      global.fetch = vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ resultados: [] }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              resultados: [
+                {
+                  nombre: "Med",
+                  pactivos: "PA",
+                  aineAnalysis: { status: "GREEN" },
+                },
+              ],
+            }),
+        });
+
+      await fill(input, "654321");
+      await submit(form);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledTimes(2);
+        expect(global.fetch).toHaveBeenCalledWith("/api/cima?cn=654321");
+        expect(global.fetch).toHaveBeenCalledWith("/api/cima?nombre=654321");
+      });
+    });
+
+    it("does not retry when CN query succeeds with results", async () => {
+      const { default: SearchBar } = await import("./search-bar");
+      const { container } = renderWithProvider(<SearchBar />);
+      const input = container.querySelector('input[type="text"]')!;
+      const form = container.querySelector("form")!;
+
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            resultados: [
+              {
+                nombre: "Med",
+                pactivos: "PA",
+                aineAnalysis: { status: "GREEN" },
+              },
+            ],
+          }),
+      });
+
+      await fill(input, "654321");
+      await submit(form);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledTimes(1);
+        expect(global.fetch).toHaveBeenCalledWith("/api/cima?cn=654321");
+      });
+    });
+
+    it("shows empty state when CN fallback also returns empty", async () => {
+      const { default: SearchBar } = await import("./search-bar");
+      const { container, getByRole } = renderWithProvider(<SearchBar />);
+      const input = container.querySelector('input[type="text"]')!;
+      const form = container.querySelector("form")!;
+
+      global.fetch = vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ resultados: [] }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ resultados: [] }),
+        });
+
+      await fill(input, "654321");
+      await submit(form);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledTimes(2);
+        const status = getByRole("status");
+        expect(status).toBeInTheDocument();
+        expect(status.textContent).toContain(
+          "No se han encontrado medicamentos",
+        );
+      });
+    });
+
+    it("shows empty state for name query with no fallback", async () => {
+      const { default: SearchBar } = await import("./search-bar");
+      const { container, getByRole } = renderWithProvider(<SearchBar />);
+      const input = container.querySelector('input[type="text"]')!;
+      const form = container.querySelector("form")!;
+
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ resultados: [] }),
+      });
+
+      await fill(input, "xyz");
+      await submit(form);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledTimes(1);
+        expect(global.fetch).toHaveBeenCalledWith("/api/cima?nombre=xyz");
+        const status = getByRole("status");
+        expect(status).toBeInTheDocument();
+        expect(status.textContent).toContain(
+          "No se han encontrado medicamentos",
+        );
+      });
+    });
+  });
 });
