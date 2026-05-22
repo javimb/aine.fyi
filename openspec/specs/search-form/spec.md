@@ -37,6 +37,8 @@ The search bar SHALL always render at the same size (large, prominent, `h-12`) o
 
 Before submitting a search, the search bar SHALL run `detectQueryType()` on the trimmed query to determine the appropriate API parameter (`cn` or `nombre`). If the detected type is `"ean13"`, the search bar SHALL extract the CN via `extractCnFromEan13()` and use the `cn` parameter. If the detected type is `"cn"`, the search bar SHALL use the `cn` parameter directly. If the detected type is `"name"`, the search bar SHALL use the `nombre` parameter. When a CN or EAN-13 query returns no results (HTTP 404 or empty result), the search bar SHALL transparently retry with `nombre=<original_query>`.
 
+The search bar SHALL render a BarcodeScannerButton next to the search input when `navigator.mediaDevices?.getUserMedia` is available. The SearchBar SHALL manage an `isScannerOpen` boolean state for overlay visibility. The SearchBar SHALL pass an `onDetected` callback to `useBarcodeScanner` that sets the `query` state to the detected barcode and calls `searchWithQuery` directly, reusing the existing search pipeline without modification and avoiding React effect-based state synchronization.
+
 #### Scenario: Search bar renders prominently on landing page
 
 - **WHEN** the user loads the page
@@ -76,6 +78,32 @@ Before submitting a search, the search bar SHALL run `detectQueryType()` on the 
 - **WHEN** a name search returns no results
 - **THEN** the search bar SHALL display the empty results state
 - **AND** SHALL NOT perform any fallback
+
+#### Scenario: Scanner button renders next to search input on supported device
+
+- **WHEN** the search bar renders on a device with `navigator.mediaDevices?.getUserMedia` available
+- **THEN** a BarcodeScannerButton SHALL render next to the search input
+- **AND** tapping the button SHALL set `isScannerOpen` to `true`
+
+#### Scenario: Scanner overlay opens and closes
+
+- **WHEN** `isScannerOpen` is `true`
+- **THEN** the ScannerOverlay SHALL render
+- **WHEN** the overlay closes (via close button, Escape key, or successful detection)
+- **THEN** `isScannerOpen` SHALL be set to `false`
+
+#### Scenario: Detected barcode populates search and auto-submits
+
+- **WHEN** a barcode detection completes and the `onDetected` callback is invoked with the detected code
+- **THEN** the SearchBar SHALL set `query` state to the detected barcode
+- **AND** `searchWithQuery` SHALL be called automatically with the detected code
+- **AND** the search SHALL follow the existing pipeline without modification
+
+#### Scenario: Scanner button hidden on unsupported device
+
+- **WHEN** the search bar renders on a device without `navigator.mediaDevices?.getUserMedia`
+- **THEN** no BarcodeScannerButton SHALL render
+- **AND** the search bar SHALL function identically to the current text-only implementation
 
 ### Requirement: Error and loading states are accessible
 
