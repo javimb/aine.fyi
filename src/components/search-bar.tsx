@@ -33,6 +33,7 @@ export default function SearchBar() {
   const [isEmpty, setIsEmpty] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const { lastDetected } = useBarcodeScanner();
 
@@ -46,6 +47,9 @@ export default function SearchBar() {
     if (lastDetected !== null) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- barcode detected from scanner, must sync to input
       setQuery(lastDetected);
+      requestAnimationFrame(() => {
+        formRef.current?.requestSubmit();
+      });
     }
   }, [lastDetected]);
 
@@ -119,6 +123,7 @@ export default function SearchBar() {
   return (
     <div className="w-full max-w-2xl">
       <form
+        ref={formRef}
         onSubmit={handleSearch}
         aria-label={t("formLabel")}
         aria-busy={loading}

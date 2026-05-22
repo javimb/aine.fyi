@@ -525,7 +525,7 @@ describe("SearchBar", () => {
       expect(getByRole("dialog")).toBeInTheDocument();
     });
 
-    it("detected barcode populates search input", async () => {
+    it("detected barcode populates search input and auto-submits", async () => {
       vi.doMock("@/hooks/use-barcode-scanner", () => ({
         useBarcodeScanner: () => ({
           isSupported: true,
@@ -537,6 +537,20 @@ describe("SearchBar", () => {
         }),
       }));
 
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            resultados: [
+              {
+                nombre: "Med",
+                pactivos: "PA",
+                aineAnalysis: { status: "GREEN" },
+              },
+            ],
+          }),
+      });
+
       const { default: SearchBar } = await import("./search-bar");
       const { container } = renderWithProvider(<SearchBar />);
       const input = container.querySelector(
@@ -544,6 +558,10 @@ describe("SearchBar", () => {
       ) as HTMLInputElement;
       await waitFor(() => {
         expect(input.value).toBe("8470006543215");
+      });
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith("/api/cima?cn=654321");
       });
     });
 
