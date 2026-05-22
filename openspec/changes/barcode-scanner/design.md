@@ -20,7 +20,7 @@
 **useBarcodeScanner (hook)** — Manages QuaggaJS initialization, camera permissions, and detection:
 
 - Returns `{ isSupported, isScanning, lastDetected, error, startScanning, stopScanning }`
-- `isSupported` — checks `navigator.mediaDevices?.getUserMedia` availability
+- `isSupported` — state initialized to `false`, set via `useEffect` after mount to `!!navigator.mediaDevices?.getUserMedia` to avoid SSR/client hydration mismatch
 - `startScanning` — requests camera permission → initializes QuaggaJS with `{ decoder: { readers: ["ean_reader"] }, locate: true, frequency: 10 }` → binds `onDetected` callback
 - `onDetected` — validates detected code is 13 digits (EAN-13) → sets `lastDetected` → calls `stopScanning`
 - `stopScanning` — teardown QuaggaJS, stop camera tracks

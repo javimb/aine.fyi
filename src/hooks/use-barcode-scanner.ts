@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useSyncExternalStore,
+} from "react";
 
 interface UseBarcodeScannerReturn {
   isSupported: boolean;
@@ -11,9 +17,30 @@ interface UseBarcodeScannerReturn {
   stopScanning: () => void;
 }
 
+const emptySubscribe = () => () => {};
+
+function getIsSupported() {
+  return (
+    typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia
+  );
+}
+
+function getIsSupportedSnapshot() {
+  return (
+    typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia
+  );
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
 export function useBarcodeScanner(): UseBarcodeScannerReturn {
-  const isSupported =
-    typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia;
+  const isSupported = useSyncExternalStore(
+    emptySubscribe,
+    getIsSupportedSnapshot,
+    getServerSnapshot,
+  );
 
   const [isScanning, setIsScanning] = useState(false);
   const [lastDetected, setLastDetected] = useState<string | null>(null);

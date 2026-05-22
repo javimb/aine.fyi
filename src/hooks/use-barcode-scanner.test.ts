@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { renderHook, act, waitFor } from "@testing-library/react";
 
 describe("useBarcodeScanner", () => {
   let mockQuagga: {
@@ -96,7 +96,9 @@ describe("useBarcodeScanner", () => {
     const { useBarcodeScanner } = await import("./use-barcode-scanner");
     const { result } = renderHook(() => useBarcodeScanner());
 
-    expect(result.current.isSupported).toBe(false);
+    await waitFor(() => {
+      expect(result.current.isSupported).toBe(false);
+    });
   });
 
   it("sets isScanning=true after startScanning succeeds", async () => {
