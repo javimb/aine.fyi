@@ -67,7 +67,7 @@ export default function ScannerOverlay({
     <div
       role="dialog"
       aria-label={t("scannerTitle")}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black"
     >
       <div
         ref={containerRef}
