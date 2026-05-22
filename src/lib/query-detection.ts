@@ -8,6 +8,6 @@ export function detectQueryType(input: string): QueryType {
 }
 
 export function extractCnFromEan13(ean13: string): string | null {
-  if (ean13.length !== 13) return null;
+  if (ean13.length !== 13 || !/^\d+$/.test(ean13)) return null;
   return ean13.slice(6, 12);
 }

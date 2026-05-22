@@ -44,8 +44,8 @@ describe("extractCnFromEan13", () => {
     expect(extractCnFromEan13("12345678901234")).toBeNull();
   });
 
-  it("extracts exactly indices 6-12 from a 13-character string", () => {
-    expect(extractCnFromEan13("ABCDEFGHIJKLM")).toBe("GHIJKL");
+  it("returns null for non-numeric 13-character string", () => {
+    expect(extractCnFromEan13("ABCDEFGHIJKLM")).toBeNull();
   });
 
   it("returns null for empty string", () => {
