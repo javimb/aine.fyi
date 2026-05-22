@@ -20,16 +20,17 @@
 **useBarcodeScanner (hook)** — Manages QuaggaJS initialization, camera permissions, and detection:
 
 - Returns `{ isSupported, isScanning, lastDetected, error, startScanning, stopScanning }`
-- `isSupported` — state initialized to `false`, set via `useEffect` after mount to `!!navigator.mediaDevices?.getUserMedia` to avoid SSR/client hydration mismatch
+- Accepts optional `options` parameter with `onDetected` callback
+- `isSupported` — uses `useSyncExternalStore` with server snapshot returning `false` to avoid SSR/client hydration mismatch
 - `startScanning` — requests camera permission → initializes QuaggaJS with `{ decoder: { readers: ["ean_reader"] }, locate: true, frequency: 10 }` → binds `onDetected` callback
-- `onDetected` — validates detected code is 13 digits (EAN-13) → sets `lastDetected` → calls `stopScanning`
-- `stopScanning` — teardown QuaggaJS, stop camera tracks
+- `onDetected` callback — invoked on valid detection, passed the detected code string; held via ref to keep `startScanning` stable
+- `stopScanning` — teardown QuaggaJS, stop camera tracks, clean up DOM elements from container
 - 2-second debounce on detection to prevent duplicate scans
 - Cleanup on unmount — always stops camera tracks to release hardware
 
 ### Modified Components
 
-**SearchBar** — Renders BarcodeScannerButton next to the Input. Manages `isScannerOpen` state for overlay visibility. When `lastDetected` changes from `null` to a barcode string, sets `query` state and calls `handleSearch`. Existing search flow (detectQueryType → API call with CN/EAN-13 fallback) remains unmodified.
+**SearchBar** — Renders BarcodeScannerButton next to the Input. Manages `isScannerOpen` state for overlay visibility. Passes an `onDetected` callback to `useBarcodeScanner` that sets `query` state and calls `searchWithQuery` directly (extracted from `handleSearch`), avoiding effect-based state synchronization. Existing search flow (detectQueryType → API call with CN/EAN-13 fallback) remains unmodified.
 
 ### Data Flow
 
@@ -38,8 +39,9 @@
 3. ScannerOverlay shows live camera feed
 4. Barcode detected → 2s debounce → validate 13 digits
 5. Overlay auto-closes after ~300ms with green flash feedback
-6. Detected code populates SearchBar input
-7. Auto-submit triggers existing handleSearch flow (detectQueryType → API call → fallback if needed)
+6. `onDetected` callback invoked with detected code
+7. SearchBar sets `query` state and calls `searchWithQuery` directly
+8. Auto-submit triggers existing search flow (detectQueryType → API call → fallback if needed)
 
 ## Scanner Overlay UX
 
@@ -68,7 +70,8 @@
 - No new global state needed
 - SearchBar manages `isScannerOpen` boolean
 - `useBarcodeScanner` hook manages all scanning state
-- When `lastDetected` changes → SearchBar sets `query` → calls `handleSearch`
+- `onDetected` callback (held via ref for stability) triggers `setQuery` + `searchWithQuery` directly in SearchBar — no React effect-based synchronization
+- `searchWithQuery` extracted as `useCallback` from `handleSearch` to enable direct invocation from the callback
 - Existing search flow remains entirely unmodified
 
 ### i18n Keys (messages/es-ES.json)

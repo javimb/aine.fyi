@@ -62,12 +62,13 @@ The ScannerOverlay SHALL provide a close button in the top-right corner with an 
 
 ### Requirement: Barcode detection and validation
 
-The `useBarcodeScanner` hook SHALL manage QuaggaJS initialization and barcode detection. It SHALL initialize QuaggaJS with `{ decoder: { readers: ["ean_reader"] }, locate: true, frequency: 10 }` for live stream detection. When a barcode is detected, it SHALL validate that the code is exactly 13 digits (EAN-13 format). Valid detections SHALL set `lastDetected` and call `stopScanning`. A 2-second debounce SHALL prevent duplicate scans.
+The `useBarcodeScanner` hook SHALL manage QuaggaJS initialization and barcode detection. It SHALL initialize QuaggaJS with `{ decoder: { readers: ["ean_reader"] }, locate: true, frequency: 10 }` for live stream detection. When a barcode is detected, it SHALL validate that the code is exactly 13 digits (EAN-13 format). Valid detections SHALL set `lastDetected`, call the `onDetected` callback (if provided), and call `stopScanning`. A 2-second debounce SHALL prevent duplicate scans.
 
 #### Scenario: Valid EAN-13 barcode detected
 
 - **WHEN** QuaggaJS detects a code that is 13 digits long
 - **THEN** `lastDetected` SHALL be set to the detected code
+- **AND** the `onDetected` callback SHALL be called with the detected code
 - **AND** scanning SHALL stop automatically
 
 #### Scenario: Invalid barcode ignored
@@ -163,13 +164,14 @@ On mobile devices, the scanner SHALL request the rear-facing camera via `getUser
 
 ### Requirement: Detection result propagation to search
 
-When `lastDetected` changes from `null` to a barcode string, the SearchBar component SHALL set the `query` state to the detected barcode and call `handleSearch`, reusing the existing search pipeline (`detectQueryType` → API call with CN/EAN-13 fallback).
+The `useBarcodeScanner` hook SHALL accept an optional `onDetected` callback via its options parameter. When a valid barcode is detected, this callback SHALL be invoked with the detected code string. The SearchBar component SHALL provide this callback to set the `query` state and call `searchWithQuery` directly, reusing the existing search pipeline (`detectQueryType` → API call with CN/EAN-13 fallback). This avoids React effect-based state synchronization and ensures the search is triggered synchronously with detection.
 
 #### Scenario: Detected barcode populates search input
 
-- **WHEN** a valid barcode is detected and the overlay closes
-- **THEN** the SearchBar query input SHALL be populated with the detected barcode value
-- **AND** `handleSearch` SHALL be called automatically
+- **WHEN** a valid barcode is detected
+- **THEN** the `onDetected` callback SHALL be invoked with the detected code
+- **AND** the SearchBar query input SHALL be populated with the detected barcode value
+- **AND** `searchWithQuery` SHALL be called automatically with the detected code
 
 #### Scenario: Detected barcode follows existing search flow
 

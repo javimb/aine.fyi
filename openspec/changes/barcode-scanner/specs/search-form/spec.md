@@ -6,7 +6,7 @@ The search bar SHALL always render at the same size (large, prominent, `h-12`) o
 
 Before submitting a search, the search bar SHALL run `detectQueryType()` on the trimmed query to determine the appropriate API parameter (`cn` or `nombre`). If the detected type is `"ean13"`, the search bar SHALL extract the CN via `extractCnFromEan13()` and use the `cn` parameter. If the detected type is `"cn"`, the search bar SHALL use the `cn` parameter directly. If the detected type is `"name"`, the search bar SHALL use the `nombre` parameter. When a CN or EAN-13 query returns no results (HTTP 404 or empty result), the search bar SHALL transparently retry with `nombre=<original_query>`.
 
-The search bar SHALL render a BarcodeScannerButton next to the search input when `navigator.mediaDevices?.getUserMedia` is available. The SearchBar SHALL manage an `isScannerOpen` boolean state for overlay visibility. When a barcode is detected and `lastDetected` changes from `null` to a barcode string, the SearchBar SHALL set the `query` state to the detected barcode value and call `handleSearch`, reusing the existing search pipeline without modification.
+The search bar SHALL render a BarcodeScannerButton next to the search input when `navigator.mediaDevices?.getUserMedia` is available. The SearchBar SHALL manage an `isScannerOpen` boolean state for overlay visibility. The SearchBar SHALL pass an `onDetected` callback to `useBarcodeScanner` that sets the `query` state to the detected barcode and calls `searchWithQuery` directly, reusing the existing search pipeline without modification and avoiding React effect-based state synchronization.
 
 #### Scenario: Search bar renders prominently on landing page
 
@@ -63,9 +63,9 @@ The search bar SHALL render a BarcodeScannerButton next to the search input when
 
 #### Scenario: Detected barcode populates search and auto-submits
 
-- **WHEN** a barcode detection completes and `lastDetected` changes from `null` to a barcode string
+- **WHEN** a barcode detection completes and the `onDetected` callback is invoked with the detected code
 - **THEN** the SearchBar SHALL set `query` state to the detected barcode
-- **AND** `handleSearch` SHALL be called automatically
+- **AND** `searchWithQuery` SHALL be called automatically with the detected code
 - **AND** the search SHALL follow the existing pipeline without modification
 
 #### Scenario: Scanner button hidden on unsupported device
