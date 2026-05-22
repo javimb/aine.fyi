@@ -6,7 +6,7 @@
   "search": {
     "formLabel": "Buscar medicamento",
     "inputLabel": "Nombre del medicamento",
-    "placeholder": "Buscar medicamento...",
+    "placeholder": "Buscar medicamento por nombre, código nacional o código de barras...",
     "button": "Buscar",
     "buttonLoading": "Buscando...",
     "error": "Error al buscar",
