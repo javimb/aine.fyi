@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
+import { createRef } from "react";
 import { render, cleanup, within } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import userEvent from "@testing-library/user-event";
@@ -27,6 +28,8 @@ const messages = {
   },
 };
 
+const containerRef = createRef<HTMLDivElement>();
+
 const defaultProps = {
   open: true,
   onClose: vi.fn(),
@@ -35,6 +38,7 @@ const defaultProps = {
   error: null as string | null,
   startScanning: vi.fn(),
   stopScanning: vi.fn(),
+  containerRef,
 };
 
 function renderWithProvider(ui: React.ReactElement) {

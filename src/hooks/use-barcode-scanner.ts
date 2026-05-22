@@ -8,6 +8,10 @@ import {
   useSyncExternalStore,
 } from "react";
 
+interface UseBarcodeScannerOptions {
+  onDetected?: (code: string) => void;
+}
+
 interface UseBarcodeScannerReturn {
   isSupported: boolean;
   isScanning: boolean;
@@ -19,12 +23,6 @@ interface UseBarcodeScannerReturn {
 
 const emptySubscribe = () => () => {};
 
-function getIsSupported() {
-  return (
-    typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia
-  );
-}
-
 function getIsSupportedSnapshot() {
   return (
     typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia
@@ -35,7 +33,10 @@ function getServerSnapshot() {
   return false;
 }
 
-export function useBarcodeScanner(): UseBarcodeScannerReturn {
+export function useBarcodeScanner(
+  containerRef?: React.RefObject<HTMLDivElement | null>,
+  options?: UseBarcodeScannerOptions,
+): UseBarcodeScannerReturn {
   const isSupported = useSyncExternalStore(
     emptySubscribe,
     getIsSupportedSnapshot,
@@ -52,6 +53,10 @@ export function useBarcodeScanner(): UseBarcodeScannerReturn {
     offDetected: () => void;
   } | null>(null);
   const lastDetectionTimeRef = useRef(0);
+  const onDetectedRef = useRef(options?.onDetected);
+  useEffect(() => {
+    onDetectedRef.current = options?.onDetected;
+  });
 
   const releaseTracks = useCallback(() => {
     if (streamRef.current) {
@@ -68,8 +73,10 @@ export function useBarcodeScanner(): UseBarcodeScannerReturn {
       } catch {}
       quaggaRef.current = null;
     }
+    const target = containerRef?.current ?? document.body;
+    target.querySelectorAll("video, canvas").forEach((el) => el.remove());
     releaseTracks();
-  }, [releaseTracks]);
+  }, [releaseTracks, containerRef]);
 
   const startScanning = useCallback(async () => {
     if (!isSupported) return;
@@ -101,12 +108,13 @@ export function useBarcodeScanner(): UseBarcodeScannerReturn {
       const Quagga = (await import("@ericblade/quagga2")).default;
       quaggaRef.current = Quagga;
 
+      const target = containerRef?.current ?? document.body;
       await new Promise<void>((resolve, reject) => {
         Quagga.init(
           {
             inputStream: {
               type: "LiveStream",
-              target: document.body,
+              target,
               constraints: videoConstraints,
             },
             decoder: {
@@ -138,13 +146,14 @@ export function useBarcodeScanner(): UseBarcodeScannerReturn {
         lastDetectionTimeRef.current = now;
 
         setLastDetected(code);
+        onDetectedRef.current?.(code);
         stopScanning();
       });
     } catch {
       setError("permission_denied");
       releaseTracks();
     }
-  }, [isSupported, stopScanning, releaseTracks]);
+  }, [isSupported, stopScanning, releaseTracks, containerRef]);
 
   useEffect(() => {
     return () => {

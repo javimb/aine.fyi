@@ -13,6 +13,7 @@ interface ScannerOverlayProps {
   error: string | null;
   startScanning: () => void;
   stopScanning: () => void;
+  containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export default function ScannerOverlay({
@@ -23,6 +24,7 @@ export default function ScannerOverlay({
   error,
   startScanning,
   stopScanning,
+  containerRef,
 }: ScannerOverlayProps) {
   const t = useTranslations("search");
   const flashRef = useRef<HTMLDivElement>(null);
@@ -65,8 +67,13 @@ export default function ScannerOverlay({
     <div
       role="dialog"
       aria-label={t("scannerTitle")}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center"
     >
+      <div
+        ref={containerRef}
+        className="absolute inset-0 [&>video]:h-full [&>video]:w-full [&>video]:object-cover [&>canvas]:absolute [&>canvas]:left-0 [&>canvas]:top-0 [&>canvas]:h-full [&>canvas]:w-full"
+      />
+
       <div
         ref={flashRef}
         className="pointer-events-none fixed inset-0 transition-colors duration-300"
@@ -84,7 +91,7 @@ export default function ScannerOverlay({
         </Button>
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-4">
+      <div className="z-10 flex flex-col items-center gap-4 p-4">
         <p className="text-lg font-semibold text-white">{t("scannerTitle")}</p>
 
         <div className="h-48 w-64 border-2 border-dashed border-white/50" />

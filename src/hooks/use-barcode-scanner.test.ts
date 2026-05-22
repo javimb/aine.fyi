@@ -238,4 +238,37 @@ describe("useBarcodeScanner", () => {
 
     expect(trackStopSpy).toHaveBeenCalled();
   });
+
+  it("calls onDetected callback when a barcode is detected", async () => {
+    mockGetUserMedia("resolve");
+
+    const onDetected = vi.fn();
+
+    vi.doMock("@ericblade/quagga2", () => ({
+      default: mockQuagga,
+    }));
+
+    mockQuagga.init.mockImplementation(
+      (_config: unknown, callback: (err?: unknown) => void) => {
+        callback();
+      },
+    );
+
+    const { useBarcodeScanner } = await import("./use-barcode-scanner");
+    const { result } = renderHook(() =>
+      useBarcodeScanner(undefined, { onDetected }),
+    );
+
+    await act(async () => {
+      await result.current.startScanning();
+    });
+
+    const onDetectedCb = mockQuagga.onDetected.mock.calls[0][0];
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543215" } });
+    });
+
+    expect(onDetected).toHaveBeenCalledWith("8470006543215");
+    expect(result.current.lastDetected).toBe("8470006543215");
+  });
 });

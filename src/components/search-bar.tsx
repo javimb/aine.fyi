@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,84 @@ export default function SearchBar() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const scannerContainerRef = useRef<HTMLDivElement>(null);
+
+  const searchWithQuery = useCallback(
+    async (rawQuery: string) => {
+      const trimmed = rawQuery.trim();
+      if (!trimmed) return;
+      setLoading(true);
+      setError("");
+      setIsEmpty(false);
+
+      const queryType = detectQueryType(trimmed);
+
+      function processResponse(data: Record<string, unknown>) {
+        if (data.resultados) {
+          setResults(data.resultados as SearchResult[]);
+          setIsEmpty((data.resultados as unknown[]).length === 0);
+        } else if (data.error) {
+          setError(data.error as string);
+          setResults([]);
+          setIsEmpty(false);
+        } else {
+          setResults([data as unknown as SearchResult]);
+          setIsEmpty(false);
+        }
+      }
+
+      try {
+        let apiUrl: string;
+        if (queryType === "cn") {
+          apiUrl = `/api/cima?cn=${encodeURIComponent(trimmed)}`;
+        } else if (queryType === "ean13") {
+          const cn = extractCnFromEan13(trimmed);
+          if (cn) {
+            apiUrl = `/api/cima?cn=${encodeURIComponent(cn)}`;
+          } else {
+            apiUrl = `/api/cima?nombre=${encodeURIComponent(trimmed)}`;
+          }
+        } else {
+          apiUrl = `/api/cima?nombre=${encodeURIComponent(trimmed)}`;
+        }
+
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+
+        const isCnLookup = queryType === "cn" || queryType === "ean13";
+        const needsFallback =
+          isCnLookup &&
+          (res.status === 404 ||
+            (data.resultados && data.resultados.length === 0) ||
+            (!data.resultados && !data.nombre && !data.error));
+
+        if (needsFallback) {
+          const fallbackRes = await fetch(
+            `/api/cima?nombre=${encodeURIComponent(trimmed)}`,
+          );
+          const fallbackData = await fallbackRes.json();
+          processResponse(fallbackData);
+        } else {
+          processResponse(data);
+        }
+      } catch {
+        setError(t("error"));
+        setResults([]);
+        setIsEmpty(false);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [t],
+  );
+
+  const handleBarcodeDetected = useCallback(
+    (code: string) => {
+      setQuery(code);
+      searchWithQuery(code);
+    },
+    [searchWithQuery],
+  );
 
   const {
     isSupported,
@@ -42,7 +120,9 @@ export default function SearchBar() {
     error: scannerError,
     startScanning,
     stopScanning,
-  } = useBarcodeScanner();
+  } = useBarcodeScanner(scannerContainerRef, {
+    onDetected: handleBarcodeDetected,
+  });
 
   useEffect(() => {
     if (results.length > 0 && resultsRef.current) {
@@ -50,81 +130,9 @@ export default function SearchBar() {
     }
   }, [results]);
 
-  useEffect(() => {
-    if (lastDetected !== null) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- barcode detected from scanner, must sync to input
-      setQuery(lastDetected);
-      requestAnimationFrame(() => {
-        formRef.current?.requestSubmit();
-      });
-    }
-  }, [lastDetected]);
-
-  async function handleSearch(e: React.FormEvent) {
+  function handleSearch(e: React.FormEvent) {
     e.preventDefault();
-    const trimmed = query.trim();
-    if (!trimmed) return;
-    setLoading(true);
-    setError("");
-    setIsEmpty(false);
-
-    const queryType = detectQueryType(trimmed);
-
-    function processResponse(data: Record<string, unknown>) {
-      if (data.resultados) {
-        setResults(data.resultados as SearchResult[]);
-        setIsEmpty((data.resultados as unknown[]).length === 0);
-      } else if (data.error) {
-        setError(data.error as string);
-        setResults([]);
-        setIsEmpty(false);
-      } else {
-        setResults([data as unknown as SearchResult]);
-        setIsEmpty(false);
-      }
-    }
-
-    try {
-      let apiUrl: string;
-      if (queryType === "cn") {
-        apiUrl = `/api/cima?cn=${encodeURIComponent(trimmed)}`;
-      } else if (queryType === "ean13") {
-        const cn = extractCnFromEan13(trimmed);
-        if (cn) {
-          apiUrl = `/api/cima?cn=${encodeURIComponent(cn)}`;
-        } else {
-          apiUrl = `/api/cima?nombre=${encodeURIComponent(trimmed)}`;
-        }
-      } else {
-        apiUrl = `/api/cima?nombre=${encodeURIComponent(trimmed)}`;
-      }
-
-      const res = await fetch(apiUrl);
-      const data = await res.json();
-
-      const isCnLookup = queryType === "cn" || queryType === "ean13";
-      const needsFallback =
-        isCnLookup &&
-        (res.status === 404 ||
-          (data.resultados && data.resultados.length === 0) ||
-          (!data.resultados && !data.nombre && !data.error));
-
-      if (needsFallback) {
-        const fallbackRes = await fetch(
-          `/api/cima?nombre=${encodeURIComponent(trimmed)}`,
-        );
-        const fallbackData = await fallbackRes.json();
-        processResponse(fallbackData);
-      } else {
-        processResponse(data);
-      }
-    } catch {
-      setError(t("error"));
-      setResults([]);
-      setIsEmpty(false);
-    } finally {
-      setLoading(false);
-    }
+    searchWithQuery(query.trim());
   }
 
   return (
@@ -161,6 +169,7 @@ export default function SearchBar() {
         error={scannerError}
         startScanning={startScanning}
         stopScanning={stopScanning}
+        containerRef={scannerContainerRef}
       />
 
       {error && (

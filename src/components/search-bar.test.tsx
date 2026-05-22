@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, cleanup, waitFor } from "@testing-library/react";
+import { act } from "react";
 import "@testing-library/jest-dom/vitest";
 import { afterEach } from "vitest";
 import { NextIntlClientProvider } from "next-intl";
@@ -526,15 +527,22 @@ describe("SearchBar", () => {
     });
 
     it("detected barcode populates search input and auto-submits", async () => {
+      let capturedOnDetected: ((code: string) => void) | undefined;
       vi.doMock("@/hooks/use-barcode-scanner", () => ({
-        useBarcodeScanner: () => ({
-          isSupported: true,
-          isScanning: false,
-          lastDetected: "8470006543215",
-          error: null,
-          startScanning: vi.fn(),
-          stopScanning: vi.fn(),
-        }),
+        useBarcodeScanner: (
+          _ref?: unknown,
+          options?: { onDetected?: (code: string) => void },
+        ) => {
+          capturedOnDetected = options?.onDetected;
+          return {
+            isSupported: true,
+            isScanning: false,
+            lastDetected: null,
+            error: null,
+            startScanning: vi.fn(),
+            stopScanning: vi.fn(),
+          };
+        },
       }));
 
       global.fetch = vi.fn().mockResolvedValueOnce({
@@ -553,6 +561,11 @@ describe("SearchBar", () => {
 
       const { default: SearchBar } = await import("./search-bar");
       const { container } = renderWithProvider(<SearchBar />);
+
+      act(() => {
+        capturedOnDetected!("8470006543215");
+      });
+
       const input = container.querySelector(
         'input[type="text"]',
       ) as HTMLInputElement;
