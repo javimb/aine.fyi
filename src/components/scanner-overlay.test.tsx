@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, cleanup, within } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
+import ScannerOverlay from "./scanner-overlay";
 
 afterEach(cleanup);
 
@@ -21,8 +22,19 @@ const messages = {
     scannerDetected: "Código detectado",
     scannerPermissionDenied:
       "No se pudo acceder a la cámara. Puedes escribir el código manualmente.",
+    scannerRetryLabel: "Reintentar",
     closeScannerLabel: "Cerrar escáner",
   },
+};
+
+const defaultProps = {
+  open: true,
+  onClose: vi.fn(),
+  isScanning: true,
+  lastDetected: null,
+  error: null as string | null,
+  startScanning: vi.fn(),
+  stopScanning: vi.fn(),
 };
 
 function renderWithProvider(ui: React.ReactElement) {
@@ -34,29 +46,9 @@ function renderWithProvider(ui: React.ReactElement) {
 }
 
 describe("ScannerOverlay", () => {
-  beforeEach(() => {
-    vi.resetModules();
-  });
-
-  afterEach(() => {
-    vi.doUnmock("@/hooks/use-barcode-scanner");
-  });
-
-  it("renders as role=dialog with aria-label when open", async () => {
-    vi.doMock("@/hooks/use-barcode-scanner", () => ({
-      useBarcodeScanner: () => ({
-        isSupported: true,
-        isScanning: true,
-        lastDetected: null,
-        error: null,
-        startScanning: vi.fn(),
-        stopScanning: vi.fn(),
-      }),
-    }));
-
-    const { default: ScannerOverlay } = await import("./scanner-overlay");
+  it("renders as role=dialog with aria-label when open", () => {
     const { getByRole } = renderWithProvider(
-      <ScannerOverlay open={true} onClose={() => {}} />,
+      <ScannerOverlay {...defaultProps} />,
     );
 
     const dialog = getByRole("dialog");
@@ -64,21 +56,9 @@ describe("ScannerOverlay", () => {
   });
 
   it("close button has aria-label from i18n and calls onClose", async () => {
-    vi.doMock("@/hooks/use-barcode-scanner", () => ({
-      useBarcodeScanner: () => ({
-        isSupported: true,
-        isScanning: true,
-        lastDetected: null,
-        error: null,
-        startScanning: vi.fn(),
-        stopScanning: vi.fn(),
-      }),
-    }));
-
-    const { default: ScannerOverlay } = await import("./scanner-overlay");
     const onClose = vi.fn();
     const { getByRole } = renderWithProvider(
-      <ScannerOverlay open={true} onClose={onClose} />,
+      <ScannerOverlay {...defaultProps} onClose={onClose} />,
     );
 
     const user = userEvent.setup();
@@ -88,20 +68,8 @@ describe("ScannerOverlay", () => {
   });
 
   it("Escape key calls onClose", async () => {
-    vi.doMock("@/hooks/use-barcode-scanner", () => ({
-      useBarcodeScanner: () => ({
-        isSupported: true,
-        isScanning: true,
-        lastDetected: null,
-        error: null,
-        startScanning: vi.fn(),
-        stopScanning: vi.fn(),
-      }),
-    }));
-
-    const { default: ScannerOverlay } = await import("./scanner-overlay");
     const onClose = vi.fn();
-    renderWithProvider(<ScannerOverlay open={true} onClose={onClose} />);
+    renderWithProvider(<ScannerOverlay {...defaultProps} onClose={onClose} />);
 
     const user = userEvent.setup();
     await user.keyboard("{Escape}");
@@ -109,21 +77,9 @@ describe("ScannerOverlay", () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it("aria-live=polite region announces detection", async () => {
-    vi.doMock("@/hooks/use-barcode-scanner", () => ({
-      useBarcodeScanner: () => ({
-        isSupported: true,
-        isScanning: false,
-        lastDetected: "8470006543215",
-        error: null,
-        startScanning: vi.fn(),
-        stopScanning: vi.fn(),
-      }),
-    }));
-
-    const { default: ScannerOverlay } = await import("./scanner-overlay");
+  it("aria-live=polite region announces detection", () => {
     const { getByRole } = renderWithProvider(
-      <ScannerOverlay open={true} onClose={() => {}} />,
+      <ScannerOverlay {...defaultProps} lastDetected="8470006543215" />,
     );
 
     const log = getByRole("log");
@@ -132,21 +88,16 @@ describe("ScannerOverlay", () => {
   });
 
   it("permission-denied state shows message with retry and dismiss buttons", async () => {
-    vi.doMock("@/hooks/use-barcode-scanner", () => ({
-      useBarcodeScanner: () => ({
-        isSupported: true,
-        isScanning: false,
-        lastDetected: null,
-        error: "permission_denied",
-        startScanning: vi.fn(),
-        stopScanning: vi.fn(),
-      }),
-    }));
-
-    const { default: ScannerOverlay } = await import("./scanner-overlay");
     const onClose = vi.fn();
+    const startScanning = vi.fn();
     const { getByRole, getByText } = renderWithProvider(
-      <ScannerOverlay open={true} onClose={onClose} />,
+      <ScannerOverlay
+        {...defaultProps}
+        isScanning={false}
+        error="permission_denied"
+        startScanning={startScanning}
+        onClose={onClose}
+      />,
     );
 
     expect(
@@ -170,21 +121,9 @@ describe("ScannerOverlay", () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it("status text shows while scanning", async () => {
-    vi.doMock("@/hooks/use-barcode-scanner", () => ({
-      useBarcodeScanner: () => ({
-        isSupported: true,
-        isScanning: true,
-        lastDetected: null,
-        error: null,
-        startScanning: vi.fn(),
-        stopScanning: vi.fn(),
-      }),
-    }));
-
-    const { default: ScannerOverlay } = await import("./scanner-overlay");
+  it("status text shows while scanning", () => {
     const { getByText } = renderWithProvider(
-      <ScannerOverlay open={true} onClose={() => {}} />,
+      <ScannerOverlay {...defaultProps} isScanning={true} />,
     );
 
     expect(getByText("Escaneando...")).toBeInTheDocument();

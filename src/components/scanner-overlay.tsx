@@ -3,18 +3,28 @@
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
-import { useBarcodeScanner } from "@/hooks/use-barcode-scanner";
 import { Button } from "@/components/ui/button";
 
 interface ScannerOverlayProps {
   open: boolean;
   onClose: () => void;
+  isScanning: boolean;
+  lastDetected: string | null;
+  error: string | null;
+  startScanning: () => void;
+  stopScanning: () => void;
 }
 
-export default function ScannerOverlay({ open, onClose }: ScannerOverlayProps) {
+export default function ScannerOverlay({
+  open,
+  onClose,
+  isScanning,
+  lastDetected,
+  error,
+  startScanning,
+  stopScanning,
+}: ScannerOverlayProps) {
   const t = useTranslations("search");
-  const { isScanning, lastDetected, error, startScanning, stopScanning } =
-    useBarcodeScanner();
   const flashRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -96,7 +106,7 @@ export default function ScannerOverlay({ open, onClose }: ScannerOverlayProps) {
                 size="sm"
                 onClick={startScanning}
               >
-                Reintentar
+                {t("scannerRetryLabel")}
               </Button>
               <Button type="button" variant="ghost" size="sm" onClick={onClose}>
                 {t("closeScannerLabel")}

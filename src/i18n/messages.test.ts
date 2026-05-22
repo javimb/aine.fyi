@@ -32,6 +32,7 @@ describe("search namespace scanner keys", () => {
     "scannerStatus",
     "scannerDetected",
     "scannerPermissionDenied",
+    "scannerRetryLabel",
     "closeScannerLabel",
   ];
 

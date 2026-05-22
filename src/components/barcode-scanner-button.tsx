@@ -3,17 +3,17 @@
 import { useTranslations } from "next-intl";
 import { ScanBarcode } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useBarcodeScanner } from "@/hooks/use-barcode-scanner";
 
 interface BarcodeScannerButtonProps {
+  isSupported: boolean;
   onOpenScanner: () => void;
 }
 
 export default function BarcodeScannerButton({
+  isSupported,
   onOpenScanner,
 }: BarcodeScannerButtonProps) {
   const t = useTranslations("search");
-  const { isSupported } = useBarcodeScanner();
 
   if (!isSupported) return null;
 

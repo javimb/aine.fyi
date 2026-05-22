@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import userEvent from "@testing-library/user-event";
@@ -20,6 +20,7 @@ const messages = {
     scannerStatus: "Escaneando...",
     scannerDetected: "Código detectado",
     scannerPermissionDenied: "No se pudo acceder a la cámara.",
+    scannerRetryLabel: "Reintentar",
     closeScannerLabel: "Cerrar escáner",
   },
 };
@@ -33,30 +34,9 @@ function renderWithProvider(ui: React.ReactElement) {
 }
 
 describe("BarcodeScannerButton", () => {
-  beforeEach(() => {
-    vi.resetModules();
-  });
-
-  afterEach(() => {
-    vi.doUnmock("@/hooks/use-barcode-scanner");
-  });
-
-  it("renders button with ScanBarcode icon and aria-label when camera is supported", async () => {
-    vi.doMock("@/hooks/use-barcode-scanner", () => ({
-      useBarcodeScanner: () => ({
-        isSupported: true,
-        isScanning: false,
-        lastDetected: null,
-        error: null,
-        startScanning: vi.fn(),
-        stopScanning: vi.fn(),
-      }),
-    }));
-
-    const { default: BarcodeScannerButton } =
-      await import("./barcode-scanner-button");
+  it("renders button with svg icon and aria-label when isSupported is true", () => {
     const { getByRole } = renderWithProvider(
-      <BarcodeScannerButton onOpenScanner={() => {}} />,
+      <BarcodeScannerButton isSupported={true} onOpenScanner={() => {}} />,
     );
 
     const button = getByRole("button", { name: "Escanear código de barras" });
@@ -64,44 +44,18 @@ describe("BarcodeScannerButton", () => {
     expect(button.querySelector("svg")).toBeInTheDocument();
   });
 
-  it("does not render when getUserMedia is unavailable", async () => {
-    vi.doMock("@/hooks/use-barcode-scanner", () => ({
-      useBarcodeScanner: () => ({
-        isSupported: false,
-        isScanning: false,
-        lastDetected: null,
-        error: null,
-        startScanning: vi.fn(),
-        stopScanning: vi.fn(),
-      }),
-    }));
-
-    const { default: BarcodeScannerButton } =
-      await import("./barcode-scanner-button");
+  it("does not render when isSupported is false", () => {
     const { container } = renderWithProvider(
-      <BarcodeScannerButton onOpenScanner={() => {}} />,
+      <BarcodeScannerButton isSupported={false} onOpenScanner={() => {}} />,
     );
 
     expect(container.querySelector("button")).not.toBeInTheDocument();
   });
 
   it("calls onOpenScanner when clicked", async () => {
-    vi.doMock("@/hooks/use-barcode-scanner", () => ({
-      useBarcodeScanner: () => ({
-        isSupported: true,
-        isScanning: false,
-        lastDetected: null,
-        error: null,
-        startScanning: vi.fn(),
-        stopScanning: vi.fn(),
-      }),
-    }));
-
-    const { default: BarcodeScannerButton } =
-      await import("./barcode-scanner-button");
     const onOpenScanner = vi.fn();
     const { getByRole } = renderWithProvider(
-      <BarcodeScannerButton onOpenScanner={onOpenScanner} />,
+      <BarcodeScannerButton isSupported={true} onOpenScanner={onOpenScanner} />,
     );
 
     const user = userEvent.setup();
@@ -112,3 +66,5 @@ describe("BarcodeScannerButton", () => {
     expect(onOpenScanner).toHaveBeenCalledOnce();
   });
 });
+
+import BarcodeScannerButton from "./barcode-scanner-button";

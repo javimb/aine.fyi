@@ -35,7 +35,14 @@ export default function SearchBar() {
   const resultsRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const { lastDetected } = useBarcodeScanner();
+  const {
+    isSupported,
+    isScanning,
+    lastDetected,
+    error: scannerError,
+    startScanning,
+    stopScanning,
+  } = useBarcodeScanner();
 
   useEffect(() => {
     if (results.length > 0 && resultsRef.current) {
@@ -140,12 +147,20 @@ export default function SearchBar() {
         <Button type="submit" disabled={loading} className="h-12 px-6">
           {loading ? t("buttonLoading") : t("button")}
         </Button>
-        <BarcodeScannerButton onOpenScanner={() => setIsScannerOpen(true)} />
+        <BarcodeScannerButton
+          isSupported={isSupported}
+          onOpenScanner={() => setIsScannerOpen(true)}
+        />
       </form>
 
       <ScannerOverlay
         open={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
+        isScanning={isScanning}
+        lastDetected={lastDetected}
+        error={scannerError}
+        startScanning={startScanning}
+        stopScanning={stopScanning}
       />
 
       {error && (
