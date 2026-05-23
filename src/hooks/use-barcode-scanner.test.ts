@@ -271,4 +271,131 @@ describe("useBarcodeScanner", () => {
     expect(onDetected).toHaveBeenCalledWith("8470006543215");
     expect(result.current.lastDetected).toBe("8470006543215");
   });
+
+  it("requires N consecutive identical detections before confirming", async () => {
+    mockGetUserMedia("resolve");
+
+    const { result } = await setupQuaggaMock();
+
+    await act(async () => {
+      await result.current.startScanning();
+    });
+
+    const onDetectedCb = mockQuagga.onDetected.mock.calls[0][0];
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    expect(result.current.lastDetected).toBeNull();
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    expect(result.current.lastDetected).toBeNull();
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    expect(result.current.lastDetected).toBe("8470006543214");
+    expect(result.current.isScanning).toBe(false);
+  });
+
+  it("resets confirmation counter when a different code is detected mid-sequence", async () => {
+    mockGetUserMedia("resolve");
+
+    const { result } = await setupQuaggaMock();
+
+    await act(async () => {
+      await result.current.startScanning();
+    });
+
+    const onDetectedCb = mockQuagga.onDetected.mock.calls[0][0];
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "5901234123457" } });
+    });
+    expect(result.current.lastDetected).toBeNull();
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "5901234123457" } });
+    });
+    expect(result.current.lastDetected).toBeNull();
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "5901234123457" } });
+    });
+    expect(result.current.lastDetected).toBe("5901234123457");
+  });
+
+  it("supports a custom confirmation threshold", async () => {
+    mockGetUserMedia("resolve");
+
+    vi.doMock("@ericblade/quagga2", () => ({
+      default: mockQuagga,
+    }));
+
+    mockQuagga.init.mockImplementation(
+      (_config: unknown, callback: (err?: unknown) => void) => {
+        callback();
+      },
+    );
+
+    const { useBarcodeScanner } = await import("./use-barcode-scanner");
+    const { result } = renderHook(() =>
+      useBarcodeScanner(undefined, { confirmationThreshold: 2 }),
+    );
+
+    await act(async () => {
+      await result.current.startScanning();
+    });
+
+    const onDetectedCb = mockQuagga.onDetected.mock.calls[0][0];
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    expect(result.current.lastDetected).toBeNull();
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    expect(result.current.lastDetected).toBe("8470006543214");
+  });
+
+  it("resets confirmation state on new scan session", async () => {
+    mockGetUserMedia("resolve");
+
+    const { result } = await setupQuaggaMock();
+
+    await act(async () => {
+      await result.current.startScanning();
+    });
+
+    const firstCb = mockQuagga.onDetected.mock.calls[0][0];
+
+    await act(async () => {
+      firstCb({ codeResult: { code: "8470006543214" } });
+    });
+
+    await act(async () => {
+      result.current.stopScanning();
+    });
+
+    await act(async () => {
+      await result.current.startScanning();
+    });
+
+    const secondCb = mockQuagga.onDetected.mock.calls[
+      mockQuagga.onDetected.mock.calls.length - 1
+    ][0];
+
+    await act(async () => {
+      secondCb({ codeResult: { code: "8470006543214" } });
+    });
+    expect(result.current.lastDetected).toBeNull();
+  });
 });

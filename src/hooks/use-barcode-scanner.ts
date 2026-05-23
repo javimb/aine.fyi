@@ -8,8 +8,11 @@ import {
   useSyncExternalStore,
 } from "react";
 
+import { validateBarcodeEAN13 } from "@/lib/validate-barcode";
+
 interface UseBarcodeScannerOptions {
   onDetected?: (code: string) => void;
+  confirmationThreshold?: number;
 }
 
 interface UseBarcodeScannerReturn {
@@ -52,10 +55,13 @@ export function useBarcodeScanner(
     stop: () => void;
     offDetected: () => void;
   } | null>(null);
-  const lastDetectionTimeRef = useRef(0);
+  const confirmCountRef = useRef(0);
+  const confirmCodeRef = useRef<string | null>(null);
   const onDetectedRef = useRef(options?.onDetected);
+  const confirmationThresholdRef = useRef(options?.confirmationThreshold ?? 3);
   useEffect(() => {
     onDetectedRef.current = options?.onDetected;
+    confirmationThresholdRef.current = options?.confirmationThreshold ?? 3;
   });
 
   const releaseTracks = useCallback(() => {
@@ -83,6 +89,8 @@ export function useBarcodeScanner(
 
     setError(null);
     setLastDetected(null);
+    confirmCountRef.current = 0;
+    confirmCodeRef.current = null;
 
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(
       navigator.userAgent,
@@ -136,14 +144,17 @@ export function useBarcodeScanner(
       Quagga.onDetected((result: { codeResult: { code: string | null } }) => {
         const code = result.codeResult.code;
         if (!code || !/^\d{13}$/.test(code)) return;
+        if (!validateBarcodeEAN13(code)) return;
 
-        const now = Date.now();
-        if (
-          lastDetectionTimeRef.current > 0 &&
-          now - lastDetectionTimeRef.current < 2000
-        )
-          return;
-        lastDetectionTimeRef.current = now;
+        if (confirmCodeRef.current === code) {
+          confirmCountRef.current += 1;
+        } else {
+          confirmCodeRef.current = code;
+          confirmCountRef.current = 1;
+        }
+
+        const threshold = confirmationThresholdRef.current;
+        if (confirmCountRef.current < threshold) return;
 
         setLastDetected(code);
         onDetectedRef.current?.(code);
