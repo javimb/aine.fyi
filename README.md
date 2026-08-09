@@ -9,7 +9,7 @@ A web application that helps people with NSAID (AINE) allergies check whether co
 | 🟢 Green  | **No AINE detected** — safe based on official composition         |
 | 🟡 Yellow | **Uncertain / not found** — incomplete data, consult a pharmacist |
 
-Principios activos last updated: 2026-05-06 <!-- last-updated: 2026-05-06 -->
+Principios activos last updated: 2026-08-01 <!-- last-updated: 2026-08-01 -->
 
 > **IMPORTANT:** This application is an informational tool based on public data. It does not replace the advice of a healthcare professional. Always verify the physical medication leaflet and consult a doctor or pharmacist before taking any medication, especially in cases of severe allergies.
 
