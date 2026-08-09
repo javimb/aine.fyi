@@ -125,10 +125,16 @@ describe("useBarcodeScanner", () => {
 
     const onDetectedCb = mockQuagga.onDetected.mock.calls[0][0];
     await act(async () => {
-      onDetectedCb({ codeResult: { code: "8470006543215" } });
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
     });
 
-    expect(result.current.lastDetected).toBe("8470006543215");
+    expect(result.current.lastDetected).toBe("8470006543214");
     expect(result.current.isScanning).toBe(false);
   });
 
@@ -149,10 +155,7 @@ describe("useBarcodeScanner", () => {
     expect(result.current.lastDetected).toBeNull();
   });
 
-  it("debounces detections within 2 seconds", async () => {
-    let currentTime = 1000000;
-    vi.spyOn(Date, "now").mockImplementation(() => currentTime);
-
+  it("ignores a 13-digit code that fails EAN-13 checksum validation", async () => {
     mockGetUserMedia("resolve");
 
     const { result } = await setupQuaggaMock();
@@ -161,32 +164,48 @@ describe("useBarcodeScanner", () => {
       await result.current.startScanning();
     });
 
-    const firstOnDetectedCb = mockQuagga.onDetected.mock.calls[0][0];
+    const onDetectedCb = mockQuagga.onDetected.mock.calls[0][0];
 
     await act(async () => {
-      firstOnDetectedCb({ codeResult: { code: "8470006543215" } });
+      onDetectedCb({ codeResult: { code: "8470006543219" } });
+    });
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543219" } });
+    });
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543219" } });
     });
 
-    expect(result.current.lastDetected).toBe("8470006543215");
-    expect(result.current.isScanning).toBe(false);
+    expect(result.current.lastDetected).toBeNull();
+    expect(result.current.isScanning).toBe(true);
+  });
+
+  it("does not confirm a code until N consecutive identical detections", async () => {
+    mockGetUserMedia("resolve");
+
+    const { result } = await setupQuaggaMock();
 
     await act(async () => {
       await result.current.startScanning();
     });
 
-    expect(result.current.lastDetected).toBeNull();
+    const onDetectedCb = mockQuagga.onDetected.mock.calls[0][0];
 
-    currentTime += 500;
-
-    const secondOnDetectedCb =
-      mockQuagga.onDetected.mock.calls[
-        mockQuagga.onDetected.mock.calls.length - 1
-      ][0];
     await act(async () => {
-      secondOnDetectedCb({ codeResult: { code: "8470009999999" } });
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
     });
-
     expect(result.current.lastDetected).toBeNull();
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    expect(result.current.lastDetected).toBeNull();
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    expect(result.current.lastDetected).toBe("8470006543214");
+    expect(result.current.isScanning).toBe(false);
   });
 
   it("sets error state when camera permission is denied", async () => {
@@ -265,10 +284,116 @@ describe("useBarcodeScanner", () => {
 
     const onDetectedCb = mockQuagga.onDetected.mock.calls[0][0];
     await act(async () => {
-      onDetectedCb({ codeResult: { code: "8470006543215" } });
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
     });
 
-    expect(onDetected).toHaveBeenCalledWith("8470006543215");
-    expect(result.current.lastDetected).toBe("8470006543215");
+    expect(onDetected).toHaveBeenCalledWith("8470006543214");
+    expect(result.current.lastDetected).toBe("8470006543214");
+  });
+
+  it("resets confirmation counter when a different code is detected mid-sequence", async () => {
+    mockGetUserMedia("resolve");
+
+    const { result } = await setupQuaggaMock();
+
+    await act(async () => {
+      await result.current.startScanning();
+    });
+
+    const onDetectedCb = mockQuagga.onDetected.mock.calls[0][0];
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "5901234123457" } });
+    });
+    expect(result.current.lastDetected).toBeNull();
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "5901234123457" } });
+    });
+    expect(result.current.lastDetected).toBeNull();
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "5901234123457" } });
+    });
+    expect(result.current.lastDetected).toBe("5901234123457");
+  });
+
+  it("supports a custom confirmation threshold", async () => {
+    mockGetUserMedia("resolve");
+
+    vi.doMock("@ericblade/quagga2", () => ({
+      default: mockQuagga,
+    }));
+
+    mockQuagga.init.mockImplementation(
+      (_config: unknown, callback: (err?: unknown) => void) => {
+        callback();
+      },
+    );
+
+    const { useBarcodeScanner } = await import("./use-barcode-scanner");
+    const { result } = renderHook(() =>
+      useBarcodeScanner(undefined, { confirmationThreshold: 2 }),
+    );
+
+    await act(async () => {
+      await result.current.startScanning();
+    });
+
+    const onDetectedCb = mockQuagga.onDetected.mock.calls[0][0];
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    expect(result.current.lastDetected).toBeNull();
+
+    await act(async () => {
+      onDetectedCb({ codeResult: { code: "8470006543214" } });
+    });
+    expect(result.current.lastDetected).toBe("8470006543214");
+  });
+
+  it("resets confirmation state on new scan session", async () => {
+    mockGetUserMedia("resolve");
+
+    const { result } = await setupQuaggaMock();
+
+    await act(async () => {
+      await result.current.startScanning();
+    });
+
+    const firstCb = mockQuagga.onDetected.mock.calls[0][0];
+
+    await act(async () => {
+      firstCb({ codeResult: { code: "8470006543214" } });
+    });
+
+    await act(async () => {
+      result.current.stopScanning();
+    });
+
+    await act(async () => {
+      await result.current.startScanning();
+    });
+
+    const secondCb =
+      mockQuagga.onDetected.mock.calls[
+        mockQuagga.onDetected.mock.calls.length - 1
+      ][0];
+
+    await act(async () => {
+      secondCb({ codeResult: { code: "8470006543214" } });
+    });
+    expect(result.current.lastDetected).toBeNull();
   });
 });
