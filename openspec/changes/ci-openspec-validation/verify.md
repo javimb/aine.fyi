@@ -32,15 +32,14 @@ If any items failed, list id + issues:
 
 ## 2. Task Completion (`tasks.md`)
 
-- [ ] All `- [ ]` have become `- [x]`
+- [x] All `- [ ]` have become `- [x]`
 
 **Incomplete tasks** (if any):
 
-| Task                                                            | Reason not done                                                                                          | Blocking archive?                                |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| 2.3 Commit: `chore(opsx): add ci-openspec-validation artifacts` | Pending — will be committed as part of the finishing-a-development-branch step (change artifacts commit) | No — part of this cycle's remaining deliverables |
-| 3.1 Push the branch to remote                                   | Pending — executed in the finishing-a-development-branch step after verify + retrospective               | No                                               |
-| 3.2 Create a pull request via `gh` CLI                          | Pending — executed in the finishing-a-development-branch step                                            | No                                               |
+| Task                                   | Reason not done                                                                            | Blocking archive? |
+| -------------------------------------- | ------------------------------------------------------------------------------------------ | ----------------- |
+| 3.1 Push the branch to remote          | Pending — executed in the finishing-a-development-branch step after verify + retrospective | No                |
+| 3.2 Create a pull request via `gh` CLI | Pending — executed in the finishing-a-development-branch step                              | No                |
 
 ---
 
