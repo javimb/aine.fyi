@@ -1,10 +1,6 @@
 # CIMA Proxy
 
-## Purpose
-
-Server-side proxy for the CIMA medication database that eliminates browser CORS restrictions and enriches every response with AINE safety analysis (RED/GREEN/YELLOW status and matched active-ingredient families), turning the API into the intelligent layer of the app.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: CIMA API proxy route
 
@@ -49,26 +45,3 @@ The project SHALL expose a Next.js API route at `/api/cima` that proxies request
 
 - **WHEN** a request is sent to `/api/cima` without any of `nombre`, `nregistro`, or `cn`
 - **THEN** the route SHALL return a 400 error with a descriptive message
-
-### Requirement: CORS bypass via server-side proxy
-
-The CIMA proxy route SHALL execute requests server-side, eliminating browser CORS restrictions for client code.
-
-#### Scenario: Client fetches CIMA data through proxy
-
-- **WHEN** client-side code fetches from `/api/cima`
-- **THEN** the request SHALL succeed without CORS errors, as the actual CIMA API call is made server-side
-
-### Requirement: Enriched response shape with aineAnalysis
-
-All successful CIMA proxy responses SHALL include an `aineAnalysis` field on each medication object with the following shape: `{ status: "RED" | "GREEN" | "YELLOW", matchedAines: Array<{ name: string, family: string }> }`.
-
-#### Scenario: Successful search response with AINE analysis
-
-- **WHEN** a search by nombre returns a list of medications
-- **THEN** each medication object in the list SHALL include an `aineAnalysis` field with status and matchedAines
-
-#### Scenario: Successful detail response with AINE analysis
-
-- **WHEN** a detail lookup by `nregistro` or `cn` returns a single medication
-- **THEN** the response SHALL include an `aineAnalysis` field with status and matchedAines

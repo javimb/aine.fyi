@@ -53,8 +53,8 @@ async function handleDetail(url: string) {
       headers: { Accept: "application/json" },
     });
 
-    if (!response.ok) {
-      if (response.status === 404) {
+    if (!response.ok || response.status === 204) {
+      if (response.status === 404 || response.status === 204) {
         return NextResponse.json(
           { aineAnalysis: YELLOW_ANALYSIS },
           { status: 404 },

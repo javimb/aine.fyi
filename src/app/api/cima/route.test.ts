@@ -139,6 +139,40 @@ describe("CIMA proxy route", () => {
     expect(body.aineAnalysis.status).toBe("YELLOW");
   });
 
+  it("returns 404 with YELLOW analysis when CIMA returns 204 for detail lookup by nregistro", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 204,
+      json: () =>
+        Promise.reject(new SyntaxError("Unexpected end of JSON input")),
+    });
+
+    const { GET } = await import("@/app/api/cima/route");
+    const request = createRequest({ nregistro: "99999" });
+    const response = await GET(request);
+
+    expect(response.status).toBe(404);
+    const body = await response.json();
+    expect(body.aineAnalysis.status).toBe("YELLOW");
+  });
+
+  it("returns 404 with YELLOW analysis when CIMA returns 204 for detail lookup by cn", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 204,
+      json: () =>
+        Promise.reject(new SyntaxError("Unexpected end of JSON input")),
+    });
+
+    const { GET } = await import("@/app/api/cima/route");
+    const request = createRequest({ cn: "99999" });
+    const response = await GET(request);
+
+    expect(response.status).toBe(404);
+    const body = await response.json();
+    expect(body.aineAnalysis.status).toBe("YELLOW");
+  });
+
   it("returns 502 with YELLOW analysis when CIMA returns server error", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
