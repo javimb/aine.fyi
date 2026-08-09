@@ -81,3 +81,20 @@ jobs:
 
       - name: E2E tests (smoke then exhaustive)
         run: npm run test:e2e:smoke && npm run test:e2e:exhaustive
+
+  openspec:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install OpenSpec CLI
+        run: npm i -g @fission-ai/openspec@1.8.0
+
+      - name: Validate specs and changes
+        run: openspec validate --all --strict --json
