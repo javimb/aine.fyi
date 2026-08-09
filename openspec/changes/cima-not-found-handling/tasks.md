@@ -27,5 +27,5 @@
 
 ## 6. Push and Create PR
 
-- [ ] 6.1 Push branch to remote
-- [ ] 6.2 Create pull request via `gh` CLI
+- [x] 6.1 Push branch to remote
+- [x] 6.2 Create pull request via `gh` CLI
