@@ -10,7 +10,7 @@
 
 - [x] 2.1 Run `openspec validate --all --strict` locally and confirm it passes
 - [x] 2.2 Run `npm run test` and `npx tsc --noEmit` to confirm pre-commit gates pass
-- [ ] 2.3 Commit: `chore(opsx): add ci-openspec-validation artifacts`
+- [x] 2.3 Commit: `chore(opsx): add ci-openspec-validation artifacts`
 
 ## 3. Push and Create PR
 
