@@ -40,6 +40,11 @@ The project SHALL expose a Next.js API route at `/api/cima` that proxies request
 - **WHEN** the CIMA API returns a 404 for a detail lookup by `nregistro` or `cn`
 - **THEN** the proxy route SHALL return a 404 with `aineAnalysis` status `YELLOW` and an empty `matchedAines` array
 
+#### Scenario: Medication not found in CIMA (204 No Content)
+
+- **WHEN** the CIMA API returns a 204 No Content response (empty body) for a detail lookup by `nregistro` or `cn`
+- **THEN** the proxy route SHALL return a 404 with `aineAnalysis` status `YELLOW` and an empty `matchedAines` array
+
 #### Scenario: Missing required query parameters
 
 - **WHEN** a request is sent to `/api/cima` without any of `nombre`, `nregistro`, or `cn`
