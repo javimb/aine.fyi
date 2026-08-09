@@ -1,4 +1,10 @@
-## ADDED Requirements
+# CIMA Proxy
+
+## Purpose
+
+Server-side proxy for the CIMA medication database that eliminates browser CORS restrictions and enriches every response with AINE safety analysis (RED/GREEN/YELLOW status and matched active-ingredient families), turning the API into the intelligent layer of the app.
+
+## Requirements
 
 ### Requirement: CIMA API proxy route
 

@@ -1,4 +1,10 @@
-## ADDED Requirements
+# Open Source Compliance
+
+## Purpose
+
+Legal and community files required for public open-source release of the repository — the GPL-3.0 license, the Contributor Covenant code of conduct, and a contributing guide — to ensure legal compliance, contributor onboarding, and clean repo hygiene.
+
+## Requirements
 
 ### Requirement: GPL-3.0 license file
 
