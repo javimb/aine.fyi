@@ -66,6 +66,7 @@ When querying a specific medication, the coding agent should focus on:
    - **MATCH:** Trigger "Danger/Red" UI state.
    - **NO MATCH:** Trigger "Safe/Green" UI state.
    - **ERROR/404:** Trigger "Unknown/Yellow" UI state.
+   - **Note:** CIMA returns `204 No Content` (empty body), not 404, for unknown `nregistro`/`cn` lookups. The proxy normalizes 204 to a 404 not-found response so the UI can distinguish not-found from server errors.
 
 ---
 
