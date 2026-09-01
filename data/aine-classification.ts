@@ -272,6 +272,8 @@ export const principioClassification: PrincipleClassification = {
   "ARNICA MONTANA": { level: "YELLOW", family: "" },
   "ARNICA MONTANA EXTRACTO LIQUIDO": { level: "GREEN", family: "" },
   "ARNICA MONTANA FLORES": { level: "YELLOW", family: "" },
+  "ARNM CON CAPERUZA QUE CODIFICA LA PROTEINA ESPIGA DEL SARS-COV-2, VARIANTE OMICRON XFG":
+    { level: "GREEN", family: "" },
   ARSENICO: { level: "YELLOW", family: "" },
   "ARSENICO TRIOXIDO": { level: "GREEN", family: "" },
   "ARTEMISIA ABSINTHIUM": { level: "YELLOW", family: "" },
@@ -337,6 +339,7 @@ export const principioClassification: PrincipleClassification = {
   BACITRACINA: { level: "GREEN", family: "" },
   "BACITRACINA-ZINC": { level: "GREEN", family: "" },
   BACLOFENO: { level: "GREEN", family: "" },
+  "BALOXAVIR MARBOXIL": { level: "GREEN", family: "" },
   "BALSAMO PERU": { level: "GREEN", family: "" },
   "BALSAMO TOLU": { level: "YELLOW", family: "" },
   "BALSAMO TOLU EXTO ACUOSO": { level: "YELLOW", family: "" },
@@ -1006,6 +1009,7 @@ export const principioClassification: PrincipleClassification = {
   },
   "DICLOROBENCILICO ALCOHOL": { level: "GREEN", family: "" },
   DIDANOSINA: { level: "YELLOW", family: "" },
+  DIDROGESTERONA: { level: "GREEN", family: "" },
   DIENOGEST: { level: "GREEN", family: "" },
   "DIETILAMINOETIL DEXTRANO HIDROCLORURO": { level: "GREEN", family: "" },
   DIFELICEFALINA: { level: "YELLOW", family: "" },
@@ -1071,6 +1075,7 @@ export const principioClassification: PrincipleClassification = {
   "DOLUTEGRAVIR SODIO": { level: "GREEN", family: "" },
   DOMPERIDONA: { level: "GREEN", family: "" },
   "DOMPERIDONA MALEATO": { level: "GREEN", family: "" },
+  DONANEMAB: { level: "GREEN", family: "" },
   DONEPEZILO: { level: "GREEN", family: "" },
   "DONEPEZILO HIDROCLORURO": { level: "GREEN", family: "" },
   DOPAMINA: { level: "YELLOW", family: "" },
@@ -1578,6 +1583,8 @@ export const principioClassification: PrincipleClassification = {
   GLICLAZIDA: { level: "GREEN", family: "" },
   GLICOPIRRONIO: { level: "GREEN", family: "" },
   "GLICOPIRRONIO BROMURO": { level: "GREEN", family: "" },
+  "GLICOPROTEINA F DEL VIRUS RESPIRATORIO SINCITIAL EN SU CONFORMACION PREFUSION, ARNM MONOCATENARIO PROTEGIDO EN EL EXTREMO 5′ QUE CODIFICA PARA":
+    { level: "GREEN", family: "" },
   GLIMEPIRIDA: { level: "GREEN", family: "" },
   GLIPIZIDA: { level: "GREEN", family: "" },
   GLIQUIDONA: { level: "YELLOW", family: "" },
@@ -2398,6 +2405,7 @@ export const principioClassification: PrincipleClassification = {
   OLARATUMAB: { level: "YELLOW", family: "" },
   "OLEA EUROPEA": { level: "YELLOW", family: "" },
   "OLEA EUROPEA HOJAS": { level: "YELLOW", family: "" },
+  OLEZARSEN: { level: "GREEN", family: "" },
   "OLIPUDASA ALFA": { level: "GREEN", family: "" },
   OLMESARTAN: { level: "YELLOW", family: "" },
   "OLMESARTAN MEDOXOMILO": { level: "GREEN", family: "" },
@@ -3563,7 +3571,7 @@ export const principioClassification: PrincipleClassification = {
   "ZUCLOPENTIXOL DECANOATO": { level: "GREEN", family: "" },
   "ZUCLOPENTIXOL DIHIDROCLORURO": { level: "GREEN", family: "" },
 };
-export const lastUpdated = "2026-08-01";
+export const lastUpdated = "2026-09-01";
 export const validatedClassification = PrincipleClassificationSchema.parse(
   principioClassification,
 );
